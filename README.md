@@ -1,16 +1,7 @@
 # DwFramework
+[![](https://img.shields.io/badge/%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97-v5.1.2-brightgreen)](https://github.com/BanCodeNet/DwFramework/blob/readme/ReleaseLog_v5.1.x.md)
 ![](https://github.com/DwGoingJiang/DwFramework/workflows/Ubuntu/badge.svg)
-
-### 0x1 项目简介
-
-基于Autofac的NetCore快速开发框架，这个框架旨在将服务注入简单化，把Autofac中常用的部分暴露出来，并融合了其他几个项目开发常用的组件。让整个开发的过程变得简单快速。当然，如果你有更复杂的业务需求，你可以直接引用Autofac来对本框架进行扩展。
-
----
-
-### 0x2 组件列表
-
-版本说明：NETVersion.ReleaseVersion.FixVersion
-
+### 0x1 组件列表
 |            组件             |     说明      |                             版本                             |
 | :-------------------------: | :-----------: | :----------------------------------------------------------: |
 |      DwFramework.Core       |   核心库    | [![](https://img.shields.io/badge/Nuget-5.1.2-brightgreen.svg)](https://www.nuget.org/packages/DwFramework.Core/) |
@@ -18,10 +9,8 @@
 |    DwFramework.RabbitMQ     | RabbitMQ封装库  | [![](https://img.shields.io/badge/Nuget-5.1.2-brightgreen.svg)](https://www.nuget.org/packages/DwFramework.RabbitMQ/) |
 |       DwFramework.Quartz       |    Quartz封装库    | [![](https://img.shields.io/badge/Nuget-5.1.2-brightgreen.svg)](https://www.nuget.org/packages/DwFramework.Quartz/) |
 |     DwFramework.Web      |  网络库   | [![](https://img.shields.io/badge/Nuget-5.1.2-brightgreen.svg)](https://www.nuget.org/packages/DwFramework.Web/) |
-
 ---
-
-### 0x3 简单示例
+### 0x2 简单示例
 
 ```c#
 class Program
