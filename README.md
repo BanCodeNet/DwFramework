@@ -1,6 +1,6 @@
 # DwFramework
 [![](https://img.shields.io/badge/%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97-v5.1.2-brightgreen)](https://github.com/BanCodeNet/DwFramework/blob/readme/ReleaseLog_v5.1.x.md)
-![](https://github.com/DwGoingJiang/DwFramework/workflows/Ubuntu/badge.svg)
+![](https://github.com/DwGoingJiang/DwFramework/workflows/Ubuntu/badge.svg) 
 ### 0x1 组件列表
 |            组件             |     说明      |                             版本                             |
 | :-------------------------: | :-----------: | :----------------------------------------------------------: |
