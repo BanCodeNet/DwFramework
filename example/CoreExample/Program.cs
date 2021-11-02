@@ -36,16 +36,29 @@ namespace CoreExample
                     + $"Return:\t{invocation.ReturnValue}\n"
                     + "========================================"
                 )));
-                builder.RegisterType<A>().As<I>().EnableInterfaceInterceptors();
-                builder.RegisterType<B>().As<I>().EnableInterfaceInterceptors();
+                // builder.RegisterType<A>().As<I>().EnableInterfaceInterceptors();
+                // builder.RegisterType<B>().As<I>().EnableInterfaceInterceptors();
             });
             host.OnHostStarted += provider =>
             {
+                try
+                {
+                    throw new Ex(null);
+                }
+                catch (Exception x)
+                {
+
+                }
                 ServiceHost.ParseConfiguration<string>("ConnectionString");
                 foreach (var item in provider.GetServices<I>()) item.Do(5, 6);
             };
             await host.RunAsync();
         }
+    }
+
+    public sealed class Ex : ExceptionBase
+    {
+        public Ex(string msg) : base(401, msg) { }
     }
 
     // 定义接口
@@ -59,7 +72,7 @@ namespace CoreExample
     {
         public A() { }
 
-        public int Do(int a, int b)
+        public virtual int Do(int a, int b)
         {
             return a + b;
         }
@@ -70,7 +83,7 @@ namespace CoreExample
     {
         public B() { }
 
-        public int Do(int a, int b)
+        public virtual int Do(int a, int b)
         {
             return a * b;
         }

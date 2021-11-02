@@ -5,7 +5,6 @@
 
 # Custom files
 .DS_Store
-Config.json
 build/
 
 # User-specific files
