@@ -1,14 +1,11 @@
-﻿using System;
+﻿namespace DwFramework.Core;
 
-namespace DwFramework.Core
+/// <summary>
+/// 生命周期
+/// </summary>
+public enum Lifetime
 {
-    /// <summary>
-    /// 生命周期
-    /// </summary>
-    public enum Lifetime
-    {
-        InstancePerDependency,
-        Singleton,
-        InstancePerLifetimeScope
-    }
+    InstancePerDependency,
+    Singleton,
+    InstancePerLifetimeScope
 }

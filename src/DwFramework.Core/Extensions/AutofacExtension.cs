@@ -1,9 +1,6 @@
-﻿using System;
+﻿namespace DwFramework.Core;
 
-namespace DwFramework.Core
+public static class AutofacExtension
 {
-    public static class AutofacExtension
-    {
 
-    }
 }

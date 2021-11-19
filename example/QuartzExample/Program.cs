@@ -1,52 +1,50 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Quartz;
 using Autofac;
 using DwFramework.Core;
 using DwFramework.Quartz;
 
-namespace QuartzExample
+namespace QuartzExample;
+
+class Program
 {
-    class Program
+    static async Task Main(string[] args)
     {
-        static async Task Main(string[] args)
+        var host = new ServiceHost();
+        host.ConfigureContainer(b =>
         {
-            var host = new ServiceHost();
-            host.ConfigureContainer(b =>
-            {
-                b.RegisterType<A>().SingleInstance();
-                b.RegisterType<Job>();
-            });
-            host.ConfigureQuartz();
-            host.OnHostStarted += async p =>
-            {
-                var s = p.GetQuartz();
-                var ss = await s.CreateSchedulerAsync("X", true);
-                await s.CreateJobAsync<Job>("X", "1/5 * * * * ?");
-                await ss.Start();
-            };
-            await host.RunAsync();
-        }
+            b.RegisterType<A>().SingleInstance();
+            b.RegisterType<Job>();
+        });
+        host.ConfigureQuartz();
+        host.OnHostStarted += async p =>
+        {
+            var s = p.GetQuartz();
+            var ss = await s.CreateSchedulerAsync("X", true);
+            await s.CreateJobAsync<Job>("X", "1/5 * * * * ?");
+            await ss.Start();
+        };
+        await host.RunAsync();
+    }
+}
+
+public class A
+{
+    public readonly Guid Id = Guid.NewGuid();
+}
+
+public class Job : IJob
+{
+    private A _a;
+
+    public Job(A a)
+    {
+        _a = a;
     }
 
-    public class A
+    public Task Execute(IJobExecutionContext context)
     {
-        public readonly Guid Id = Guid.NewGuid();
-    }
-
-    public class Job : IJob
-    {
-        private A _a;
-
-        public Job(A a)
-        {
-            _a = a;
-        }
-
-        public Task Execute(IJobExecutionContext context)
-        {
-            Console.WriteLine(_a.Id);
-            return Task.CompletedTask;
-        }
+        Console.WriteLine(_a.Id);
+        return Task.CompletedTask;
     }
 }

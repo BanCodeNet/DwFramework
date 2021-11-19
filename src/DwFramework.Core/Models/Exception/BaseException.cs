@@ -1,20 +1,17 @@
-using System;
+namespace DwFramework.Core;
 
-namespace DwFramework.Core
+public abstract class BaseException : Exception
 {
-    public abstract class BaseException : Exception
-    {
-        public int Code { get; init; }
+    public int Code { get; init; }
 
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        /// <param name="code"></param>
-        /// <param name="message"></param>
-        /// <param name="innerException"></param>
-        public BaseException(int code, string message = null, Exception innerException = null) : base(message, innerException)
-        {
-            Code = code;
-        }
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    /// <param name="code"></param>
+    /// <param name="message"></param>
+    /// <param name="innerException"></param>
+    public BaseException(int code, string message = null, Exception innerException = null) : base(message, innerException)
+    {
+        Code = code;
     }
 }

@@ -1,10 +1,7 @@
-﻿using System;
+﻿namespace DwFramework.Web;
 
-namespace DwFramework.Web
+[AttributeUsage(AttributeTargets.Class)]
+public class RPCAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Class)]
-    public class RPCAttribute : Attribute
-    {
-        public RPCAttribute() { }
-    }
+    public RPCAttribute() { }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -14,25 +13,25 @@ using DwFramework.Core;
 using DwFramework.Web;
 using DwFramework.Web.Socket;
 
-namespace WebExample
-{
-    class Program
-    {
-        static async Task Main(string[] args)
-        {
-            var host = new ServiceHost();
-            var configuration = new ConfigurationBuilder().AddJsonFile("Config.json").Build();
-            host.ConfigureWeb(configuration, builder => builder.UseStartup<Startup>(), "web");
-            // host.ConfigureSocket(configuration, "tcp");
-            // host.ConfigureSocket(configuration, "udp");
-            host.ConfigureLogging(builder => builder.UserNLog());
+namespace WebExample;
 
-            host.OnHostStarted += p =>
-            {
-                var web = p.GetWeb();
-                web.OnWebSocketConnect += (c, a) => Console.WriteLine($"{c.ID} 建立连接");
-                web.OnWebSocketReceive += (c, a) => Console.WriteLine($"{c.ID} {Encoding.UTF8.GetString(a.Data)}");
-                web.OnWebSocketClose += (c, a) => Console.WriteLine($"{c.ID} 断开连接");
+class Program
+{
+    static async Task Main(string[] args)
+    {
+        var host = new ServiceHost();
+        var configuration = new ConfigurationBuilder().AddJsonFile("Config.json").Build();
+        host.ConfigureWeb(configuration, builder => builder.UseStartup<Startup>(), "web");
+        // host.ConfigureSocket(configuration, "tcp");
+        // host.ConfigureSocket(configuration, "udp");
+        host.ConfigureLogging(builder => builder.UserNLog());
+
+        host.OnHostStarted += p =>
+        {
+            var web = p.GetWeb();
+            web.OnWebSocketConnect += (c, a) => Console.WriteLine($"{c.ID} 建立连接");
+            web.OnWebSocketReceive += (c, a) => Console.WriteLine($"{c.ID} {Encoding.UTF8.GetString(a.Data)}");
+            web.OnWebSocketClose += (c, a) => Console.WriteLine($"{c.ID} 断开连接");
 
                 // var tcp = p.GetTcp();
                 // tcp.OnConnect += (c, a) => Console.WriteLine($"{c.ID} connected");
@@ -60,93 +59,92 @@ namespace WebExample
                 // };
                 // udp.OnSend += (c, a) => Console.WriteLine($"{c} sent {Encoding.UTF8.GetString(a.Data)}");
             };
-            await host.RunAsync();
-        }
+        await host.RunAsync();
     }
+}
 
-    [Service]
-    public interface IGreeterService
+[Service]
+public interface IGreeterService
+{
+    [Operation
+    ]
+    Task<HelloReply> SayHelloAsync(HelloRequest request,
+        CallContext context = default);
+}
+
+[ProtoContract]
+public class HelloRequest
+{
+    [ProtoMember(1)]
+    public string Name { get; set; }
+}
+
+[ProtoContract]
+public class HelloReply
+{
+    [ProtoMember(1)]
+    public string Message { get; set; }
+}
+
+[RPC]
+public class GreeterService : IGreeterService
+{
+    public Task<HelloReply> SayHelloAsync(HelloRequest request, CallContext context = default)
     {
-        [Operation
-        ]
-        Task<HelloReply> SayHelloAsync(HelloRequest request,
-            CallContext context = default);
+        return Task.FromResult(
+               new HelloReply
+               {
+                   Message = $"Hello {request.Name}"
+               });
     }
+}
 
-    [ProtoContract]
-    public class HelloRequest
+public sealed class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
     {
-        [ProtoMember(1)]
-        public string Name { get; set; }
-    }
-
-    [ProtoContract]
-    public class HelloReply
-    {
-        [ProtoMember(1)]
-        public string Message { get; set; }
-    }
-
-    [RPC]
-    public class GreeterService : IGreeterService
-    {
-        public Task<HelloReply> SayHelloAsync(HelloRequest request, CallContext context = default)
+        services.AddCors(options =>
         {
-            return Task.FromResult(
-                   new HelloReply
-                   {
-                       Message = $"Hello {request.Name}"
-                   });
-        }
-    }
-
-    public sealed class Startup
-    {
-        public void ConfigureServices(IServiceCollection services)
+            options.AddPolicy("any", builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); });
+        });
+        services.AddSwaggerGen(c =>
         {
-            services.AddCors(options =>
+            c.SwaggerDoc("name", new OpenApiInfo()
             {
-                options.AddPolicy("any", builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); });
+                Title = "title",
+                Version = "version",
+                Description = "description"
             });
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("name", new OpenApiInfo()
-                {
-                    Title = "title",
-                    Version = "version",
-                    Description = "description"
-                });
-            });
-            services.AddControllers().AddJsonOptions(options =>
-            {
+        });
+        services.AddControllers().AddJsonOptions(options =>
+        {
                 //不使用驼峰样式的key
                 options.JsonSerializerOptions.PropertyNamingPolicy = null;
                 //不使用驼峰样式的key
                 options.JsonSerializerOptions.DictionaryKeyPolicy = null;
-            });
-            services.AddMvc(options => options.UseRoutePrefix("api"));
-            services.AddRpcImplements();
-            services.AddRazorPages();
-            services.AddServerSideBlazor();
-            services.AddAntDesign();
-        }
+        });
+        services.AddMvc(options => options.UseRoutePrefix("api"));
+        services.AddRpcImplements();
+        services.AddRazorPages();
+        services.AddServerSideBlazor();
+        services.AddAntDesign();
+    }
 
-        public void Configure(IApplicationBuilder app, IHostApplicationLifetime lifetime)
+    public void Configure(IApplicationBuilder app, IHostApplicationLifetime lifetime)
+    {
+        app.UseCors("any");
+        app.UseStaticFiles();
+        app.UseRouting();
+        app.UseSwagger(c => c.RouteTemplate = "{documentName}/swagger.json");
+        app.UseSwaggerUI(c => c.SwaggerEndpoint($"/{"name"}/swagger.json", "desc"));
+        app.UseWebSocket();
+        app.UseEndpoints(endpoints =>
         {
-            app.UseCors("any");
-            app.UseStaticFiles();
-            app.UseRouting();
-            app.UseSwagger(c => c.RouteTemplate = "{documentName}/swagger.json");
-            app.UseSwaggerUI(c => c.SwaggerEndpoint($"/{"name"}/swagger.json", "desc"));
-            app.UseWebSocket();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-                endpoints.MapRpcImplements();
+            endpoints.MapControllers();
+            endpoints.MapRpcImplements();
 
-                endpoints.MapBlazorHub();
-                endpoints.MapFallbackToPage("/_Host");
-            });
-        }
+            endpoints.MapBlazorHub();
+            endpoints.MapFallbackToPage("/_Host");
+        });
     }
 }

@@ -1,10 +1,6 @@
-using System;
-using DwFramework.Core;
+namespace DwFramework.TensorFlow;
 
-namespace DwFramework.TensorFlow
+public static class TensorFlowExtension
 {
-    public static class TensorFlowExtension
-    {
 
-    }
 }

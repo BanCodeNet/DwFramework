@@ -1,31 +1,28 @@
-using System;
-using System.Net.WebSockets;
 using Microsoft.AspNetCore.Http;
 
-namespace DwFramework.Web
+namespace DwFramework.Web;
+
+public class OnConnectEventArgs : EventArgs
 {
-    public class OnConnectEventArgs : EventArgs
-    {
-        public IHeaderDictionary Header { get; init; }
-    }
+    public IHeaderDictionary Header { get; init; }
+}
 
-    public class OnCloceEventArgs : EventArgs
-    {
+public class OnCloceEventArgs : EventArgs
+{
 
-    }
+}
 
-    public class OnSendEventArgs : EventArgs
-    {
-        public byte[] Data { get; init; }
-    }
+public class OnSendEventArgs : EventArgs
+{
+    public byte[] Data { get; init; }
+}
 
-    public class OnReceiveEventArgs : EventArgs
-    {
-        public byte[] Data { get; init; }
-    }
+public class OnReceiveEventArgs : EventArgs
+{
+    public byte[] Data { get; init; }
+}
 
-    public class OnErrorEventArgs : EventArgs
-    {
-        public Exception Exception { get; init; }
-    }
+public class OnErrorEventArgs : EventArgs
+{
+    public Exception Exception { get; init; }
 }

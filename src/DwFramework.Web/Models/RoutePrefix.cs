@@ -1,31 +1,29 @@
-using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
-namespace DwFramework.Web
+namespace DwFramework.Web;
+
+public sealed class RoutePrefix : IApplicationModelConvention
 {
-    public sealed class RoutePrefix : IApplicationModelConvention
+    private readonly AttributeRouteModel _centralPrefix;
+
+    public RoutePrefix(IRouteTemplateProvider routeTemplateProvider)
     {
-        private readonly AttributeRouteModel _centralPrefix;
+        _centralPrefix = new AttributeRouteModel(routeTemplateProvider);
+    }
 
-        public RoutePrefix(IRouteTemplateProvider routeTemplateProvider)
+    public void Apply(ApplicationModel application)
+    {
+        foreach (var controller in application.Controllers)
         {
-            _centralPrefix = new AttributeRouteModel(routeTemplateProvider);
-        }
-
-        public void Apply(ApplicationModel application)
-        {
-            foreach (var controller in application.Controllers)
+            var matchedSelectors = controller.Selectors.Where(x => x.AttributeRouteModel != null).ToList();
+            if (matchedSelectors.Any())
             {
-                var matchedSelectors = controller.Selectors.Where(x => x.AttributeRouteModel != null).ToList();
-                if (matchedSelectors.Any())
+                foreach (var selectorModel in matchedSelectors)
                 {
-                    foreach (var selectorModel in matchedSelectors)
-                    {
-                        selectorModel.AttributeRouteModel = AttributeRouteModel.CombineAttributeRouteModel(_centralPrefix,
-                            selectorModel.AttributeRouteModel);
-                    }
+                    selectorModel.AttributeRouteModel = AttributeRouteModel.CombineAttributeRouteModel(_centralPrefix,
+                        selectorModel.AttributeRouteModel);
                 }
             }
         }
