@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.IO.Pipes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,8 +31,8 @@ namespace CoreExample
                     + $"Return:\t{invocation.ReturnValue}\n"
                     + "========================================"
                 )));
-                builder.RegisterType<A>().As<I>().EnableInterfaceInterceptors().InterceptedBy(typeof(LoggerInterceptor));
-                builder.RegisterType<B>().As<I>().EnableInterfaceInterceptors().InterceptedBy(typeof(LoggerInterceptor));
+                builder.RegisterType<A>().As<I>().EnableInterfaceInterceptors();
+                builder.RegisterType<B>().As<I>().EnableInterfaceInterceptors();
             });
             host.OnHostStarted += provider =>
             {
@@ -50,22 +51,24 @@ namespace CoreExample
     }
 
     // 定义实现
+    [Intercept(typeof(LoggerInterceptor))]
     public class A : I
     {
         public A() { }
 
-        public virtual int Do(int a, int b)
+        public int Do(int a, int b)
         {
             return a + b;
         }
     }
 
     // 定义实现
+    [Intercept(typeof(LoggerInterceptor))]
     public class B : I
     {
         public B() { }
 
-        public virtual int Do(int a, int b)
+        public int Do(int a, int b)
         {
             return a * b;
         }

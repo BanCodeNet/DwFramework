@@ -2,7 +2,7 @@ using System;
 
 namespace DwFramework.Core
 {
-    public sealed class TypeNotMatchException : ExceptionBase
+    public sealed class TypeNotMatchException : BaseException
     {
         public readonly Type SourceType;
         public readonly Type TargetType;

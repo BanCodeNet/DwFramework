@@ -1,0 +1,10 @@
+{
+    "web": {
+        "Listens": [
+            {
+                "Scheme": "http",
+                "Port": 6001
+            }
+        ]
+    }
+}
