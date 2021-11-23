@@ -8,7 +8,7 @@ using Autofac.Extras.DynamicProxy;
 using NLog;
 using DwFramework.Core;
 using DwFramework.Core.Generator;
-using DwFramework.Core.AOP;
+using DwFramework.Core.Aop;
 
 namespace CoreExample;
 
@@ -21,7 +21,7 @@ class Program
         host.ConfigureLogging(builder => builder.UserNLog());
         host.ConfigureContainer(builder =>
         {
-            builder.Register(c => new LoggerInterceptor(invocation => (
+            builder.RegisterLoggerInterceptor(invocation => (
                 $"{invocation.TargetType.Name}InvokeLog",
                 LogLevel.Debug,
                 "\n========================================\n"
@@ -29,7 +29,7 @@ class Program
                 + $"Args:\t{string.Join('|', invocation.Arguments)}\n"
                 + $"Return:\t{invocation.ReturnValue}\n"
                 + "========================================"
-            )));
+            ));
             builder.RegisterType<A>().As<I>().EnableInterfaceInterceptors();
             builder.RegisterType<B>().As<I>().EnableInterfaceInterceptors();
         });
