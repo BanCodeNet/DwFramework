@@ -2,7 +2,7 @@ using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
 
-namespace DwFramework.Core;
+namespace DwFramework.Core.Modularization;
 
 public static class ModuleManager
 {
@@ -43,9 +43,9 @@ public static class ModuleManager
                     }
                 }
             }
-            throw new NotFoundException(moduleType.Name);
+            throw new Exception($"Can not find ModuleType({moduleType.Name})");
         }
-        else throw new NotFoundException(modulePath);
+        else throw new Exception($"Can not find ModulePath({modulePath})");
     }
 
     /// <summary>

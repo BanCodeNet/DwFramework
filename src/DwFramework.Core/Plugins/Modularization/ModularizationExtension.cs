@@ -1,8 +1,8 @@
 using Autofac;
 
-namespace DwFramework.Core;
+namespace DwFramework.Core.Modularization;
 
-public static class ModuleExtension
+public static class ModularizationExtension
 {
     /// <summary>
     /// 导入模块

@@ -1,7 +1,7 @@
 using System.Reflection;
 using System.Runtime.Loader;
 
-namespace DwFramework.Core;
+namespace DwFramework.Core.Modularization;
 
 public sealed class ModuleLoadContext : AssemblyLoadContext
 {
