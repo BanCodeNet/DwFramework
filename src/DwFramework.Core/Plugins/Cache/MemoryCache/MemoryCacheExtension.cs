@@ -12,11 +12,9 @@ public static class MemoryCacheExtension
     /// <param name="isGlobal"></param>
     /// <returns></returns>
     public static ServiceHost ConfigureMemoryCache(this ServiceHost host, int storeCount = 6, bool isGlobal = true)
-    {
-        return host.ConfigureContainer(builder =>
+        => host.ConfigureContainer(builder =>
         {
             var registration = builder.Register(context => new MemoryCache(storeCount)).As<ICache>();
             if (isGlobal) registration.SingleInstance();
         });
-    }
 }
