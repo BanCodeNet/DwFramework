@@ -7,7 +7,6 @@ using Autofac;
 using Autofac.Extras.DynamicProxy;
 using NLog;
 using DwFramework.Core;
-using DwFramework.Core.Generator;
 using DwFramework.Core.Aop;
 
 namespace CoreExample;
@@ -17,22 +16,21 @@ class Program
     static async Task Main(string[] args)
     {
         var host = new ServiceHost();
-        host.AddJsonConfiguration("Config.json", reloadOnChange: true);
-        host.ConfigureLogging(builder => builder.UserNLog());
+        host.ConfigureLogging(builder => builder.UserNLog("NLog.config"));
         host.ConfigureContainer(builder =>
         {
-            builder.RegisterLoggerInterceptor(invocation => (
-                $"{invocation.TargetType.Name}InvokeLog",
-                LogLevel.Debug,
-                "\n========================================\n"
-                + $"Method:\t{invocation.Method}\n"
-                + $"Args:\t{string.Join('|', invocation.Arguments)}\n"
-                + $"Return:\t{invocation.ReturnValue}\n"
-                + "========================================"
-            ));
             builder.RegisterType<A>().As<I>().EnableInterfaceInterceptors();
             builder.RegisterType<B>().As<I>().EnableInterfaceInterceptors();
         });
+        host.ConfigureLoggerInterceptor(invocation => (
+            $"{invocation.TargetType.Name}InvokeLog",
+            LogLevel.Debug,
+            "\n========================================\n"
+            + $"Method:\t{invocation.Method}\n"
+            + $"Args:\t{string.Join('|', invocation.Arguments)}\n"
+            + $"Return:\t{invocation.ReturnValue}\n"
+            + "========================================"
+        ));
         host.OnHostStarted += provider =>
         {
             var x = ServiceHost.ParseConfiguration<string>("ConnectionString");
