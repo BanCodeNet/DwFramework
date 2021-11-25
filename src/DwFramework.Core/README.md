@@ -192,6 +192,7 @@ host.OnHostStarted += provider =>
     Console.WriteLine(cache.Get("key"));
 };
 await host.RunAsync();
+
 // 结果输出
 { Name = DwGöing }
 ```

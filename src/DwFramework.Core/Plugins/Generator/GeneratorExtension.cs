@@ -14,13 +14,11 @@ public static class GeneratorExtension
     /// <param name="isGlobal"></param>
     /// <returns></returns>
     public static ServiceHost ConfigureSnowflakeGenerator(this ServiceHost host, long workerId, DateTime startTime, bool isGlobal = true)
-    {
-        return host.ConfigureContainer(builder =>
+        => host.ConfigureContainer(builder =>
         {
             var registration = builder.Register(_ => new SnowflakeGenerator(workerId, startTime));
             if (isGlobal) registration.SingleInstance();
         });
-    }
 
     /// <summary>
     /// 获取雪花生成器
