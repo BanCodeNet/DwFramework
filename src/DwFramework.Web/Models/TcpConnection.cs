@@ -26,7 +26,7 @@ public sealed class TcpConnection
     /// <param name="bufferSize"></param>
     public TcpConnection(System.Net.Sockets.Socket socket, int bufferSize)
     {
-        ID = MD5.Encrypt(Encoding.UTF8.GetBytes(Guid.NewGuid().ToString()));
+        ID = Guid.NewGuid().ToString();
         _socket = socket;
         _socket.EnableKeepAlive(3000, 500);
         _buffer = new byte[bufferSize];

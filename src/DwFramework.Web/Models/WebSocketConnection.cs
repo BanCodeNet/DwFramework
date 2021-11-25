@@ -31,7 +31,7 @@ public class WebSocketConnection
     /// <param name="resetEvent"></param>
     public WebSocketConnection(WebSocket webSocket, int bufferSize, out AutoResetEvent resetEvent)
     {
-        ID = MD5.Encrypt(Encoding.UTF8.GetBytes(Guid.NewGuid().ToString()));
+        ID = Guid.NewGuid().ToString();
         _webSocket = webSocket;
         _buffer = new byte[bufferSize > 0 ? bufferSize : 4096];
         _resetEvent = new AutoResetEvent(false);
