@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace DwFramework.Core.Time;
 
@@ -6,13 +7,19 @@ public static class StopwatchManager
 {
     private sealed class Stopwatch
     {
+        public string Tag { get; init; }
         public DateTime StartTime { get; private set; }
 
         /// <summary>
         /// 构造函数
         /// </summary>
+        /// <param name="tag"></param>
         /// <param name="startTime"></param>
-        public Stopwatch(DateTime startTime) => StartTime = startTime;
+        public Stopwatch(string tag, DateTime startTime)
+        {
+            Tag = tag;
+            StartTime = startTime;
+        }
 
         /// <summary>
         /// 设置开始时间
@@ -45,7 +52,7 @@ public static class StopwatchManager
     {
         tag ??= Guid.NewGuid().ToString();
         startTime ??= DateTime.UtcNow;
-        _stopwatches[tag] = new Stopwatch(startTime.Value);
+        _stopwatches[tag] = new Stopwatch(tag, startTime.Value);
         return tag;
     }
 
@@ -90,5 +97,61 @@ public static class StopwatchManager
     {
         if (!_stopwatches.ContainsKey(tag)) return 0;
         return _stopwatches[tag].GetTotalSeconds();
+    }
+
+    /// <summary>
+    /// 执行并返回耗时
+    /// </summary>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    public static long ExecuteReturnMilliseconds(Action action)
+    {
+        var tag = Create();
+        action?.Invoke();
+        var ms = GetTotalMilliseconds(tag);
+        Remove(tag);
+        return ms;
+    }
+
+    /// <summary>
+    /// 执行并返回耗时
+    /// </summary>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    public static async Task<long> ExecuteReturnMillisecondsAsync(Func<Task> action)
+    {
+        var tag = Create();
+        await action?.Invoke();
+        var ms = GetTotalMilliseconds(tag);
+        Remove(tag);
+        return ms;
+    }
+
+    /// <summary>
+    /// 执行并返回耗时
+    /// </summary>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    public static long ExecuteReturnSeconds(Action action)
+    {
+        var tag = Create();
+        action?.Invoke();
+        var sec = GetTotalSeconds(tag);
+        Remove(tag);
+        return sec;
+    }
+
+    /// <summary>
+    /// 执行并返回耗时
+    /// </summary>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    public static async Task<long> ExecuteReturnSecondsAsync(Func<Task> action)
+    {
+        var tag = Create();
+        await action?.Invoke();
+        var sec = GetTotalSeconds(tag);
+        Remove(tag);
+        return sec;
     }
 }
