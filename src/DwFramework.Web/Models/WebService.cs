@@ -41,7 +41,7 @@ public sealed class WebService
     private WebService(ServiceHost host, IConfiguration configuration, Action<IWebHostBuilder> configureWebHostBuilder)
     {
         _config = configuration.Get<Config.Web>();
-        if (_config == null) throw new NotFoundException("缺少Web配置");
+        if (_config == null) throw new Exception("缺少Web配置");
         host.ConfigureHostBuilder(builder => builder.ConfigureWebHostDefaults(webHostBuilder =>
         {
             if (!string.IsNullOrEmpty(_config.ContentRoot)) webHostBuilder.UseContentRoot(_config.ContentRoot);

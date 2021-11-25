@@ -30,7 +30,7 @@ public sealed class SqlSugarService
     public SqlSugarClient CreateConnection(string connName, InitKeyType initKeyType = InitKeyType.Attribute, Action<Type, EntityInfo> entityNameService = null, Action<PropertyInfo, EntityColumnInfo> entityService = null)
     {
         var config = _configuration.Get<Config>();
-        if (config == null) throw new NotFoundException("缺少SqlSugar配置");
+        if (config == null) throw new Exception("缺少SqlSugar配置");
         if (!config.ConnectionConfigs.ContainsKey(connName)) throw new Exception("找不到该连接的配置");
         var connConfig = config.ConnectionConfigs[connName];
         var connectionConfig = new ConnectionConfig()
