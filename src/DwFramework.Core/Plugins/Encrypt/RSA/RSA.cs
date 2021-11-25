@@ -62,34 +62,6 @@ public static class RSA
     }
 
     /// <summary>
-    /// 解密
-    /// </summary>
-    /// <param name="rsa"></param>
-    /// <param name="encryptedData"></param>
-    /// <param name="padding"></param>
-    /// <returns></returns>
-    private static byte[] Decrypt(System.Security.Cryptography.RSA rsa, byte[] encryptedData, RSAEncryptionPadding padding = null)
-    {
-        padding ??= RSAEncryptionPadding.Pkcs1;
-        byte[] result;
-        var step = rsa.KeySize / 8;
-        // 长数据分割
-        if (step != encryptedData.Length)
-        {
-            var pointer = 0;
-            var resBytes = new List<byte>();
-            while (pointer < encryptedData.Length)
-            {
-                resBytes.AddRange(rsa.Decrypt(encryptedData.Skip(pointer).Take(step).ToArray(), padding));
-                pointer += step;
-            }
-            result = resBytes.ToArray();
-        }
-        else result = rsa.Decrypt(encryptedData, padding);
-        return result;
-    }
-
-    /// <summary>
     /// 公钥加密
     /// </summary>
     /// <param name="data"></param>
@@ -124,16 +96,32 @@ public static class RSA
     /// <summary>
     /// 私钥解密
     /// </summary>
-    /// <param name="encryptedData"></param>
+    /// <param name="data"></param>
     /// <param name="type"></param>
     /// <param name="privateKey"></param>
     /// <param name="isPem"></param>
     /// <param name="padding"></param>
     /// <returns></returns>
-    public static byte[] Decrypt(byte[] encryptedData, RSAKeyType type, string privateKey, bool isPem = false, RSAEncryptionPadding padding = null)
+    public static byte[] Decrypt(byte[] data, RSAKeyType type, string privateKey, bool isPem = false, RSAEncryptionPadding padding = null)
     {
         using var rsa = System.Security.Cryptography.RSA.Create();
         rsa.ImportPrivateKey(type, privateKey, isPem);
-        return Decrypt(rsa, encryptedData, padding);
+        padding ??= RSAEncryptionPadding.Pkcs1;
+        byte[] result;
+        var step = rsa.KeySize / 8;
+        // 长数据分割
+        if (step != data.Length)
+        {
+            var pointer = 0;
+            var resBytes = new List<byte>();
+            while (pointer < data.Length)
+            {
+                resBytes.AddRange(rsa.Decrypt(data.Skip(pointer).Take(step).ToArray(), padding));
+                pointer += step;
+            }
+            result = resBytes.ToArray();
+        }
+        else result = rsa.Decrypt(data, padding);
+        return result;
     }
 }
