@@ -215,7 +215,7 @@ public sealed class RabbitMQService
     /// <param name="handler"></param>
     /// <param name="consumerCount"></param>
     /// <param name="qosCount"></param>
-    public void Subscribe(string queue, bool autoAck, Action<IModel, BasicDeliverEventArgs> handler, int consumerCount = 1, ushort qosCount = 100)
+    public void Subscribe(string queue, bool autoAck, Func<IModel, BasicDeliverEventArgs, Task> handler, int consumerCount = 1, ushort qosCount = 100)
     {
         _subscribeConnection ??= _connectionFactory.CreateConnection();
         _subscribers[queue] = new EventingBasicConsumer[consumerCount];
@@ -223,7 +223,7 @@ public sealed class RabbitMQService
         {
             var channel = _subscribeConnection.CreateModel();
             var consumer = new EventingBasicConsumer(channel);
-            consumer.Received += (sender, args) => handler?.Invoke(channel, args);
+            consumer.Received += async (sender, args) => await handler?.Invoke(channel, args);
             channel.BasicQos(0, qosCount, true);
             channel.BasicConsume(queue, autoAck, consumer);
             _subscribers[queue][i] = consumer;

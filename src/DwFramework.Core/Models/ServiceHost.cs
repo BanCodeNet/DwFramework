@@ -1,12 +1,13 @@
-﻿using System.IO;
+﻿using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System.Linq.Expressions;
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
-using Autofac;
-using Autofac.Extensions.DependencyInjection;
 
 namespace DwFramework.Core;
 
@@ -195,13 +196,15 @@ public sealed class ServiceHost
     /// 注册服务
     /// </summary>
     /// <param name="assembly"></param>
-    public void RegisterFromAssembly(Assembly assembly)
+    /// <param name="expression"></param>
+    public void RegisterFromAssembly(Assembly assembly, Expression<Func<Type, bool>> expression = null)
     {
         var t = assembly.GetTypes();
         foreach (var item in assembly.GetTypes())
         {
             var attr = item.GetCustomAttribute<RegisterableAttribute>();
             if (attr == null) continue;
+            if (!expression.Compile()(item)) continue;
             _hostBuilder.ConfigureContainer<ContainerBuilder>(builder =>
             {
                 var registration = builder.RegisterType(item);
@@ -220,9 +223,10 @@ public sealed class ServiceHost
     /// <summary>
     /// 注册服务
     /// </summary>
-    public void RegisterFromAssemblies()
+    /// <param name="expression"></param>
+    public void RegisterFromAssemblies(Expression<Func<Type, bool>> expression)
     {
-        foreach (var item in AppDomain.CurrentDomain.GetAssemblies()) RegisterFromAssembly(item);
+        foreach (var item in AppDomain.CurrentDomain.GetAssemblies()) RegisterFromAssembly(item, expression);
     }
 
     /// <summary>

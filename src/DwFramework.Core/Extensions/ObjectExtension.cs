@@ -1,6 +1,9 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Reflection;
+using System.Linq.Expressions;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -190,9 +193,9 @@ public static class ObjectExtension
     /// <param name="xml"></param>
     /// <param name="encoding"></param>
     /// <returns></returns>
-    public static T FromXml<T>(this string xml, Encoding encoding = null) where T : class
+    public static T FromXml<T>(this string xml, Encoding encoding = null)
     {
-        return xml.FromXml(typeof(T), encoding) as T;
+        return (T)xml.FromXml(typeof(T), encoding);
     }
 
     /// <summary>
@@ -214,8 +217,39 @@ public static class ObjectExtension
     /// <typeparam name="T"></typeparam>
     /// <param name="bytes"></param>
     /// <returns></returns>
-    public static T FromXmlBytes<T>(this byte[] bytes) where T : class
+    public static T FromXmlBytes<T>(this byte[] bytes)
     {
-        return bytes.FromXmlBytes(typeof(T)) as T;
+        return (T)bytes.FromXmlBytes(typeof(T));
     }
+
+    /// <summary>
+    /// 映射
+    /// </summary>
+    /// <param name="in"></param>
+    /// <typeparam name="TIn"></typeparam>
+    /// <typeparam name="TOut"></typeparam>
+    /// <returns></returns>
+    public static TOut Mapping<TIn, TOut>(this TIn @in)
+    {
+        var parameterExpression = Expression.Parameter(typeof(TIn));
+        var memberBindingList = new List<MemberBinding>();
+        foreach (var item in typeof(TOut).GetProperties())
+        {
+            if (!item.CanWrite) continue;
+            var property = Expression.Property(parameterExpression, typeof(TIn).GetProperty(item.Name));
+            var memberBinding = Expression.Bind(item, property);
+            memberBindingList.Add(memberBinding);
+        }
+        var memberInitExpression = Expression.MemberInit(Expression.New(typeof(TOut)), memberBindingList.ToArray());
+        var lambda = Expression.Lambda<Func<TIn, TOut>>(memberInitExpression, new ParameterExpression[] { parameterExpression });
+        return lambda.Compile().Invoke(@in);
+    }
+
+    /// <summary>
+    /// 深拷贝
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public static T DeepClone<T>(this T obj) => obj.Mapping<T, T>();
 }

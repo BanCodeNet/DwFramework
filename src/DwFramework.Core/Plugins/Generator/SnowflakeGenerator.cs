@@ -20,7 +20,7 @@ public sealed class SnowflakeGenerator
         /// <param name="startTime"></param>
         public SnowflakeIdInfo(long id, DateTime startTime)
         {
-            ID = id;
+            ID = id <= 0 ? Convert.ToInt64(Guid.NewGuid().ToByteArray()) : id;
             StartTime = startTime;
             var timestamp = id >> (WorkerIdBits + SequenceBits);
             Timestamp = timestamp + DateTime.UnixEpoch.GetTimeDiff(startTime);
