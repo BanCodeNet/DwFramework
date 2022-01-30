@@ -1,0 +1,39 @@
+{
+    "version": "0.2.0",
+    "inputs": [
+        {
+            "type": "pickString",
+            "id": "ProjectName",
+            "options": [
+                "CoreExample",
+                "QuartzExample",
+                "RabbitMQExample",
+                "SqlSugarExample",
+                "SqlSugarExample",
+                "SqlSugarExample"
+            ],
+            "description": "请选择需要调试的项目"
+        }
+    ],
+    "configurations": [
+        {
+            "name": "Launch",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "dotnet",
+            "preLaunchTask": "build",
+            "args": [
+                "${input:ProjectName}.dll"
+            ],
+            "cwd": "${workspaceFolder}/build/${input:ProjectName}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Attach",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:pickProcess}"
+        }
+    ]
+}

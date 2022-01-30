@@ -1,0 +1,34 @@
+{
+    "version": "2.0.0",
+    "inputs": [
+        {
+            "type": "pickString",
+            "id": "ProjectName",
+            "options": [
+                "CoreExample",
+                "QuartzExample",
+                "RabbitMQExample",
+                "SqlSugarExample",
+                "SqlSugarExample",
+                "SqlSugarExample"
+            ],
+            "description": "选择需要构建的项目"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "-o",
+                "${workspaceFolder}/build/${input:ProjectName}",
+                "${workspaceFolder}/example/${input:ProjectName}/${input:ProjectName}.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}

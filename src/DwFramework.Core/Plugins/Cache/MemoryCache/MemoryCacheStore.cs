@@ -1,15 +1,12 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Timers;
 
 namespace DwFramework.Core.Cache;
 
 public sealed class MemoryCacheStore
 {
     private readonly Hashtable _datas;
-    private readonly Timer _timer;
+    private readonly System.Timers.Timer _timer;
     private bool _isCleaning = false;
 
     /// <summary>
@@ -18,7 +15,7 @@ public sealed class MemoryCacheStore
     public MemoryCacheStore()
     {
         _datas = Hashtable.Synchronized(new Hashtable());
-        _timer = new Timer(30 * 1000)
+        _timer = new System.Timers.Timer(30 * 1000)
         {
             AutoReset = true
         };
