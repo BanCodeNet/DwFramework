@@ -6,10 +6,12 @@ public static class EnumExtension
     /// 获取枚举的描述
     /// </summary>
     /// <param name="value"></param>
+    /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static string GetDescription(this Enum value)
+    public static string GetDescription<T>(this T value) where T : Enum
     {
-        var enumType = value.GetType();
+        if (value is null) throw new ExceptionBase(ExceptionType.Parameter);
+        var enumType = typeof(T);
         var name = Enum.GetName(enumType, value);
         if (name == null) return null;
         var fieldInfo = enumType.GetField(name);
