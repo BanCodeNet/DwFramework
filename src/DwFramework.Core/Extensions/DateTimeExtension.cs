@@ -9,10 +9,9 @@ public static class DateTimeExtension
     /// <param name="endTime"></param>
     /// <param name="isMilliseconds"></param>
     /// <returns></returns>
-    public static long GetTimeDiff(this DateTime startTime, DateTime endTime, bool isMilliseconds = false)
+    public static double GetTimeDiff(this DateTime startTime, DateTime endTime, bool isMilliseconds = false)
     {
-        var diffTime = endTime - startTime;
-        if (isMilliseconds) return (long)diffTime.TotalMilliseconds;
-        else return (long)diffTime.TotalSeconds;
+        if (isMilliseconds) return (endTime - startTime).TotalMilliseconds;
+        else return (endTime - startTime).TotalSeconds;
     }
 }
