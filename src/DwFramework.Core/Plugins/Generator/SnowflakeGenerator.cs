@@ -1,12 +1,10 @@
-﻿using System.Threading;
-
-namespace DwFramework.Core.Generator;
+﻿namespace DwFramework.Core.Generator;
 
 public sealed class SnowflakeGenerator
 {
     public record SnowflakeIdInfo
     {
-        public long ID { get; init; }
+        public long WorkerId { get; init; }
         public DateTime StartTime { get; init; }
         public long Timestamp { get; init; }
         public DateTime Time => DateTime.UnixEpoch.AddSeconds(Timestamp);
@@ -20,12 +18,13 @@ public sealed class SnowflakeGenerator
         /// <param name="startTime"></param>
         public SnowflakeIdInfo(long id, DateTime startTime)
         {
-            ID = id <= 0 ? Convert.ToInt64(Guid.NewGuid().ToByteArray()) : id;
+            if (id <= 0) throw new ExceptionBase(ExceptionType.Parameter, message: "workerId必须大于0");
+            WorkerId = id;
             StartTime = startTime;
-            var timestamp = id >> (WorkerIdBits + SequenceBits);
-            Timestamp = timestamp + DateTime.UnixEpoch.GetTimeDiff(startTime);
-            WorkId = (id ^ (timestamp << (WorkerIdBits + SequenceBits))) >> SequenceBits;
-            Sequence = id ^ (timestamp << (WorkerIdBits + SequenceBits) | WorkId << SequenceBits);
+            var timestamp = id >> (WORKER_ID_BITS + SEQUENCE_BITS);
+            Timestamp = timestamp + (long)DateTime.UnixEpoch.GetTimeDiff(startTime);
+            WorkId = (id ^ (timestamp << (WORKER_ID_BITS + SEQUENCE_BITS))) >> SEQUENCE_BITS;
+            Sequence = id ^ (timestamp << (WORKER_ID_BITS + SEQUENCE_BITS) | WorkId << SEQUENCE_BITS);
         }
     }
 
@@ -33,14 +32,14 @@ public sealed class SnowflakeGenerator
     private long _currentTimestamp;
     private long _currentSequence;
 
-    public static int TimestampBits { get; } = 41;
-    public static int WorkerIdBits { get; } = 10;
-    public static int SequenceBits { get; } = 12;
+    public const int TIMESTAMP_BITS = 41;
+    public const int WORKER_ID_BITS = 10;
+    public const int SEQUENCE_BITS = 12;
+    public const long MAX_TIMESTAMP = 2L << TIMESTAMP_BITS;
+    public const long MAX_WORKER_ID = (2L << WORKER_ID_BITS) - 1;
+    public const long MAX_SEQUENCE = (2L << SEQUENCE_BITS) - 1;
     public long WorkerId { get; }
     public DateTime StartTime { get; }
-    public long MaxTimestamp { get; }
-    public long MaxWorkerId { get; }
-    public long MaxSequence { get; }
 
     /// <summary>
     /// 构造函数
@@ -49,10 +48,7 @@ public sealed class SnowflakeGenerator
     /// <param name="startTime"></param>
     public SnowflakeGenerator(long workerId, DateTime startTime)
     {
-        MaxTimestamp = 2L << TimestampBits;
-        MaxWorkerId = (2L << WorkerIdBits) - 1;
-        MaxSequence = (2L << SequenceBits) - 1;
-        if (workerId < 0 || workerId > MaxWorkerId) throw new Exception("机器ID超过上限");
+        if (workerId < 0 || workerId > MAX_WORKER_ID) throw new ExceptionBase(ExceptionType.Parameter, message: "机器ID超过上限");
         WorkerId = workerId;
         StartTime = startTime;
     }
@@ -66,16 +62,16 @@ public sealed class SnowflakeGenerator
         lock (_lock)
         {
             _currentSequence++;
-            if (_currentSequence > MaxSequence) Thread.Sleep(1);
-            var timestamp = StartTime.GetTimeDiff(DateTime.UtcNow);
-            if (timestamp > MaxTimestamp) throw new Exception("时间戳容量不足,请调整StartTime");
-            if (timestamp < _currentTimestamp) throw new Exception("时间获取异常,请检查服务器时间");
+            if (_currentSequence > MAX_SEQUENCE) Thread.Sleep(1);
+            var timestamp = StartTime.GetTimeDiff(DateTime.Now);
+            if (timestamp > MAX_TIMESTAMP) throw new ExceptionBase(ExceptionType.Internal, message: "时间戳容量不足,请调整StartTime");
+            if (timestamp < _currentTimestamp) throw new ExceptionBase(ExceptionType.Internal, message: "时间获取异常,请检查服务器时间");
             else if (timestamp > _currentTimestamp)
             {
-                _currentTimestamp = timestamp;
+                _currentTimestamp = (long)timestamp;
                 _currentSequence = 0;
             }
-            return _currentTimestamp << (WorkerIdBits + SequenceBits) | WorkerId << SequenceBits | _currentSequence;
+            return _currentTimestamp << (WORKER_ID_BITS + SEQUENCE_BITS) | WorkerId << SEQUENCE_BITS | _currentSequence;
         }
     }
 
@@ -83,7 +79,6 @@ public sealed class SnowflakeGenerator
     /// 解析ID
     /// </summary>
     /// <param name="id"></param>
-    /// <param name="startTime"></param>
     /// <returns></returns>
-    public static SnowflakeIdInfo DecodeId(long id, DateTime startTime) => new SnowflakeIdInfo(id, startTime);
+    public SnowflakeIdInfo DecodeId(long id) => new SnowflakeIdInfo(id, StartTime);
 }
