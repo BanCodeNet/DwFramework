@@ -1,18 +1,23 @@
 using Castle.DynamicProxy;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace DwFramework.Core.Aop;
 
 public sealed class LoggerInterceptor : IInterceptor
 {
+    private readonly ILoggerFactory _loggerFactory;
     private readonly Func<IInvocation, (string LoggerName, LogLevel Level, string Context)> _invocationHandler;
 
     /// <summary>
     /// 构造函数
     /// </summary>
+    /// <param name="logger"></param>
+    /// <param name="LoggerName"></param>
+    /// <param name="Level"></param>
     /// <param name="invocationHandler"></param>
-    public LoggerInterceptor(Func<IInvocation, (string LoggerName, LogLevel Level, string Context)> invocationHandler)
+    public LoggerInterceptor(ILoggerFactory loggerFactory, Func<IInvocation, (string LoggerName, LogLevel Level, string Context)> invocationHandler)
     {
+        _loggerFactory = loggerFactory;
         _invocationHandler = invocationHandler;
     }
 
@@ -24,7 +29,7 @@ public sealed class LoggerInterceptor : IInterceptor
     {
         invocation.Proceed();
         var result = _invocationHandler(invocation);
-        var logger = LogManager.GetLogger(result.LoggerName);
+        var logger = _loggerFactory.CreateLogger(result.LoggerName);
         if (logger == null) return;
         logger?.Log(result.Level, result.Context);
     }

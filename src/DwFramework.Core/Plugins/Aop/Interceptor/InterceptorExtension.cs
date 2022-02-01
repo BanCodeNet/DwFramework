@@ -1,6 +1,6 @@
 using Autofac;
 using Castle.DynamicProxy;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace DwFramework.Core.Aop;
 
@@ -15,5 +15,5 @@ public static class InterceptorExtension
     /// <param name="invocationHandler"></param>
     /// <returns></returns>
     public static ServiceHost ConfigureLoggerInterceptor(this ServiceHost host, Func<IInvocation, (string LoggerName, LogLevel Level, string Context)> invocationHandler)
-        => host.ConfigureContainer(builder => builder.Register(context => new LoggerInterceptor(invocationHandler)));
+        => host.ConfigureContainer(builder => builder.Register(context => new LoggerInterceptor(context.Resolve<ILoggerFactory>(), invocationHandler)));
 }
