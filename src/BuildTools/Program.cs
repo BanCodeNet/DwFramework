@@ -1,7 +1,5 @@
 ﻿using System.Xml;
-using System.Reflection.Metadata;
 using System.Diagnostics;
-using System.Linq;
 
 namespace BuildTools;
 
@@ -30,7 +28,7 @@ class Program
         }
         Console.Write($"是否为大版本构建(Y[y]/N[n]):");
         var isChangeBuildVersion = new[] { "Y", "y" }.Contains(Console.ReadLine());
-        Console.Write($"是否使用后缀:");
+        Console.Write($"使用后缀:");
         var suffix = Console.ReadLine();
         var version = "";
         try
