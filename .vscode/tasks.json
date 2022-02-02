@@ -29,6 +29,20 @@
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build tools",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "-o",
+                "${workspaceFolder}/build/BuildTools",
+                "${workspaceFolder}/src/BuildTools/BuildTools.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
         }
     ]
 }

@@ -17,7 +17,7 @@
     ],
     "configurations": [
         {
-            "name": "Launch",
+            "name": "Debug",
             "type": "coreclr",
             "request": "launch",
             "program": "dotnet",
@@ -34,6 +34,19 @@
             "type": "coreclr",
             "request": "attach",
             "processId": "${command:pickProcess}"
+        },
+        {
+            "name": "Build",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "dotnet",
+            "preLaunchTask": "build tools",
+            "args": [
+                "BuildTools.dll"
+            ],
+            "cwd": "${workspaceFolder}/build/BuildTools",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
         }
     ]
 }
