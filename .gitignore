@@ -6,6 +6,7 @@
 # Custom files
 .DS_Store
 build/
+nuget/
 
 # User-specific files
 *.rsuser
