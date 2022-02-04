@@ -23,7 +23,11 @@ class Program
             // 绑定
             s.QueueBind("queueA", "exchange.direct", "A");
             // 订阅
-            s.Subscribe("queueA", true, (m, a) => Console.WriteLine(Encoding.UTF8.GetString(a.Body.ToArray())));
+            s.Subscribe("queueA", true, (m, a) =>
+            {
+                Console.WriteLine(Encoding.UTF8.GetString(a.Body.ToArray()));
+                return Task.CompletedTask;
+            });
             // 发布消息
             s.Publish(new
             {

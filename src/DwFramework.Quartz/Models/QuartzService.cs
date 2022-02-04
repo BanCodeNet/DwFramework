@@ -1,10 +1,9 @@
-﻿using System.Threading.Tasks;
-using System.Collections.Generic;
+﻿using DwFramework.Core;
 using Quartz;
 using Quartz.Impl;
-using Quartz.Simpl;
 using Quartz.Impl.Calendar;
 using Quartz.Impl.Matchers;
+using Quartz.Simpl;
 
 namespace DwFramework.Quartz;
 
@@ -28,7 +27,7 @@ public sealed class QuartzService
     public async Task<IScheduler> GetSchedulerAsync(string schedulerName)
     {
         var scheduler = await DirectSchedulerFactory.Instance.GetScheduler(schedulerName);
-        if (scheduler == null) throw new Exception("未知调度器");
+        if (scheduler == null) throw new ExceptionBase(ExceptionType.Parameter, message: "未知调度器");
         return scheduler;
     }
 
@@ -307,7 +306,7 @@ public sealed class QuartzService
     /// <returns></returns>
     public Task<DateTimeOffset> CreateJobAsync<T>(string schedulerName, int repeat, long intervalMilliseconds, DateTimeOffset? startAt = null, string calName = null, IDictionary<string, object> properties = null, string jobName = null, string jobGroup = null, string triggerName = null, string triggerGroup = null) where T : IJob
     {
-        if (repeat < 0 || intervalMilliseconds <= 0) throw new Exception("参数错误");
+        if (repeat < 0 || intervalMilliseconds <= 0) throw new ExceptionBase(ExceptionType.Parameter, message: "参数错误");
         return CreateJobAsync<T>(schedulerName, jobBuilder =>
          {
              if (properties != null) jobBuilder.SetJobData(new JobDataMap(properties));

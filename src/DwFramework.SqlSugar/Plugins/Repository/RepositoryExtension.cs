@@ -1,6 +1,6 @@
-﻿using System.Reflection;
-using Autofac;
+﻿using Autofac;
 using DwFramework.Core;
+using System.Reflection;
 
 namespace DwFramework.SqlSugar.Repository;
 

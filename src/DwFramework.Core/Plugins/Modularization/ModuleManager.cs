@@ -41,9 +41,9 @@ public static class ModuleManager
                     }
                 }
             }
-            throw new Exception($"Can not find ModuleType({moduleType.Name})");
+            throw new ExceptionBase(ExceptionType.Parameter, message: $"无法找到模块类型: {moduleType.Name}");
         }
-        else throw new Exception($"Can not find ModulePath({modulePath})");
+        else throw new ExceptionBase(ExceptionType.Parameter, message: $"无法找到模块路径: {modulePath}");
     }
 
     /// <summary>

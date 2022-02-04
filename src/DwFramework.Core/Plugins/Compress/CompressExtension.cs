@@ -20,7 +20,7 @@ public static class CompressExtension
             CompressType.Brotli => new BrotliStream(targetStream, CompressionMode.Compress),
             CompressType.GZip => new GZipStream(targetStream, CompressionMode.Compress),
             CompressType.LZ4 => LZ4Stream.Encode(targetStream),
-            _ => throw new Exception("未知压缩类型")
+            _ => throw new ExceptionBase(ExceptionType.Parameter, message: "未知压缩类型")
         };
         await sourceStream.CopyToAsync(compressionStream);
         compressionStream.Close();
@@ -42,7 +42,7 @@ public static class CompressExtension
             CompressType.Brotli => new BrotliStream(soureStream, CompressionMode.Decompress),
             CompressType.GZip => new GZipStream(soureStream, CompressionMode.Decompress),
             CompressType.LZ4 => LZ4Stream.Decode(soureStream),
-            _ => throw new Exception("未知压缩类型")
+            _ => throw new ExceptionBase(ExceptionType.Parameter, message: "未知压缩类型")
         };
         await decompressionStream.CopyToAsync(targetStream);
         return targetStream.ToArray();

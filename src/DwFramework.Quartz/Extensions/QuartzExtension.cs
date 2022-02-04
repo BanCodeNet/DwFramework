@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Autofac;
+﻿using Autofac;
 using DwFramework.Core;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DwFramework.Quartz;
 

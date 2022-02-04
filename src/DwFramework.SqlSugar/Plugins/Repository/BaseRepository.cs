@@ -1,9 +1,7 @@
-﻿using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using DwFramework.Core;
 using SqlSugar;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace DwFramework.SqlSugar.Repository;
 
@@ -21,7 +19,7 @@ public abstract class BaseRepository<T> : IRepository<T> where T : class, new()
     {
         _sqlSugarService = sqlSugarService;
         _connName = connName;
-        if (_sqlSugarService == null) throw new Exception("sqlSugarService不能为空");
+        if (_sqlSugarService == null) throw new ExceptionBase(ExceptionType.Internal, message: "sqlSugarService不能为空");
     }
 
     /// <summary>

@@ -3,14 +3,18 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version></Version>
+    <Version>6.0.0.2</Version>
     <Authors>DwGoing</Authors>
-    <Description>DwFramework 网络库</Description>
-    <PackageProjectUrl>https://github.com/Dwgoing/DwFramework</PackageProjectUrl>
+    <Copyright>CopyRight 2020 BanCode.Net</Copyright>
+    <Title>DwFramework 网络库</Title>
+    <Description>DwFramework框架是一款基于Autofac开发的高扩展性轻量级基础框架，可快速构建多种类型的纯后端或MVC项目。</Description>
+    <PackageProjectUrl>https://github.com/BanCodeNet/DwFramework</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>git@github.com:BanCodeNet/DwFramework.git</RepositoryUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageTags>DwFramework,Autofac,Framework,DI,DDD,Net,Web</PackageTags>
   </PropertyGroup>
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DwFramework.Core\DwFramework.Core.csproj" />
   </ItemGroup>
@@ -25,5 +29,8 @@
     <PackageReference Include="Microsoft.AspNetCore.WebSockets" Version="2.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.10" />
     <PackageReference Include="Consul" Version="1.6.10.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="../../LICENSE" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>

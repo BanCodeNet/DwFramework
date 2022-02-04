@@ -1,10 +1,5 @@
-﻿using System.Text;
-using System.Collections.Generic;
-using System.Linq;
+﻿using DwFramework.Core;
 using System.Net.WebSockets;
-using System.Threading;
-using System.Threading.Tasks;
-using DwFramework.Core.Encrypt;
 
 namespace DwFramework.Web;
 
@@ -90,7 +85,7 @@ public class WebSocketConnection
     {
         try
         {
-            if (_webSocket.State != WebSocketState.Open) throw new Exception("连接状态异常");
+            if (_webSocket.State != WebSocketState.Open) throw new ExceptionBase(ExceptionType.Internal, message: "连接状态异常");
             await _webSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
             OnSend?.Invoke(this, new OnSendEventArgs() { Data = buffer });
         }

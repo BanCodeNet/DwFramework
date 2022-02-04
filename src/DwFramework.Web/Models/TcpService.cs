@@ -1,9 +1,7 @@
-using System.Threading.Tasks;
-using System.Collections.Generic;
+using DwFramework.Core;
+using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Net.Sockets;
-using Microsoft.Extensions.Configuration;
-using DwFramework.Core;
 
 namespace DwFramework.Web.Socket;
 
@@ -26,9 +24,9 @@ public sealed class TcpService
     public TcpService(IConfiguration configuration)
     {
         _config = configuration.ParseConfiguration<Config.Socket>();
-        if (_config.Listen == null) throw new Exception("缺少Socket配置");
+        if (_config.Listen == null) throw new ExceptionBase(ExceptionType.Internal, message: "缺少Socket配置");
         _server = new System.Net.Sockets.Socket(_config.AddressFamily, _config.SocketType, ProtocolType.Tcp);
-        if (_config.Listen == null) throw new Exception("缺少Listen配置");
+        if (_config.Listen == null) throw new ExceptionBase(ExceptionType.Internal, message: "缺少Listen配置");
         _server.Bind(new IPEndPoint(string.IsNullOrEmpty(_config.Listen.Ip) ? IPAddress.Any : IPAddress.Parse(_config.Listen.Ip), _config.Listen.Port));
         _server.Listen(_config.BackLog);
         _ = AcceptAsync();

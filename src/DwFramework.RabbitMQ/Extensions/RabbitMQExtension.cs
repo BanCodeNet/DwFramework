@@ -1,8 +1,7 @@
-﻿using System.IO;
+﻿using Autofac;
+using DwFramework.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Autofac;
-using DwFramework.Core;
 
 namespace DwFramework.RabbitMQ;
 

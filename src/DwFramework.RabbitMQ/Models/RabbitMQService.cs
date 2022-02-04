@@ -1,10 +1,8 @@
-﻿using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Text;
+﻿using DwFramework.Core;
 using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using DwFramework.Core;
+using System.Text;
 
 namespace DwFramework.RabbitMQ;
 
@@ -23,7 +21,7 @@ public sealed class RabbitMQService
     public RabbitMQService(IConfiguration configuration)
     {
         _config = configuration.Get<Config>();
-        if (_config == null) throw new Exception("缺少RabbitMQ配置");
+        if (_config == null) throw new ExceptionBase(ExceptionType.Internal, message: "缺少RabbitMQ配置");
         _connectionFactory = new ConnectionFactory()
         {
             HostName = _config.Host,

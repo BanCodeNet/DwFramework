@@ -268,9 +268,7 @@ public static class RSA
         privateKey = EnablePrivateKeyPkcs1Pem(privateKey);
         var pr = new PemReader(new StringReader(privateKey));
         if (!(pr.ReadObject() is AsymmetricCipherKeyPair asymmetricCipherKeyPair))
-        {
-            throw new Exception("Private key format is incorrect");
-        }
+            throw new ExceptionBase(ExceptionType.Parameter, message: "私钥格式错误");
         var rsaPrivateCrtKeyParameters = (RsaPrivateCrtKeyParameters)PrivateKeyFactory.CreateKey(
             PrivateKeyInfoFactory.CreatePrivateKeyInfo(asymmetricCipherKeyPair.Private)
         );

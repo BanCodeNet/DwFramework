@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 using SqlSugar;
+using System.Collections;
+using System.Reflection;
 
 namespace DwFramework.SqlSugar;
 
@@ -93,8 +92,8 @@ public class DataMemoryCache : ICacheService
     {
         return _cacheManager.GetOrCreate<T>(key, cache =>
         {
-                // 防止高并发时的穿透
-                cache.SetAbsoluteExpiration(TimeSpan.FromSeconds(expireSeconds));
+            // 防止高并发时的穿透
+            cache.SetAbsoluteExpiration(TimeSpan.FromSeconds(expireSeconds));
             cache.SetPriority(CacheItemPriority.Normal);
             return default;
         });

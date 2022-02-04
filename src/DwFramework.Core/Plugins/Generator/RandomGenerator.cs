@@ -34,7 +34,7 @@ public static class RandomGenerator
     /// <returns></returns>
     public static double RandomNumber(double start, double end)
     {
-        if (end - start <= 0) throw new Exception("end必须大于start");
+        if (end - start <= 0) throw new ExceptionBase(ExceptionType.Parameter, message: "end必须大于start");
         var random = GetRandom();
         return (end - start) * random.NextDouble() + start;
     }

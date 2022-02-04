@@ -9,7 +9,7 @@ public static class StringExtension
     /// </summary>
     /// <param name="char"></param>
     /// <returns></returns>
-    public static int ToBase32Value(this char @char)
+    private static int ToBase32Value(this char @char)
     {
         var value = (int)@char;
         return value switch
@@ -17,7 +17,7 @@ public static class StringExtension
             > 49 and < 56 => value - 24,
             > 64 and < 91 => value - 65,
             > 96 and < 123 => value - 97,
-            _ => throw new Exception($"非Base32字符:{@char}")
+            _ => throw new ExceptionBase(ExceptionType.Parameter, message: $"非Base32字符:{@char}")
         };
     }
 
@@ -26,14 +26,50 @@ public static class StringExtension
     /// </summary>
     /// <param name="byte"></param>
     /// <returns></returns>
-    public static char ToBase32Char(this byte @byte)
+    private static char ToBase32Char(this byte @byte)
     {
         return @byte switch
         {
             < 26 => (char)(@byte + 65),
             > 26 and < 32 => (char)(@byte + 24),
-            _ => throw new Exception($"非Base32字符值:{@byte}")
+            _ => throw new ExceptionBase(ExceptionType.Parameter, message: $"非Base32字符值:{@byte}")
         };
+    }
+
+    /// <summary>
+    /// 转Base32字符串
+    /// </summary>
+    /// <param name="bytes"></param>
+    /// <returns></returns>
+    public static string ToBase32(this byte[] bytes)
+    {
+        if (bytes == null || bytes.Length == 0) throw new ExceptionBase(ExceptionType.Parameter, message: "参数为空");
+        var charCount = (int)Math.Ceiling(bytes.Length / 5d) * 8;
+        var returnArray = new char[charCount];
+        var nextChar = (byte)0;
+        var bitsRemaining = (byte)5;
+        var arrayIndex = 0;
+        foreach (var item in bytes)
+        {
+            nextChar = (byte)(nextChar | (item >> (8 - bitsRemaining)));
+            returnArray[arrayIndex++] = ToBase32Char(nextChar);
+
+            if (bitsRemaining < 4)
+            {
+                nextChar = (byte)((item >> (3 - bitsRemaining)) & 31);
+                returnArray[arrayIndex++] = ToBase32Char(nextChar);
+                bitsRemaining += 5;
+            }
+
+            bitsRemaining -= 3;
+            nextChar = (byte)((item << bitsRemaining) & 31);
+        };
+        if (arrayIndex != charCount)
+        {
+            returnArray[arrayIndex++] = ToBase32Char(nextChar);
+            while (arrayIndex != charCount) returnArray[arrayIndex++] = '=';
+        }
+        return new string(returnArray);
     }
 
     /// <summary>
@@ -43,7 +79,7 @@ public static class StringExtension
     /// <returns></returns>
     public static byte[] FromBase32(this string str)
     {
-        if (string.IsNullOrEmpty(str)) throw new Exception("参数为空");
+        if (string.IsNullOrEmpty(str)) throw new ExceptionBase(ExceptionType.Parameter, message: "参数为空");
         str = str.TrimEnd('=');
         var byteCount = str.Length * 5 / 8;
         var returnArray = new byte[byteCount];
@@ -74,42 +110,6 @@ public static class StringExtension
             returnArray[arrayIndex] = curByte;
         }
         return returnArray;
-    }
-
-    /// <summary>
-    /// 转Base32字符串
-    /// </summary>
-    /// <param name="bytes"></param>
-    /// <returns></returns>
-    public static string ToBase32(this byte[] bytes)
-    {
-        if (bytes == null || bytes.Length == 0) throw new Exception("参数为空");
-        var charCount = (int)Math.Ceiling(bytes.Length / 5d) * 8;
-        var returnArray = new char[charCount];
-        var nextChar = (byte)0;
-        var bitsRemaining = (byte)5;
-        var arrayIndex = 0;
-        foreach (var item in bytes)
-        {
-            nextChar = (byte)(nextChar | (item >> (8 - bitsRemaining)));
-            returnArray[arrayIndex++] = ToBase32Char(nextChar);
-
-            if (bitsRemaining < 4)
-            {
-                nextChar = (byte)((item >> (3 - bitsRemaining)) & 31);
-                returnArray[arrayIndex++] = ToBase32Char(nextChar);
-                bitsRemaining += 5;
-            }
-
-            bitsRemaining -= 3;
-            nextChar = (byte)((item << bitsRemaining) & 31);
-        };
-        if (arrayIndex != charCount)
-        {
-            returnArray[arrayIndex++] = ToBase32Char(nextChar);
-            while (arrayIndex != charCount) returnArray[arrayIndex++] = '=';
-        }
-        return new string(returnArray);
     }
 
     /// <summary>
