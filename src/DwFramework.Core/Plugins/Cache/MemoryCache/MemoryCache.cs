@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace DwFramework.Core.Cache;
+﻿namespace DwFramework.Core.Cache;
 
 public sealed class MemoryCache : ICache
 {

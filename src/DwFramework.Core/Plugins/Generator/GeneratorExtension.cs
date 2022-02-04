@@ -1,5 +1,5 @@
-using Microsoft.Extensions.DependencyInjection;
 using Autofac;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DwFramework.Core.Generator;
 

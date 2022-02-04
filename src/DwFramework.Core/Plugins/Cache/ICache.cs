@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace DwFramework.Core.Cache;
+﻿namespace DwFramework.Core.Cache;
 
 public interface ICache
 {

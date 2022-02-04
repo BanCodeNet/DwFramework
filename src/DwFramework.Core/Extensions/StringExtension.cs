@@ -1,42 +1,9 @@
-﻿using System.Text;
-using System.Linq;
-using System.IO;
-using System.IO.Compression;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using hyjiacan.py4n;
-using K4os.Compression.LZ4.Streams;
+﻿using System.Text.RegularExpressions;
 
 namespace DwFramework.Core;
 
 public static class StringExtension
 {
-    private static readonly string _characters = "0123456789abcdef";
-
-    /// <summary>
-    /// 进制转换
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="from"></param>
-    /// <param name="to"></param>
-    /// <returns></returns>
-    public static string ToBinary(this string source, int from, int to)
-    {
-        if (!new[] { 2, 8, 10, 16 }.Contains(from) || !new[] { 2, 8, 10, 16 }.Contains(to)) throw new Exception("请选择合适的进制:2,8,10,16");
-        var index = 0;
-        var value = source.Reverse().Sum(item => _characters.IndexOf(item) * Math.Pow(from, index++));
-        var builder = new StringBuilder();
-        while (value > 0)
-        {
-            var v = (int)value / to;
-            var mod = (int)value - v * to;
-            builder.Append(_characters[mod]);
-            value = v;
-        }
-        var chars = builder.ToString().Reverse().ToArray();
-        return new string(chars);
-    }
-
     /// <summary>
     /// 字符转int
     /// </summary>
@@ -74,18 +41,15 @@ public static class StringExtension
     /// </summary>
     /// <param name="str"></param>
     /// <returns></returns>
-    public static byte[] FromBase32String(this string str)
+    public static byte[] FromBase32(this string str)
     {
         if (string.IsNullOrEmpty(str)) throw new Exception("参数为空");
-
         str = str.TrimEnd('=');
         var byteCount = str.Length * 5 / 8;
         var returnArray = new byte[byteCount];
-
         var curByte = (byte)0;
         var bitsRemaining = (byte)8;
         var arrayIndex = 0;
-
         foreach (var item in str)
         {
             var cValue = ToBase32Value(item);
@@ -105,7 +69,6 @@ public static class StringExtension
                 bitsRemaining += 3;
             }
         };
-
         if (arrayIndex != byteCount)
         {
             returnArray[arrayIndex] = curByte;
@@ -118,17 +81,14 @@ public static class StringExtension
     /// </summary>
     /// <param name="bytes"></param>
     /// <returns></returns>
-    public static string ToBase32String(this byte[] bytes)
+    public static string ToBase32(this byte[] bytes)
     {
         if (bytes == null || bytes.Length == 0) throw new Exception("参数为空");
-
         var charCount = (int)Math.Ceiling(bytes.Length / 5d) * 8;
         var returnArray = new char[charCount];
-
         var nextChar = (byte)0;
         var bitsRemaining = (byte)5;
         var arrayIndex = 0;
-
         foreach (var item in bytes)
         {
             nextChar = (byte)(nextChar | (item >> (8 - bitsRemaining)));
@@ -144,13 +104,11 @@ public static class StringExtension
             bitsRemaining -= 3;
             nextChar = (byte)((item << bitsRemaining) & 31);
         };
-
         if (arrayIndex != charCount)
         {
             returnArray[arrayIndex++] = ToBase32Char(nextChar);
             while (arrayIndex != charCount) returnArray[arrayIndex++] = '=';
         }
-
         return new string(returnArray);
     }
 
@@ -159,20 +117,14 @@ public static class StringExtension
     /// </summary>
     /// <param name="bytes"></param>
     /// <returns></returns>
-    public static string ToBase64String(this byte[] bytes)
-    {
-        return Convert.ToBase64String(bytes, 0, bytes.Length);
-    }
+    public static string ToBase64(this byte[] bytes) => Convert.ToBase64String(bytes, 0, bytes.Length);
 
     /// <summary>
     /// Base64转字节数组
     /// </summary>
     /// <param name="base64String"></param>
     /// <returns></returns>
-    public static byte[] FromBase64String(this string base64String)
-    {
-        return Convert.FromBase64String(base64String);
-    }
+    public static byte[] FromBase64(this string base64String) => Convert.FromBase64String(base64String);
 
     /// <summary>
     /// 字节数组转Hex
@@ -189,35 +141,6 @@ public static class StringExtension
     public static byte[] FromHex(this string hexString) => Convert.FromHexString(hexString);
 
     /// <summary>
-    /// 是否为中文字符
-    /// </summary>
-    /// <param name="char"></param>
-    /// <returns></returns>
-    public static bool IsChinese(this char @char) => PinyinUtil.IsHanzi(@char);
-
-    /// <summary>
-    /// 获取中文字符的拼音首字母
-    /// </summary>
-    /// <param name="@char"></param>
-    /// <returns></returns>
-    public static string GetFirstPinyin(this char @char)
-    {
-        if (!IsChinese(@char)) return null;
-        return Pinyin4Net.GetFirstPinyin(@char, PinyinFormat.UPPERCASE);
-    }
-
-    /// <summary>
-    /// 获取中文字符的拼音
-    /// </summary>
-    /// <param name="char"></param>
-    /// <returns></returns>
-    public static string[] GetPinyin(this char @char)
-    {
-        if (!IsChinese(@char)) return null;
-        return Pinyin4Net.GetPinyin(@char, PinyinFormat.UPPERCASE);
-    }
-
-    /// <summary>
     /// 是否为邮箱地址
     /// </summary>
     /// <param name="str"></param>
@@ -226,49 +149,6 @@ public static class StringExtension
     {
         var match = new Regex(@"^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$").Match(str);
         return match.Success;
-    }
-
-    /// <summary>
-    /// 压缩
-    /// </summary>
-    /// <param name="bytes"></param>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    public static async Task<byte[]> Compress(this byte[] bytes, CompressType type)
-    {
-        using var sourceStream = new MemoryStream(bytes);
-        using var targetStream = new MemoryStream();
-        using dynamic compressionStream = type switch
-        {
-            CompressType.Brotli => new BrotliStream(targetStream, CompressionMode.Compress),
-            CompressType.GZip => new GZipStream(targetStream, CompressionMode.Compress),
-            CompressType.LZ4 => LZ4Stream.Encode(targetStream),
-            _ => throw new Exception("未知压缩类型")
-        };
-        await sourceStream.CopyToAsync(compressionStream);
-        compressionStream.Close();
-        return targetStream.ToArray();
-    }
-
-    /// <summary>
-    /// 解压
-    /// </summary>
-    /// <param name="bytes"></param>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    public static async Task<byte[]> Decompress(this byte[] bytes, CompressType type)
-    {
-        using var soureStream = new MemoryStream(bytes);
-        using var targetStream = new MemoryStream();
-        using dynamic decompressionStream = type switch
-        {
-            CompressType.Brotli => new BrotliStream(soureStream, CompressionMode.Decompress),
-            CompressType.GZip => new GZipStream(soureStream, CompressionMode.Decompress),
-            CompressType.LZ4 => LZ4Stream.Decode(soureStream),
-            _ => throw new Exception("未知压缩类型")
-        };
-        await decompressionStream.CopyToAsync(targetStream);
-        return targetStream.ToArray();
     }
 
     /// <summary>
@@ -308,21 +188,5 @@ public static class StringExtension
         var pattern = @"^[\uFF00-\uFFFF]$";
         if (Regex.IsMatch(@char.ToString(), pattern)) return true;
         return false;
-    }
-
-    /// <summary>
-    /// 获取字符串长度
-    /// </summary>
-    /// <param name="str"></param>
-    /// <returns></returns>
-    public static int GetLength(this string str)
-    {
-        var len = 0;
-        foreach (var item in str)
-        {
-            if (item.IsChinese() || item.IsSBC()) len += 2;
-            else len++;
-        };
-        return len;
     }
 }

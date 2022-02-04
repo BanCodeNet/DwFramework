@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
-using System.Linq.Expressions;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -18,9 +15,7 @@ public static class ObjectExtension
     /// <param name="options"></param>
     /// <returns></returns>
     public static string ToJson(this object obj, Type type, JsonSerializerOptions options = null)
-    {
-        return JsonSerializer.Serialize(obj, type, options);
-    }
+        => JsonSerializer.Serialize(obj, type, options);
 
     /// <summary>
     /// 序列化
@@ -30,9 +25,7 @@ public static class ObjectExtension
     /// <param name="options"></param>
     /// <returns></returns>
     public static string ToJson<T>(this T obj, JsonSerializerOptions options = null)
-    {
-        return JsonSerializer.Serialize(obj, options);
-    }
+        => JsonSerializer.Serialize(obj, options);
 
     /// <summary>
     /// 序列化
@@ -72,9 +65,7 @@ public static class ObjectExtension
     /// <param name="options"></param>
     /// <returns></returns>
     public static object FromJson(this string json, Type type, JsonSerializerOptions options = null)
-    {
-        return JsonSerializer.Deserialize(json, type, options);
-    }
+        => JsonSerializer.Deserialize(json, type, options);
 
     /// <summary>
     /// 反序列化
@@ -84,9 +75,7 @@ public static class ObjectExtension
     /// <param name="options"></param>
     /// <returns></returns>
     public static T FromJson<T>(this string json, JsonSerializerOptions options = null)
-    {
-        return JsonSerializer.Deserialize<T>(json, options);
-    }
+        => JsonSerializer.Deserialize<T>(json, options);
 
     /// <summary>
     /// 反序列化
@@ -139,9 +128,7 @@ public static class ObjectExtension
     /// <param name="encoding"></param>
     /// <returns></returns>
     public static string ToXml<T>(this T obj, Encoding encoding = null)
-    {
-        return ToXml(obj, typeof(T), encoding);
-    }
+        => obj.ToXml(typeof(T), encoding);
 
     /// <summary>
     /// 序列化
@@ -168,9 +155,7 @@ public static class ObjectExtension
     /// <param name="encoding"></param>
     /// <returns></returns>
     public static byte[] ToXmlBytes<T>(this T obj, Encoding encoding = null)
-    {
-        return obj.ToXmlBytes(typeof(T), encoding);
-    }
+        => obj.ToXmlBytes(typeof(T), encoding);
 
     /// <summary>
     /// 反序列化
@@ -193,9 +178,7 @@ public static class ObjectExtension
     /// <param name="encoding"></param>
     /// <returns></returns>
     public static T FromXml<T>(this string xml, Encoding encoding = null)
-    {
-        return (T)xml.FromXml(typeof(T), encoding);
-    }
+        => (T)xml.FromXml(typeof(T), encoding);
 
     /// <summary>
     /// 反序列化
@@ -217,38 +200,5 @@ public static class ObjectExtension
     /// <param name="bytes"></param>
     /// <returns></returns>
     public static T FromXmlBytes<T>(this byte[] bytes)
-    {
-        return (T)bytes.FromXmlBytes(typeof(T));
-    }
-
-    /// <summary>
-    /// 映射
-    /// </summary>
-    /// <param name="in"></param>
-    /// <typeparam name="TIn"></typeparam>
-    /// <typeparam name="TOut"></typeparam>
-    /// <returns></returns>
-    public static TOut Mapping<TIn, TOut>(this TIn @in)
-    {
-        var parameterExpression = Expression.Parameter(typeof(TIn));
-        var memberBindingList = new List<MemberBinding>();
-        foreach (var item in typeof(TOut).GetProperties())
-        {
-            if (!item.CanWrite) continue;
-            var property = Expression.Property(parameterExpression, typeof(TIn).GetProperty(item.Name));
-            var memberBinding = Expression.Bind(item, property);
-            memberBindingList.Add(memberBinding);
-        }
-        var memberInitExpression = Expression.MemberInit(Expression.New(typeof(TOut)), memberBindingList.ToArray());
-        var lambda = Expression.Lambda<Func<TIn, TOut>>(memberInitExpression, new ParameterExpression[] { parameterExpression });
-        return lambda.Compile().Invoke(@in);
-    }
-
-    /// <summary>
-    /// 深拷贝
-    /// </summary>
-    /// <param name="obj"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    public static T DeepClone<T>(this T obj) => obj.Mapping<T, T>();
+        => (T)bytes.FromXmlBytes(typeof(T));
 }

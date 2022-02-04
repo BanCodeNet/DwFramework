@@ -11,7 +11,7 @@ public static class GoogleAuthenticator
     /// <returns></returns>
     public static string GenerateMobilePhoneKey(string key)
     {
-        var baseCode = Encoding.UTF8.GetBytes(key).ToBase32String();
+        var baseCode = Encoding.UTF8.GetBytes(key).ToBase32();
         return baseCode.TrimEnd('=');
     }
 
@@ -31,10 +31,7 @@ public static class GoogleAuthenticator
     /// <param name="key"></param>
     /// <param name="code"></param>
     /// <returns></returns>
-    public static bool VerifyCode(string key, string code)
-    {
-        return code == GenerateCode(key);
-    }
+    public static bool VerifyCode(string key, string code) => code == GenerateCode(key);
 
     /// <summary>
     /// 按照次数生成哈希编码

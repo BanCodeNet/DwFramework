@@ -1,7 +1,7 @@
 using Castle.DynamicProxy;
 using Microsoft.Extensions.Logging;
 
-namespace DwFramework.Core.Aop;
+namespace DwFramework.Core;
 
 public sealed class LoggerInterceptor : IInterceptor
 {

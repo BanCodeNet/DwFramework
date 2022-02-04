@@ -2,9 +2,9 @@ using Autofac;
 using Castle.DynamicProxy;
 using Microsoft.Extensions.Logging;
 
-namespace DwFramework.Core.Aop;
+namespace DwFramework.Core;
 
-public static class InterceptorExtension
+public static class ServiceHostExtension
 {
     /// <summary>
     /// 配置日志拦截器

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>5.1.2.0</Version>
+    <Version></Version>
     <Authors>DwGoing</Authors>
     <Description>DwFramework Quartz封装库</Description>
     <PackageProjectUrl>https://github.com/Dwgoing/DwFramework</PackageProjectUrl>
