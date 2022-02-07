@@ -47,26 +47,11 @@ public sealed class WebService
             {
                 foreach (var item in _config.Listens)
                 {
-                    switch (item.Scheme)
+                    options.Listen(string.IsNullOrEmpty(item.Ip) ? IPAddress.Any : IPAddress.Parse(item.Ip), item.Port, listenOptions =>
                     {
-                        case Scheme.Http:
-                        case Scheme.Rpc:
-                            options.Listen(string.IsNullOrEmpty(item.Ip) ? IPAddress.Any : IPAddress.Parse(item.Ip), item.Port, listenOptions =>
-                            {
-                                listenOptions.Protocols = item.Protocols == HttpProtocols.None ? HttpProtocols.Http1 : item.Protocols;
-                            });
-                            break;
-                        case Scheme.Https:
-                        case Scheme.Rpcs:
-                            options.Listen(string.IsNullOrEmpty(item.Ip) ? IPAddress.Any : IPAddress.Parse(item.Ip), item.Port, listenOptions =>
-                            {
-                                listenOptions.UseHttps(item.Cert, item.Password);
-                                listenOptions.Protocols = item.Protocols == HttpProtocols.None ? HttpProtocols.Http1 : item.Protocols;
-                            });
-                            break;
-                        default:
-                            continue;
-                    }
+                        if (item.UseSSL) listenOptions.UseHttps(item.Cert, item.Password);
+                        listenOptions.Protocols = item.Protocols == HttpProtocols.None ? HttpProtocols.Http1 : item.Protocols;
+                    });
                 }
             });
             configureWebHostBuilder?.Invoke(webHostBuilder);

@@ -2,8 +2,8 @@
     "web": {
         "Listens": [
             {
-                "Scheme": "http",
-                "Port": 6001
+                "Port": 5001,
+                "Protocols": "Http1AndHttp2"
             }
         ]
     }

@@ -6,8 +6,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Grpc.Net;
+using Grpc.Core;
+using Grpc.Net.Client;
 using ProtoBuf;
 using ProtoBuf.Grpc;
+using ProtoBuf.Grpc.Client;
 using ProtoBuf.Grpc.Configuration;
 using DwFramework.Core;
 using DwFramework.Web;
@@ -26,10 +30,28 @@ class Program
         // host.ConfigureSocket(configuration, "udp");
         host.OnHostStarted += p =>
         {
-            var web = p.GetWeb();
-            web.OnWebSocketConnect += (c, a) => Console.WriteLine($"{c.ID} 建立连接");
-            web.OnWebSocketReceive += (c, a) => Console.WriteLine($"{c.ID} {Encoding.UTF8.GetString(a.Data)}");
-            web.OnWebSocketClose += (c, a) => Console.WriteLine($"{c.ID} 断开连接");
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(3000);
+                    using var channel = GrpcChannel.ForAddress("http://localhost:5001");
+                    var service = channel.CreateGrpcService<IGreeterService>();
+                    var r = await service.SayHelloAsync(new HelloRequest()
+                    {
+                        Name = "XXX"
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            });
+
+            // var web = p.GetWeb();
+            // web.OnWebSocketConnect += (c, a) => Console.WriteLine($"{c.ID} 建立连接");
+            // web.OnWebSocketReceive += (c, a) => Console.WriteLine($"{c.ID} {Encoding.UTF8.GetString(a.Data)}");
+            // web.OnWebSocketClose += (c, a) => Console.WriteLine($"{c.ID} 断开连接");
 
             // var tcp = p.GetTcp();
             // tcp.OnConnect += (c, a) => Console.WriteLine($"{c.ID} connected");
