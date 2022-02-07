@@ -53,7 +53,7 @@ public sealed class WebService
                         case Scheme.Rpc:
                             options.Listen(string.IsNullOrEmpty(item.Ip) ? IPAddress.Any : IPAddress.Parse(item.Ip), item.Port, listenOptions =>
                             {
-                                listenOptions.Protocols = item.Protocols;
+                                listenOptions.Protocols = item.Protocols == HttpProtocols.None ? HttpProtocols.Http1 : item.Protocols;
                             });
                             break;
                         case Scheme.Https:
@@ -61,7 +61,7 @@ public sealed class WebService
                             options.Listen(string.IsNullOrEmpty(item.Ip) ? IPAddress.Any : IPAddress.Parse(item.Ip), item.Port, listenOptions =>
                             {
                                 listenOptions.UseHttps(item.Cert, item.Password);
-                                listenOptions.Protocols = item.Protocols;
+                                listenOptions.Protocols = item.Protocols == HttpProtocols.None ? HttpProtocols.Http1 : item.Protocols;
                             });
                             break;
                         default:
