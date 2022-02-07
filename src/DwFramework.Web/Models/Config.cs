@@ -8,12 +8,12 @@ public sealed class Config
 {
     public sealed class Listen
     {
+        public HttpProtocols Protocols { get; init; }
         public string Ip { get; init; }
         public int Port { get; init; }
-        public bool UseSSL { get; init; } = false;
         public string Cert { get; init; }
         public string Password { get; init; }
-        public HttpProtocols Protocols { get; init; }
+        public bool UseSSL { get; init; } = false;
     }
 
     public sealed class Socket

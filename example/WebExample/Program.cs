@@ -24,7 +24,7 @@ class Program
     static async Task Main(string[] args)
     {
         var host = new ServiceHost();
-        var configuration = new ConfigurationBuilder().AddJsonFile("Config.json").Build();
+        var configuration = new ConfigurationBuilder().AddJsonFile("config.json").Build();
         host.ConfigureWeb(configuration, builder => builder.UseStartup<Startup>(), "web");
         // host.ConfigureSocket(configuration, "tcp");
         // host.ConfigureSocket(configuration, "udp");

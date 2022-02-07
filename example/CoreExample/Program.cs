@@ -4,13 +4,12 @@ using DwFramework.Core;
 using DwFramework.Core.Encrypt;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.Text;
 
 namespace CoreExample;
 
 class Program
 {
-    static async Task Main(string[] args)
+    static async Task Main(params string[] args)
     {
         var host = new ServiceHost();
         host.ConfigureLogging(builder => builder.UserNLog("NLog.config"));

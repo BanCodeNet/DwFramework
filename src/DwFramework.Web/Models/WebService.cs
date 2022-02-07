@@ -49,8 +49,8 @@ public sealed class WebService
                 {
                     options.Listen(string.IsNullOrEmpty(item.Ip) ? IPAddress.Any : IPAddress.Parse(item.Ip), item.Port, listenOptions =>
                     {
-                        if (item.UseSSL) listenOptions.UseHttps(item.Cert, item.Password);
                         listenOptions.Protocols = item.Protocols == HttpProtocols.None ? HttpProtocols.Http1 : item.Protocols;
+                        if (item.UseSSL) listenOptions.UseHttps(item.Cert, item.Password);
                     });
                 }
             });

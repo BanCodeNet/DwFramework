@@ -9,8 +9,8 @@
                 "QuartzExample",
                 "RabbitMQExample",
                 "SqlSugarExample",
-                "SqlSugarExample",
-                "SqlSugarExample"
+                "TensorFlowExample",
+                "WebExample"
             ],
             "description": "请选择需要调试的项目"
         }
