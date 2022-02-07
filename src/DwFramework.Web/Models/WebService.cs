@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.WebSockets;
 using System.Reflection;
@@ -55,7 +53,7 @@ public sealed class WebService
                         case Scheme.Rpc:
                             options.Listen(string.IsNullOrEmpty(item.Ip) ? IPAddress.Any : IPAddress.Parse(item.Ip), item.Port, listenOptions =>
                             {
-                                if (item.Scheme == Scheme.Rpc) listenOptions.Protocols = HttpProtocols.Http2;
+                                listenOptions.Protocols = item.Protocols;
                             });
                             break;
                         case Scheme.Https:
@@ -63,7 +61,7 @@ public sealed class WebService
                             options.Listen(string.IsNullOrEmpty(item.Ip) ? IPAddress.Any : IPAddress.Parse(item.Ip), item.Port, listenOptions =>
                             {
                                 listenOptions.UseHttps(item.Cert, item.Password);
-                                if (item.Scheme == Scheme.Rpcs) listenOptions.Protocols = HttpProtocols.Http2;
+                                listenOptions.Protocols = item.Protocols;
                             });
                             break;
                         default:

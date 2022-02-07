@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Net.Sockets;
 using System.Text.Json.Serialization;
 
@@ -13,6 +14,7 @@ public sealed class Config
         public int Port { get; init; }
         public string Cert { get; init; }
         public string Password { get; init; }
+        public HttpProtocols Protocols { get; init; }
     }
 
     public sealed class Socket
