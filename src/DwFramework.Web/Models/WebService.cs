@@ -100,6 +100,12 @@ public sealed class WebService
     }
 
     /// <summary>
+    /// 添加RPC服务
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    private void AddRpcImplement<T>() => AddRpcImplement(typeof(T));
+
+    /// <summary>
     /// 从程序集中注册Rpc服务
     /// </summary>
     private void AddRpcImplementFromAssemblies()
