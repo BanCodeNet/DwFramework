@@ -63,7 +63,7 @@ public sealed class WebService
                             options.Listen(string.IsNullOrEmpty(item.Ip) ? IPAddress.Any : IPAddress.Parse(item.Ip), item.Port, listenOptions =>
                             {
                                 listenOptions.UseHttps(item.Cert, item.Password);
-                                if (item.Scheme == Scheme.Rpc) listenOptions.Protocols = HttpProtocols.Http2;
+                                if (item.Scheme == Scheme.Rpcs) listenOptions.Protocols = HttpProtocols.Http2;
                             });
                             break;
                         default:
