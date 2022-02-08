@@ -1,21 +1,15 @@
-﻿using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
-using Grpc.Net;
-using Grpc.Core;
+﻿using DwFramework.Core;
+using DwFramework.Web;
 using Grpc.Net.Client;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.OpenApi.Models;
 using ProtoBuf;
 using ProtoBuf.Grpc;
 using ProtoBuf.Grpc.Client;
+using ProtoBuf.Grpc.Server;
 using ProtoBuf.Grpc.Configuration;
-using DwFramework.Core;
-using DwFramework.Web;
-using DwFramework.Web.Socket;
+using System.Net;
+using System.Text;
 
 namespace WebExample;
 
@@ -25,17 +19,85 @@ class Program
     {
         var host = new ServiceHost();
         var configuration = new ConfigurationBuilder().AddJsonFile("config.json").Build();
-        host.ConfigureWeb(configuration, builder => builder.UseStartup<Startup>(), "web");
+        host.ConfigureWebHostDefaults(webHostBuilder =>
+        {
+            webHostBuilder.UseKestrel(options =>
+            {
+                var config = configuration.ParseConfiguration<Config.Http>();
+                foreach (var item in config.Listens)
+                {
+                    options.Listen(string.IsNullOrEmpty(item.Ip) ? IPAddress.Any : IPAddress.Parse(item.Ip), item.Port, listenOptions =>
+                    {
+                        listenOptions.Protocols = item.Protocols == HttpProtocols.None ? HttpProtocols.Http1 : item.Protocols;
+                        if (item.UseSSL) listenOptions.UseHttps(item.Cert, item.Password);
+                    });
+                }
+            });
+            webHostBuilder.ConfigureServices(services =>
+            {
+                services.AddCors(options =>
+                {
+                    options.AddPolicy("any", builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); });
+                });
+                services.AddSwaggerGen(c =>
+                {
+                    c.SwaggerDoc("name", new OpenApiInfo()
+                    {
+                        Title = "title",
+                        Version = "version",
+                        Description = "description"
+                    });
+                });
+                services.AddControllers().AddJsonOptions(options =>
+                {
+                    //不使用驼峰样式的key
+                    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                    //不使用驼峰样式的key
+                    options.JsonSerializerOptions.DictionaryKeyPolicy = null;
+                });
+                services.AddMvc(options => options.UseRoutePrefix("api"));
+                services.AddWebSocket();
+                services.AddCodeFirstGrpc();
+                services.AddRazorPages();
+                services.AddServerSideBlazor();
+                services.AddAntDesign();
+            });
+            webHostBuilder.Configure(app =>
+            {
+                app.UseCors("any");
+                app.UseRouting();
+                app.UseStaticFiles();
+                app.UseSwagger(c => c.RouteTemplate = "{documentName}/swagger.json");
+                app.UseSwaggerUI(c => c.SwaggerEndpoint($"/{"name"}/swagger.json", "desc"));
+                app.UseWebSocket();
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                    endpoints.MapGrpcService<GreeterService>();
+                    endpoints.MapBlazorHub();
+                    endpoints.MapFallbackToPage("/_Host");
+                });
+            });
+        });
         // host.ConfigureSocket(configuration, "tcp");
         // host.ConfigureSocket(configuration, "udp");
         host.OnHostStarted += p =>
         {
+            var web = p.GetWebSocket();
+            web.OnWebSocketConnect += (c, a) => Console.WriteLine($"{c.ID} 建立连接");
+            web.OnWebSocketReceive += (c, a) => Console.WriteLine($"{c.ID} {Encoding.UTF8.GetString(a.Data)}");
+            web.OnWebSocketClose += (c, a) => Console.WriteLine($"{c.ID} 断开连接");
+
             Task.Run(async () =>
             {
                 try
                 {
                     await Task.Delay(3000);
-                    using var channel = GrpcChannel.ForAddress("http://localhost:5001");
+                    GrpcClientFactory.AllowUnencryptedHttp2 = true;
+                    using var channel = GrpcChannel.ForAddress("http://localhost:9001", new GrpcChannelOptions()
+                    {
+                        Credentials = Grpc.Core.ChannelCredentials.Insecure
+                    });
                     var service = channel.CreateGrpcService<IGreeterService>();
                     var r = await service.SayHelloAsync(new HelloRequest()
                     {
@@ -47,11 +109,6 @@ class Program
                     Console.WriteLine(ex.Message);
                 }
             });
-
-            // var web = p.GetWeb();
-            // web.OnWebSocketConnect += (c, a) => Console.WriteLine($"{c.ID} 建立连接");
-            // web.OnWebSocketReceive += (c, a) => Console.WriteLine($"{c.ID} {Encoding.UTF8.GetString(a.Data)}");
-            // web.OnWebSocketClose += (c, a) => Console.WriteLine($"{c.ID} 断开连接");
 
             // var tcp = p.GetTcp();
             // tcp.OnConnect += (c, a) => Console.WriteLine($"{c.ID} connected");
@@ -86,8 +143,7 @@ class Program
 [Service]
 public interface IGreeterService
 {
-    [Operation
-    ]
+    [Operation]
     Task<HelloReply> SayHelloAsync(HelloRequest request,
         CallContext context = default);
 }
@@ -112,59 +168,9 @@ public class GreeterService : IGreeterService
     public Task<HelloReply> SayHelloAsync(HelloRequest request, CallContext context = default)
     {
         return Task.FromResult(
-               new HelloReply
-               {
-                   Message = $"Hello {request.Name}"
-               });
-    }
-}
-
-public sealed class Startup
-{
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.AddCors(options =>
-        {
-            options.AddPolicy("any", builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); });
-        });
-        services.AddSwaggerGen(c =>
-        {
-            c.SwaggerDoc("name", new OpenApiInfo()
+            new HelloReply
             {
-                Title = "title",
-                Version = "version",
-                Description = "description"
+                Message = $"Hello {request.Name}"
             });
-        });
-        services.AddControllers().AddJsonOptions(options =>
-        {
-            //不使用驼峰样式的key
-            options.JsonSerializerOptions.PropertyNamingPolicy = null;
-            //不使用驼峰样式的key
-            options.JsonSerializerOptions.DictionaryKeyPolicy = null;
-        });
-        services.AddMvc(options => options.UseRoutePrefix("api"));
-        services.AddRpcImplements();
-        services.AddRazorPages();
-        services.AddServerSideBlazor();
-        services.AddAntDesign();
-    }
-
-    public void Configure(IApplicationBuilder app, IHostApplicationLifetime lifetime)
-    {
-        app.UseCors("any");
-        app.UseStaticFiles();
-        app.UseRouting();
-        app.UseSwagger(c => c.RouteTemplate = "{documentName}/swagger.json");
-        app.UseSwaggerUI(c => c.SwaggerEndpoint($"/{"name"}/swagger.json", "desc"));
-        app.UseWebSocket();
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-            endpoints.MapRpcImplements();
-
-            endpoints.MapBlazorHub();
-            endpoints.MapFallbackToPage("/_Host");
-        });
     }
 }

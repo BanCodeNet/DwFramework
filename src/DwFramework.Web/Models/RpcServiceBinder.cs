@@ -6,19 +6,20 @@ namespace DwFramework.Web;
 
 public sealed class RpcServiceBinder : ServiceBinder
 {
-    private readonly IServiceCollection services;
+    private readonly IServiceCollection _services;
 
     public RpcServiceBinder(IServiceCollection services)
     {
-        this.services = services;
+        _services = services;
     }
 
     public override IList<object> GetMetadata(MethodInfo method, Type contractType, Type serviceType)
     {
         var resolvedServiceType = serviceType;
         if (serviceType.IsInterface)
-            resolvedServiceType = services.SingleOrDefault(x => x.ServiceType == serviceType)?.ImplementationType ?? serviceType;
-
-        return base.GetMetadata(method, contractType, resolvedServiceType);
+        {
+            resolvedServiceType = _services.SingleOrDefault(x => x.ServiceType == serviceType)?.ImplementationType ?? serviceType;
+        }
+        return GetMetadata(method, contractType, resolvedServiceType);
     }
 }

@@ -13,20 +13,15 @@
     <RepositoryUrl>git@github.com:BanCodeNet/DwFramework.git</RepositoryUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageTags>DwFramework,Autofac,Framework,DI,DDD,Net,Web</PackageTags>
+    <PackageTags>DwFramework,Autofac,Framework,DI,DDD,Net,Http,Rpc,WebSocket</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\DwFramework.Core\DwFramework.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Grpc.Net.Client" Version="2.42.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
     <PackageReference Include="protobuf-net.Grpc" Version="1.0.152" />
     <PackageReference Include="protobuf-net.Grpc.AspNetCore" Version="1.0.152" />
     <PackageReference Include="protobuf-net.Grpc.AspNetCore.Reflection" Version="1.0.152" />
-    <PackageReference Include="System.ServiceModel.Primitives" Version="4.8.1" />
-    <PackageReference Include="Microsoft.AspNetCore.WebSockets" Version="2.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.10" />
     <PackageReference Include="Consul" Version="1.6.10.3" />
   </ItemGroup>

@@ -1,10 +1,13 @@
 ﻿using DwFramework.Core;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ProtoBuf.Grpc.Server;
+using ProtoBuf.Grpc.Configuration;
+using System.Reflection;
+using System.IO.Compression;
 
 namespace DwFramework.Web;
 
@@ -66,25 +69,53 @@ public static class WebExtension
         => provider.GetService<WebSocketService>();
 
     /// <summary>
-    /// 添加Rpc服务
+    /// 从程序集中注册Rpc服务
     /// </summary>
-    /// <param name="services"></param>
-    /// <returns></returns>
-    public static IServiceCollection AddRpcImplements(this IServiceCollection services, params Type[] rpcImpls)
+    private static void AddRpcFromAssemblies()
     {
-        WebService.Instance.AddRpcImplements(services, rpcImpls);
-        return services;
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        foreach (var assembly in assemblies)
+        {
+            var types = assembly.GetTypes();
+            foreach (var type in types)
+            {
+                var attribute = type.GetCustomAttribute<RPCAttribute>();
+                if (attribute == null) continue;
+                AddRpc(type);
+            }
+        }
     }
 
     /// <summary>
-    /// 匹配Rpc路由
+    /// 添加RPC服务
     /// </summary>
-    /// <param name="endpoints"></param>
-    /// <returns></returns>
-    public static IEndpointRouteBuilder MapRpcImplements(this IEndpointRouteBuilder endpoints)
+    /// <param name="type"></param>
+    private static void AddRpc(Type type)
     {
-        WebService.Instance.MapRpcImplements(endpoints);
-        return endpoints;
+        var method = typeof(GrpcEndpointRouteBuilderExtensions).GetMethod("MapGrpcService");
+        var genericMethod = method.MakeGenericMethod(type);
+        // _rpcImplBuild += endpoint => genericMethod.Invoke(null, new object[] { endpoint });
+    }
+
+    /// <summary>
+    /// 添加RPC服务
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    private static void AddRpc<T>() => AddRpc(typeof(T));
+
+    /// <summary>
+    /// 添加Rpc服务
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="rpcImpls"></param>
+    public static IServiceCollection AddRpc(this IServiceCollection services, params Type[] rpcImpls)
+    {
+        AddRpcFromAssemblies();
+        foreach (var item in rpcImpls) AddRpc(item);
+        services.AddCodeFirstGrpc(config => config.ResponseCompressionLevel = CompressionLevel.Optimal);
+        services.AddSingleton(BinderConfiguration.Create(binder: new RpcServiceBinder(services)));
+        services.AddCodeFirstGrpcReflection();
+        return services;
     }
 
     /// <summary>
