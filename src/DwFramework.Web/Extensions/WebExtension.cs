@@ -1,13 +1,13 @@
 ﻿using DwFramework.Core;
+using Grpc.AspNetCore.Server;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ProtoBuf.Grpc.Server;
-using ProtoBuf.Grpc.Configuration;
 using System.Reflection;
-using System.IO.Compression;
 
 namespace DwFramework.Web;
 
@@ -69,10 +69,54 @@ public static class WebExtension
         => provider.GetService<WebSocketService>();
 
     /// <summary>
-    /// 从程序集中注册Rpc服务
+    /// 添加RPC服务
     /// </summary>
-    private static void AddRpcFromAssemblies()
+    /// <typeparam name="T"></typeparam>
+    public static IServiceCollection AddRpc(this IServiceCollection services, Action<GrpcServiceOptions> options = null)
     {
+        services.AddCodeFirstGrpc(options);
+        return services;
+    }
+
+    /// <summary>
+    /// 添加Rpc实现
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public static IEndpointRouteBuilder MapRpc<T>(this IEndpointRouteBuilder endpoint) where T : class
+    {
+        endpoint.MapGrpcService<T>();
+        return endpoint;
+    }
+
+    /// <summary>
+    /// 添加Rpc实现
+    /// </summary>
+    /// <param name="endpoint"></param>
+    /// <param name="types"></param>
+    /// <returns></returns>
+    public static IEndpointRouteBuilder MapRpc(this IEndpointRouteBuilder endpoint, Type[] rpcImpls)
+    {
+        var method = typeof(GrpcEndpointRouteBuilderExtensions).GetMethod("MapGrpcService");
+        foreach (var item in rpcImpls) method.MakeGenericMethod(item).Invoke(null, new object[] { endpoint });
+        return endpoint;
+    }
+
+    /// <summary>
+    /// 添加Rpc实现
+    /// </summary>
+    /// <param name="endpoint"></param>
+    /// <param name="rpcImpl"></param>
+    /// <returns></returns>
+    public static IEndpointRouteBuilder MapRpc(this IEndpointRouteBuilder endpoint, Type rpcImpl)
+        => endpoint.MapRpc(new[] { rpcImpl });
+
+    /// <summary>
+    /// 从程序集中添加Rpc实现
+    /// </summary>
+    /// <param name="endpoint"></param>
+    public static IEndpointRouteBuilder MapRpcFromAssemblies(this IEndpointRouteBuilder endpoint)
+    {
+        var rpcImpls = new List<Type>();
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         foreach (var assembly in assemblies)
         {
@@ -81,41 +125,11 @@ public static class WebExtension
             {
                 var attribute = type.GetCustomAttribute<RPCAttribute>();
                 if (attribute == null) continue;
-                AddRpc(type);
+                rpcImpls.Add(type);
             }
         }
-    }
-
-    /// <summary>
-    /// 添加RPC服务
-    /// </summary>
-    /// <param name="type"></param>
-    private static void AddRpc(Type type)
-    {
-        var method = typeof(GrpcEndpointRouteBuilderExtensions).GetMethod("MapGrpcService");
-        var genericMethod = method.MakeGenericMethod(type);
-        // _rpcImplBuild += endpoint => genericMethod.Invoke(null, new object[] { endpoint });
-    }
-
-    /// <summary>
-    /// 添加RPC服务
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    private static void AddRpc<T>() => AddRpc(typeof(T));
-
-    /// <summary>
-    /// 添加Rpc服务
-    /// </summary>
-    /// <param name="services"></param>
-    /// <param name="rpcImpls"></param>
-    public static IServiceCollection AddRpc(this IServiceCollection services, params Type[] rpcImpls)
-    {
-        AddRpcFromAssemblies();
-        foreach (var item in rpcImpls) AddRpc(item);
-        services.AddCodeFirstGrpc(config => config.ResponseCompressionLevel = CompressionLevel.Optimal);
-        services.AddSingleton(BinderConfiguration.Create(binder: new RpcServiceBinder(services)));
-        services.AddCodeFirstGrpcReflection();
-        return services;
+        endpoint.MapRpc(rpcImpls.ToArray());
+        return endpoint;
     }
 
     /// <summary>

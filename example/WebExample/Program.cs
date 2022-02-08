@@ -6,7 +6,6 @@ using Microsoft.OpenApi.Models;
 using ProtoBuf;
 using ProtoBuf.Grpc;
 using ProtoBuf.Grpc.Client;
-using ProtoBuf.Grpc.Server;
 using ProtoBuf.Grpc.Configuration;
 using System.Net;
 using System.Text;
@@ -57,7 +56,7 @@ class Program
                 });
                 services.AddMvc(options => options.UseRoutePrefix("api"));
                 services.AddWebSocket();
-                services.AddCodeFirstGrpc();
+                services.AddRpc();
                 services.AddRazorPages();
                 services.AddServerSideBlazor();
                 services.AddAntDesign();
@@ -73,7 +72,7 @@ class Program
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();
-                    endpoints.MapGrpcService<GreeterService>();
+                    endpoints.MapRpcFromAssemblies();
                     endpoints.MapBlazorHub();
                     endpoints.MapFallbackToPage("/_Host");
                 });
@@ -103,6 +102,7 @@ class Program
                     {
                         Name = "XXX"
                     });
+                    Console.WriteLine(r.Message);
                 }
                 catch (Exception ex)
                 {
