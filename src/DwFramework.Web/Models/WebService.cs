@@ -1,5 +1,4 @@
 using System.Net;
-using System.Net.WebSockets;
 using System.Reflection;
 using System.IO.Compression;
 using Microsoft.AspNetCore.Routing;
@@ -158,41 +157,5 @@ public sealed class WebService
             }
             await next();
         });
-    }
-
-    /// <summary>
-    /// 获取连接
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    public WebSocketConnection GetWebSocketConnection(string id)
-    {
-        if (!_webSocketConnections.ContainsKey(id)) return null;
-        return _webSocketConnections[id];
-    }
-
-    /// <summary>
-    /// 广播消息
-    /// </summary>
-    /// <param name="data"></param>
-    /// <returns></returns>
-    public void BroadCast(byte[] data)
-    {
-        foreach (var item in _webSocketConnections.Values)
-        {
-            _ = item.SendAsync(data);
-        }
-    }
-
-    /// <summary>
-    /// 断开连接
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    public Task CloseAsync(string id)
-    {
-        if (!_webSocketConnections.ContainsKey(id)) return Task.CompletedTask;
-        var connection = _webSocketConnections[id];
-        return connection.CloseAsync(WebSocketCloseStatus.NormalClosure);
     }
 }

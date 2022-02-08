@@ -1,82 +1,69 @@
-﻿using Autofac;
-using DwFramework.Core;
+﻿using DwFramework.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace DwFramework.Web;
 
 public static class WebExtension
 {
     /// <summary>
-    /// 配置Web服务
+    /// 配置Web主机
     /// </summary>
     /// <param name="host"></param>
-    /// <param name="configuration"></param>
-    /// <param name="configureWebHostBuilder"></param>
-    /// <param name="path"></param>
+    /// <param name="configure"></param>
     /// <returns></returns>
-    public static ServiceHost ConfigureWeb(this ServiceHost host, IConfiguration configuration, Action<IWebHostBuilder> configureWebHostBuilder, string path = null)
+    public static ServiceHost ConfigureWebHost(this ServiceHost host, Action<IWebHostBuilder> configure)
     {
-        var webService = WebService.Init(host, configuration.GetConfiguration(path), configureWebHostBuilder);
-        host.ConfigureContainer(builder => builder.RegisterInstance(webService).SingleInstance());
+        host.ConfigureHostBuilder(builder => builder.ConfigureWebHost(configure));
         return host;
     }
 
     /// <summary>
-    /// 配置Web服务
+    /// 配置Web主机
     /// </summary>
     /// <param name="host"></param>
-    /// <param name="file"></param>
-    /// <param name="configureWebHostBuilder"></param>
-    /// <param name="path"></param>
+    /// <param name="configure"></param>
     /// <returns></returns>
-    public static ServiceHost ConfigureWebWithJson(this ServiceHost host, string file, Action<IWebHostBuilder> configureWebHostBuilder, string path = null)
-        => host.ConfigureWeb(new ConfigurationBuilder().AddJsonFile(file).Build(), configureWebHostBuilder, path);
+    public static ServiceHost ConfigureWebHostDefaults(this ServiceHost host, Action<IWebHostBuilder> configure)
+    {
+        host.ConfigureHostBuilder(builder => builder.ConfigureWebHostDefaults(configure));
+        return host;
+    }
 
     /// <summary>
-    /// 配置Web服务
+    /// 添加WebSocket中间件
     /// </summary>
-    /// <param name="host"></param>
-    /// <param name="stream"></param>
-    /// <param name="configureWebHostBuilder"></param>
-    /// <param name="path"></param>
+    /// <param name="services"></param>
     /// <returns></returns>
-    public static ServiceHost ConfigureWebWithJson(this ServiceHost host, Stream stream, Action<IWebHostBuilder> configureWebHostBuilder, string path = null)
-        => host.ConfigureWeb(new ConfigurationBuilder().AddJsonStream(stream).Build(), configureWebHostBuilder, path);
+    public static IServiceCollection AddWebSocket(this IServiceCollection services)
+    {
+        services.AddSingleton<WebSocketService>();
+        return services;
+    }
 
     /// <summary>
-    /// 配置Web服务
+    /// 使用WebSocket中间件
     /// </summary>
-    /// <param name="host"></param>
-    /// <param name="file"></param>
-    /// <param name="configureWebHostBuilder"></param>
-    /// <param name="path"></param>
+    /// <param name="app"></param>
     /// <returns></returns>
-    public static ServiceHost ConfigureWebWithXml(this ServiceHost host, string file, Action<IWebHostBuilder> configureWebHostBuilder, string path = null)
-        => host.ConfigureWeb(new ConfigurationBuilder().AddXmlFile(file).Build(), configureWebHostBuilder, path);
+    public static IApplicationBuilder UseWebSocket(this IApplicationBuilder app)
+    {
+        app.UseWebSockets();
+        app.UseMiddleware<WebSocketMiddleware>();
+        return app;
+    }
 
     /// <summary>
-    /// 配置Web服务
-    /// </summary>
-    /// <param name="host"></param>
-    /// <param name="stream"></param>
-    /// <param name="configureWebHostBuilder"></param>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    public static ServiceHost ConfigureWebWithXml(this ServiceHost host, Stream stream, Action<IWebHostBuilder> configureWebHostBuilder, string path = null)
-        => host.ConfigureWeb(new ConfigurationBuilder().AddXmlStream(stream).Build(), configureWebHostBuilder, path);
-
-    /// <summary>
-    /// 获取Web服务
+    /// 获取WebSocket服务
     /// </summary>
     /// <param name="provider"></param>
-    /// <typeparam name="WebApiService"></typeparam>
     /// <returns></returns>
-    public static WebService GetWeb(this IServiceProvider provider) => provider.GetService<WebService>();
+    public static WebSocketService GetWebSocket(this IServiceProvider provider)
+        => provider.GetService<WebSocketService>();
 
     /// <summary>
     /// 添加Rpc服务
@@ -98,17 +85,6 @@ public static class WebExtension
     {
         WebService.Instance.MapRpcImplements(endpoints);
         return endpoints;
-    }
-
-    /// <summary>
-    /// 使用WebSocket中间件
-    /// </summary>
-    /// <param name="app"></param>
-    /// <returns></returns>
-    public static IApplicationBuilder UseWebSocket(this IApplicationBuilder app)
-    {
-        WebService.Instance.UseWebSocket(app);
-        return app;
     }
 
     /// <summary>
