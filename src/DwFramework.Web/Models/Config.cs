@@ -29,7 +29,7 @@ public sealed class Config
         public ProtocolType ProtocolType { get; init; }
     }
 
-    public sealed class Web
+    public sealed class Http
     {
         public string ContentRoot { get; init; }
         public List<Listen> Listens { get; init; } = new();

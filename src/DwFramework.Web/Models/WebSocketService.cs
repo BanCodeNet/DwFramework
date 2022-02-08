@@ -1,4 +1,3 @@
-using DwFramework.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System.Net.WebSockets;
@@ -10,6 +9,7 @@ public sealed class WebSocketService
     private readonly IConfiguration _configuration;
     private readonly Dictionary<string, WebSocketConnection> _webSocketConnections = new();
 
+    public int BufferSize { get; set; } = 1024 * 4;
     public event Action<WebSocketConnection, OnConnectEventArgs> OnWebSocketConnect;
     public event Action<WebSocketConnection, OnCloceEventArgs> OnWebSocketClose;
     public event Action<WebSocketConnection, OnSendEventArgs> OnWebSocketSend;
@@ -30,8 +30,7 @@ public sealed class WebSocketService
     {
         var webSocket = await context.WebSockets.AcceptWebSocketAsync();
         if (webSocket == null) return;
-        var config = _configuration.ParseConfiguration<Config.Web>();
-        var connection = new WebSocketConnection(webSocket, config.BufferSize, out var resetEvent)
+        var connection = new WebSocketConnection(webSocket, BufferSize, out var resetEvent)
         {
             OnClose = OnWebSocketClose,
             OnSend = OnWebSocketSend,
