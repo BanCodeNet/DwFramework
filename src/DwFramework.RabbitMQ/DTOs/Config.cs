@@ -1,6 +1,6 @@
 namespace DwFramework.RabbitMQ;
 
-public sealed class Config
+public readonly record struct Config
 {
     public string Host { get; init; } = "localhost";
     public int Port { get; init; } = 5672;

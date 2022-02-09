@@ -3,7 +3,7 @@ using System.Net.WebSockets;
 
 namespace DwFramework.Web;
 
-public class WebSocketConnection
+public sealed class WebSocketConnection
 {
     public string ID { get; init; }
     public bool IsClose { get; private set; } = false;

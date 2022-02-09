@@ -4,9 +4,9 @@ using System.Text.Json.Serialization;
 
 namespace DwFramework.Web;
 
-public sealed class Config
+public readonly record struct Config
 {
-    public sealed class Listen
+    public readonly record struct Listen
     {
         public HttpProtocols Protocols { get; init; }
         public string Ip { get; init; }
@@ -16,7 +16,7 @@ public sealed class Config
         public bool UseSSL { get; init; } = false;
     }
 
-    public sealed class Socket
+    public readonly record struct Socket
     {
         public Listen Listen { get; init; }
         public int BufferSize { get; init; } = 1024 * 4;
@@ -29,7 +29,7 @@ public sealed class Config
         public ProtocolType ProtocolType { get; init; }
     }
 
-    public sealed class Http
+    public readonly record struct Http
     {
         public string ContentRoot { get; init; }
         public List<Listen> Listens { get; init; } = new();

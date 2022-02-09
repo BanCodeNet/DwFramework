@@ -1,7 +1,8 @@
-﻿namespace DwFramework.Web;
+﻿using System.IO;
+namespace DwFramework.Web;
 
 [AttributeUsage(AttributeTargets.Class)]
-public class RPCAttribute : Attribute
+public sealed class RPCAttribute : Attribute
 {
     public RPCAttribute() { }
 }

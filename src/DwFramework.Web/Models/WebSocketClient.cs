@@ -2,7 +2,7 @@
 
 namespace DwFramework.Web;
 
-public class WebSocketClient
+public sealed class WebSocketClient
 {
     public event Action<OnConnectEventArgs> OnConnect;
     public event Action<OnCloceEventArgs> OnClose;

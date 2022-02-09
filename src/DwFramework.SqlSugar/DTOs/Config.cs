@@ -3,12 +3,12 @@ using System.Text.Json.Serialization;
 
 namespace DwFramework.SqlSugar;
 
-public sealed class Config
+public readonly record struct Config
 {
     public Dictionary<string, DbConnectionConfig> ConnectionConfigs { get; init; }
 }
 
-public sealed class DbConnectionConfig
+public readonly record struct DbConnectionConfig
 {
     public string ConnectionString { get; init; }
     [JsonConverter(typeof(DbType))]
@@ -17,7 +17,7 @@ public sealed class DbConnectionConfig
     public bool UseMemoryCache { get; init; } = false;
 }
 
-public sealed class SlaveDbConnectionConfig
+public readonly record struct SlaveDbConnectionConfig
 {
     public string ConnectionString { get; init; }
     public int HitRate { get; init; }

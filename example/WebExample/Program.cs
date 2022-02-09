@@ -87,28 +87,24 @@ class Program
             web.OnWebSocketReceive += (c, a) => Console.WriteLine($"{c.ID} {Encoding.UTF8.GetString(a.Data)}");
             web.OnWebSocketClose += (c, a) => Console.WriteLine($"{c.ID} 断开连接");
 
-            Task.Run(async () =>
-            {
-                try
-                {
-                    await Task.Delay(3000);
-                    GrpcClientFactory.AllowUnencryptedHttp2 = true;
-                    using var channel = GrpcChannel.ForAddress("http://localhost:9001", new GrpcChannelOptions()
-                    {
-                        Credentials = Grpc.Core.ChannelCredentials.Insecure
-                    });
-                    var service = channel.CreateGrpcService<IGreeterService>();
-                    var r = await service.SayHelloAsync(new HelloRequest()
-                    {
-                        Name = "XXX"
-                    });
-                    Console.WriteLine(r.Message);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-            });
+            // Task.Run(async () =>
+            // {
+            //     try
+            //     {
+            //         await Task.Delay(3000);
+            //         using var channel = GrpcChannel.ForAddress("http://localhost:9001");
+            //         var service = channel.CreateGrpcService<IGreeterService>();
+            //         var r = await service.SayHelloAsync(new HelloRequest()
+            //         {
+            //             Name = "XXX"
+            //         });
+            //         Console.WriteLine(r.Message);
+            //     }
+            //     catch (Exception ex)
+            //     {
+            //         Console.WriteLine(ex.Message);
+            //     }
+            // });
 
             // var tcp = p.GetTcp();
             // tcp.OnConnect += (c, a) => Console.WriteLine($"{c.ID} connected");

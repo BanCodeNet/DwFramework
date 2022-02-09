@@ -2,27 +2,27 @@ using Microsoft.AspNetCore.Http;
 
 namespace DwFramework.Web;
 
-public class OnConnectEventArgs : EventArgs
+public sealed class OnConnectEventArgs : EventArgs
 {
     public IHeaderDictionary Header { get; init; }
 }
 
-public class OnCloceEventArgs : EventArgs
+public sealed class OnCloceEventArgs : EventArgs
 {
 
 }
 
-public class OnSendEventArgs : EventArgs
-{
-    public byte[] Data { get; init; }
-}
-
-public class OnReceiveEventArgs : EventArgs
+public sealed class OnSendEventArgs : EventArgs
 {
     public byte[] Data { get; init; }
 }
 
-public class OnErrorEventArgs : EventArgs
+public sealed class OnReceiveEventArgs : EventArgs
+{
+    public byte[] Data { get; init; }
+}
+
+public sealed class OnErrorEventArgs : EventArgs
 {
     public Exception Exception { get; init; }
 }
