@@ -18,6 +18,7 @@ class Program
     {
         var host = new ServiceHost();
         var configuration = new ConfigurationBuilder().AddJsonFile("config.json").Build();
+        host.ConfigureLogging(builder => builder.UserNLog());
         host.ConfigureWebHostDefaults(webHostBuilder =>
         {
             webHostBuilder.UseKestrel(options =>

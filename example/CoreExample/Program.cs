@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Autofac.Extras.DynamicProxy;
 using DwFramework.Core;
+using DwFramework.Core.Time;
 using DwFramework.Core.Encrypt;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

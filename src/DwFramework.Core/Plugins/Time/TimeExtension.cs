@@ -1,6 +1,6 @@
 ﻿namespace DwFramework.Core;
 
-public static class DateTimeExtension
+public static class TimeExtension
 {
     /// <summary>
     /// 计算时间差
