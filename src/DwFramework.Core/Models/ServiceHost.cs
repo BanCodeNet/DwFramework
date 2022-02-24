@@ -223,8 +223,9 @@ public sealed class ServiceHost
     /// 注册服务
     /// </summary>
     /// <param name="expression"></param>
-    public void RegisterFromAssemblies(Expression<Func<Type, bool>> expression)
+    public void RegisterFromAssemblies(Expression<Func<Type, bool>> expression = null)
     {
+        expression ??= _ => true;
         foreach (var item in AppDomain.CurrentDomain.GetAssemblies()) RegisterFromAssembly(item, expression);
     }
 
