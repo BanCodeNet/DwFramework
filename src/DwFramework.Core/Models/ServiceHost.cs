@@ -198,7 +198,7 @@ public sealed class ServiceHost
     /// <param name="expression"></param>
     public void RegisterFromAssembly(Assembly assembly, Expression<Func<Type, bool>> expression = null)
     {
-        var t = assembly.GetTypes();
+        expression ??= _ => true;
         foreach (var item in assembly.GetTypes())
         {
             var attr = item.GetCustomAttribute<RegisterableAttribute>();
@@ -225,7 +225,6 @@ public sealed class ServiceHost
     /// <param name="expression"></param>
     public void RegisterFromAssemblies(Expression<Func<Type, bool>> expression = null)
     {
-        expression ??= _ => true;
         foreach (var item in AppDomain.CurrentDomain.GetAssemblies()) RegisterFromAssembly(item, expression);
     }
 
