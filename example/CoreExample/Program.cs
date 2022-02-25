@@ -28,6 +28,7 @@ class Program
             + $"Return:\t{invocation.ReturnValue}\n"
             + "========================================"
         ));
+        host.RegisterFromAssemblies();
         host.OnHostStarted += provider =>
         {
             var x = ServiceHost.ParseConfiguration<string>("ConnectionString");

@@ -225,7 +225,8 @@ public sealed class ServiceHost
     /// <param name="expression"></param>
     public void RegisterFromAssemblies(Expression<Func<Type, bool>> expression = null)
     {
-        foreach (var item in AppDomain.CurrentDomain.GetAssemblies()) RegisterFromAssembly(item, expression);
+        foreach (var item in Assembly.GetEntryAssembly().GetReferencedAssemblies())
+            RegisterFromAssembly(Assembly.Load(item), expression);
     }
 
     /// <summary>
