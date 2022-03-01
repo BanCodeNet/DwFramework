@@ -3,11 +3,11 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>6.0.0.24</Version>
+    <Version>6.0.2.0</Version>
     <Authors>DwGoing</Authors>
     <Copyright>CopyRight 2020 BanCode.Net</Copyright>
     <Title>DwFramework 核心库</Title>
-    <Description>DwFramework框架是一款基于Autofac开发的高扩展性轻量级基础框架，可快速构建多种类型的纯后端或MVC项目。</Description>
+    <Description>DwFramework框架是一款基于Autofac开发的高扩展性轻量级基础框架，可快速构建多种类型的纯后端/MVC/前后端分离项目。</Description>
     <PackageProjectUrl>https://github.com/BanCodeNet/DwFramework</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>git@github.com:BanCodeNet/DwFramework.git</RepositoryUrl>

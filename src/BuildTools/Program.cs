@@ -43,7 +43,7 @@ class Program
             var currentVersion = nodeList[0].InnerText.Split("-")[0].Split(".");
             if (currentVersion.Length < 4) currentVersion = new string[] { "0", "0", "0", "0" };
             if (!int.TryParse(currentVersion[2], out var releaseVersion) || !int.TryParse(currentVersion[3], out var buildVersion)) throw new Exception();
-            version = $"{version}.{releaseVersion + (isChangeBuildVersion ? 1 : 0)}.{buildVersion + 1}{(!string.IsNullOrEmpty(suffix) ? $"-" : "")}{suffix}";
+            version = $"{version}.{releaseVersion + (isChangeBuildVersion ? 1 : 0)}.{(isChangeBuildVersion ? 0 : buildVersion + 1)}{(!string.IsNullOrEmpty(suffix) ? $"-" : "")}{suffix}";
             nodeList[0].InnerText = version;
             document.Save(projectFile);
         }

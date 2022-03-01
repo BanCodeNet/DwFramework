@@ -6,8 +6,8 @@
     <Version></Version>
     <Authors>DwGoing</Authors>
     <Copyright>CopyRight 2020 BanCode.Net</Copyright>
-    <Title>DwFramework TensorFlow扩展库</Title>
-    <Description>DwFramework框架是一款基于Autofac开发的高扩展性轻量级基础框架，可快速构建多种类型的纯后端或MVC项目。</Description>
+    <Title>DwFramework TensorFlow封装库</Title>
+    <Description>DwFramework框架是一款基于Autofac开发的高扩展性轻量级基础框架，可快速构建多种类型的纯后端/MVC/前后端分离项目。</Description>
     <PackageProjectUrl>https://github.com/BanCodeNet/DwFramework</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>git@github.com:BanCodeNet/DwFramework.git</RepositoryUrl>
