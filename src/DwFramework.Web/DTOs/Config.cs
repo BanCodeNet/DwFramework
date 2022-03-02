@@ -14,6 +14,16 @@ public readonly record struct Config
         public string Cert { get; init; }
         public string Password { get; init; }
         public bool UseSSL { get; init; } = false;
+
+        public Listen(HttpProtocols protocols, string ip, int port, string cert, string password, bool useSSl)
+        {
+            Protocols = protocols;
+            Ip = ip;
+            Port = port;
+            Cert = cert;
+            Password = password;
+            UseSSL = useSSl;
+        }
     }
 
     public readonly record struct Socket
@@ -27,6 +37,16 @@ public readonly record struct Config
         public SocketType SocketType { get; init; }
         [JsonConverter(typeof(ProtocolType))]
         public ProtocolType ProtocolType { get; init; }
+
+        public Socket(Listen listen, int bufferSize, int backLog, AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType)
+        {
+            Listen = listen;
+            BufferSize = bufferSize;
+            BackLog = backLog;
+            AddressFamily = addressFamily;
+            SocketType = socketType;
+            ProtocolType = protocolType;
+        }
     }
 
     public readonly record struct Http
@@ -34,5 +54,12 @@ public readonly record struct Config
         public string ContentRoot { get; init; }
         public List<Listen> Listens { get; init; } = new();
         public int BufferSize { get; init; } = 1024 * 4;
+
+        public Http(string contentRoot, List<Listen> listens, int bufferSize)
+        {
+            ContentRoot = contentRoot;
+            Listens = listens;
+            BufferSize = bufferSize;
+        }
     }
 }

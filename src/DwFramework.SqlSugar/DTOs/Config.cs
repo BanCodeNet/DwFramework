@@ -15,6 +15,14 @@ public readonly record struct DbConnectionConfig
     public DbType DbType { get; init; }
     public SlaveDbConnectionConfig[] SlaveConnections { get; init; }
     public bool UseMemoryCache { get; init; } = false;
+
+    public DbConnectionConfig(string connectionString, DbType dbType, SlaveDbConnectionConfig[] slaveConnections, bool useMemoryCache)
+    {
+        ConnectionString = connectionString;
+        DbType = dbType;
+        SlaveConnections = slaveConnections;
+        UseMemoryCache = useMemoryCache;
+    }
 }
 
 public readonly record struct SlaveDbConnectionConfig
