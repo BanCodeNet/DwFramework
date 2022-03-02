@@ -28,6 +28,12 @@ class Program
     }
 }
 
+[Registerable(lifetime: Lifetime.Singleton)]
+public class X
+{
+
+}
+
 public class A
 {
     public readonly Guid Id = Guid.NewGuid();

@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\DwFramework.Core\DwFramework.Core.csproj" />
+    <ProjectReference Include="..\..\example\QuartzExample\QuartzExample.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="NLog.config">

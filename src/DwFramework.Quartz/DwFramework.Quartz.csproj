@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>6.0.2.0</Version>
+    <Version>6.0.2.1</Version>
     <Authors>DwGoing</Authors>
     <Copyright>CopyRight 2020 BanCode.Net</Copyright>
     <Title>DwFramework Quartz封装库</Title>

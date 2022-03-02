@@ -5,7 +5,7 @@ using DwFramework.Core.Time;
 using DwFramework.Core.Encrypt;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-
+using QuartzExample;
 namespace CoreExample;
 
 class Program
