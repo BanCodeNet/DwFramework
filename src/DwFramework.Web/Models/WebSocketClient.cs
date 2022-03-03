@@ -42,7 +42,7 @@ public sealed class WebSocketClient
         await _client.ConnectAsync(new Uri(uri), CancellationToken.None).ContinueWith(a =>
         {
             OnConnect?.Invoke(new OnConnectEventArgs() { });
-            Task.Factory.StartNew(async () =>
+            Task.Run(async () =>
             {
                 var buffer = new byte[_bufferSize];
                 var dataBytes = new List<byte>();

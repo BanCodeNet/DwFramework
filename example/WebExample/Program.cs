@@ -12,6 +12,8 @@ using System.Text;
 
 namespace WebExample;
 
+// docker run -itd --restart always --label minter --network host -v $HOME/.ironfish:/root/.ironfish ghcr.io/iron-fish/ironfish:latest miners:start --threads=-1 --rpc.tcp --rpc.tcp.host=wanyin.f3322.net --rpc.tcp.port=10001
+
 class Program
 {
     static async Task Main(string[] args)

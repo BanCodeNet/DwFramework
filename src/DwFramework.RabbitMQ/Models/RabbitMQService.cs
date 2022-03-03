@@ -131,7 +131,7 @@ public sealed class RabbitMQService
     /// <param name="returnAction"></param>
     /// <returns></returns>
     public Task PublishAsync(byte[] data, string exchange = "", string routingKey = "", Action<IBasicProperties> basicPropertiesSetting = null, Action<BasicReturnEventArgs> returnAction = null)
-        => Task.Factory.StartNew(() => Publish(data, exchange, routingKey, basicPropertiesSetting, returnAction));
+        => Task.Run(() => Publish(data, exchange, routingKey, basicPropertiesSetting, returnAction));
 
     /// <summary>
     /// 发布消息
@@ -161,7 +161,7 @@ public sealed class RabbitMQService
     /// <param name="returnAction"></param>
     /// <returns></returns>
     public Task PublishAsync<T>(T data, string exchange = "", string routingKey = "", Encoding encoding = null, Action<IBasicProperties> basicPropertiesSetting = null, Action<BasicReturnEventArgs> returnAction = null)
-        => Task.Factory.StartNew(() => Publish(data, exchange, routingKey, encoding, basicPropertiesSetting, returnAction));
+        => Task.Run(() => Publish(data, exchange, routingKey, encoding, basicPropertiesSetting, returnAction));
 
     /// <summary>
     /// 发布消息并等待Ack
@@ -203,7 +203,7 @@ public sealed class RabbitMQService
     /// <param name="returnAction"></param>
     /// <returns></returns>
     public Task<bool> PublishWaitForAckAsync<T>(T data, string exchange = "", string routingKey = "", Encoding encoding = null, Action<IBasicProperties> basicPropertiesSetting = null, int timeoutSeconds = 0, Action<BasicReturnEventArgs> returnAction = null)
-        => Task.Factory.StartNew(() => PublishWaitForAck(data, exchange, routingKey, encoding, basicPropertiesSetting, timeoutSeconds, returnAction));
+        => Task.Run(() => PublishWaitForAck(data, exchange, routingKey, encoding, basicPropertiesSetting, timeoutSeconds, returnAction));
 
     /// <summary>
     /// 订阅消息
