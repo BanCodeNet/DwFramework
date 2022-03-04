@@ -1,4 +1,5 @@
-﻿using System.Net.WebSockets;
+﻿using DwFramework.Core;
+using System.Net.WebSockets;
 
 namespace DwFramework.Web;
 
@@ -41,6 +42,7 @@ public sealed class WebSocketClient
         if (subProtocal != null) foreach (var item in subProtocal) _client.Options.AddSubProtocol(item);
         await _client.ConnectAsync(new Uri(uri), CancellationToken.None).ContinueWith(a =>
         {
+            if (_client.State != WebSocketState.Open) throw new ExceptionBase(ExceptionType.Internal, 0, "无法连接");
             OnConnect?.Invoke(new OnConnectEventArgs() { });
             Task.Run(async () =>
             {
