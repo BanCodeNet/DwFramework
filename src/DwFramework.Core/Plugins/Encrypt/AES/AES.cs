@@ -16,8 +16,8 @@ public static class AES
     /// <returns></returns>
     public static byte[] Encrypt(AESType type, byte[] data, byte[] key, byte[] iv = null, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.None)
     {
-        if (data == null || data.Length <= 0) throw new ExceptionBase(ExceptionType.Parameter, message: "data为空");
-        if (key == null) throw new ExceptionBase(ExceptionType.Parameter, message: "key为空");
+        if (data == null || data.Length <= 0) throw new ExceptionBase(ExceptionType.Parameter, 0, "data为空");
+        if (key == null) throw new ExceptionBase(ExceptionType.Parameter, 0, "key为空");
         var keySize = (int)type;
         if (key.Length != keySize / 8) Array.Resize(ref key, keySize / 8);
         using var aes = Aes.Create();
@@ -42,8 +42,8 @@ public static class AES
     /// <returns></returns>
     public static byte[] Decrypt(AESType type, byte[] data, byte[] key, byte[] iv = null, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.None)
     {
-        if (data == null || data.Length <= 0) throw new ExceptionBase(ExceptionType.Parameter, message: "data为空");
-        if (key == null) throw new ExceptionBase(ExceptionType.Parameter, message: "key为空");
+        if (data == null || data.Length <= 0) throw new ExceptionBase(ExceptionType.Parameter, 0, "data为空");
+        if (key == null) throw new ExceptionBase(ExceptionType.Parameter, 0, "key为空");
         var keySize = (int)type;
         if (key.Length != keySize / 8) Array.Resize(ref key, keySize / 8);
         using var aes = Aes.Create();

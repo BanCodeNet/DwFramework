@@ -37,7 +37,7 @@ public static class RSA
             RSAFormat.Pkcs1 => ExportPkcs1Key(keySize, usePem),
             RSAFormat.Pkcs8 => ExportPkcs8Key(keySize, usePem),
             RSAFormat.Xml => ExportXmlKey(keySize),
-            _ => throw new ExceptionBase(ExceptionType.Parameter, message: "未知格式")
+            _ => throw new ExceptionBase(ExceptionType.Parameter, 0, "未知格式")
         };
     }
 
@@ -268,7 +268,7 @@ public static class RSA
         privateKey = EnablePrivateKeyPkcs1Pem(privateKey);
         var pr = new PemReader(new StringReader(privateKey));
         if (!(pr.ReadObject() is AsymmetricCipherKeyPair asymmetricCipherKeyPair))
-            throw new ExceptionBase(ExceptionType.Parameter, message: "私钥格式错误");
+            throw new ExceptionBase(ExceptionType.Parameter, 0, "私钥格式错误");
         var rsaPrivateCrtKeyParameters = (RsaPrivateCrtKeyParameters)PrivateKeyFactory.CreateKey(
             PrivateKeyInfoFactory.CreatePrivateKeyInfo(asymmetricCipherKeyPair.Private)
         );
@@ -448,7 +448,7 @@ public static class RSA
         publicKey = EnablePublicKeyPem(publicKey);
         var pr = new PemReader(new StringReader(publicKey));
         var obj = pr.ReadObject();
-        if (!(obj is RsaKeyParameters rsaKey)) throw new ExceptionBase(ExceptionType.Internal, message: "无法读取公钥信息");
+        if (!(obj is RsaKeyParameters rsaKey)) throw new ExceptionBase(ExceptionType.Internal, 0, "无法读取公钥信息");
         var publicElement = new XElement("RSAKeyValue");
         //Modulus
         var pubmodulus = new XElement("Modulus", rsaKey.Modulus.ToByteArrayUnsigned().ToBase64());

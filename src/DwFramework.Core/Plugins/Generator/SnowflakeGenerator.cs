@@ -18,7 +18,7 @@ public sealed class SnowflakeGenerator
         /// <param name="startTime"></param>
         public SnowflakeIdInfo(long id, DateTime startTime)
         {
-            if (id <= 0) throw new ExceptionBase(ExceptionType.Parameter, message: "workerId必须大于0");
+            if (id <= 0) throw new ExceptionBase(ExceptionType.Parameter, 0, "workerId必须大于0");
             WorkerId = id;
             StartTime = startTime;
             var timestamp = id >> (WORKER_ID_BITS + SEQUENCE_BITS);
@@ -48,7 +48,7 @@ public sealed class SnowflakeGenerator
     /// <param name="startTime"></param>
     public SnowflakeGenerator(long workerId, DateTime startTime)
     {
-        if (workerId < 0 || workerId > MAX_WORKER_ID) throw new ExceptionBase(ExceptionType.Parameter, message: "机器ID超过上限");
+        if (workerId < 0 || workerId > MAX_WORKER_ID) throw new ExceptionBase(ExceptionType.Parameter, 0, "机器ID超过上限");
         WorkerId = workerId;
         StartTime = startTime;
     }
@@ -64,8 +64,8 @@ public sealed class SnowflakeGenerator
             _currentSequence++;
             if (_currentSequence > MAX_SEQUENCE) Thread.Sleep(1);
             var timestamp = StartTime.GetTimeDiff(DateTime.Now);
-            if (timestamp > MAX_TIMESTAMP) throw new ExceptionBase(ExceptionType.Internal, message: "时间戳容量不足,请调整StartTime");
-            if (timestamp < _currentTimestamp) throw new ExceptionBase(ExceptionType.Internal, message: "时间获取异常,请检查服务器时间");
+            if (timestamp > MAX_TIMESTAMP) throw new ExceptionBase(ExceptionType.Internal, 0, "时间戳容量不足,请调整StartTime");
+            if (timestamp < _currentTimestamp) throw new ExceptionBase(ExceptionType.Internal, 0, "时间获取异常,请检查服务器时间");
             else if (timestamp > _currentTimestamp)
             {
                 _currentTimestamp = (long)timestamp;

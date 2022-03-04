@@ -85,7 +85,7 @@ public sealed class WebSocketConnection
     {
         try
         {
-            if (_webSocket.State != WebSocketState.Open) throw new ExceptionBase(ExceptionType.Internal, message: "连接状态异常");
+            if (_webSocket.State != WebSocketState.Open) throw new ExceptionBase(ExceptionType.Internal, 0, "连接状态异常");
             await _webSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
             OnSend?.Invoke(this, new OnSendEventArgs() { Data = buffer });
         }

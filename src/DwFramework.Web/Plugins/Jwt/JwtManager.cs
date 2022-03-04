@@ -20,7 +20,7 @@ public static class JwtManager
     /// <returns></returns>
     public static string Generate(string issuer, string securityKey, string[] audiences = null, DateTime? notBefore = null, DateTime? expires = null, Dictionary<string, object> customFields = null)
     {
-        if (securityKey.Length < 16) throw new ExceptionBase(ExceptionType.Parameter, message: "SecuriyKey长度不足");
+        if (securityKey.Length < 16) throw new ExceptionBase(ExceptionType.Parameter, 0, "SecuriyKey长度不足");
         JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
         var claims = new List<Claim>();
         if (audiences != null) foreach (var item in audiences) claims.Add(new Claim("aud", item));
@@ -58,7 +58,7 @@ public static class JwtManager
     public static JwtSecurityToken Decode(string token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        if (string.IsNullOrEmpty(token) || !tokenHandler.CanReadToken(token)) throw new ExceptionBase(ExceptionType.Parameter, message: "无效的Token");
+        if (string.IsNullOrEmpty(token) || !tokenHandler.CanReadToken(token)) throw new ExceptionBase(ExceptionType.Parameter, 0, "无效的Token");
         return tokenHandler.ReadJwtToken(token);
     }
 

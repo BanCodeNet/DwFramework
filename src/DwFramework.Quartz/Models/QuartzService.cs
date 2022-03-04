@@ -27,7 +27,7 @@ public sealed class QuartzService
     public async Task<IScheduler> GetSchedulerAsync(string schedulerName)
     {
         var scheduler = await DirectSchedulerFactory.Instance.GetScheduler(schedulerName);
-        if (scheduler == null) throw new ExceptionBase(ExceptionType.Parameter, message: "未知调度器");
+        if (scheduler == null) throw new ExceptionBase(ExceptionType.Parameter, 0, "未知调度器");
         return scheduler;
     }
 
@@ -306,7 +306,7 @@ public sealed class QuartzService
     /// <returns></returns>
     public Task<DateTimeOffset> CreateJobAsync<T>(string schedulerName, int repeat, long intervalMilliseconds, DateTimeOffset? startAt = null, string calName = null, IDictionary<string, object> properties = null, string jobName = null, string jobGroup = null, string triggerName = null, string triggerGroup = null) where T : IJob
     {
-        if (repeat < 0 || intervalMilliseconds <= 0) throw new ExceptionBase(ExceptionType.Parameter, message: "参数错误");
+        if (repeat < 0 || intervalMilliseconds <= 0) throw new ExceptionBase(ExceptionType.Parameter, 0, "参数错误");
         return CreateJobAsync<T>(schedulerName, jobBuilder =>
          {
              if (properties != null) jobBuilder.SetJobData(new JobDataMap(properties));

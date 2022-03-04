@@ -18,7 +18,7 @@ public static class SocketExtension
     public static ServiceHost ConfigureSocket(this ServiceHost host, IConfiguration configuration, string path = null)
     {
         var config = configuration.ParseConfiguration<Config.Socket>(path);
-        if (config == null) throw new ExceptionBase(ExceptionType.Internal, message: "未读取到Socket配置");
+        if (config == null) throw new ExceptionBase(ExceptionType.Internal, 0, "未读取到Socket配置");
         switch (config.ProtocolType)
         {
             case ProtocolType.Tcp:
@@ -30,7 +30,7 @@ public static class SocketExtension
                 host.ConfigureContainer(builder => builder.RegisterInstance(udpService).SingleInstance());
                 break;
             default:
-                throw new ExceptionBase(ExceptionType.Internal, message: "未定义的协议类型");
+                throw new ExceptionBase(ExceptionType.Internal, 0, "未定义的协议类型");
         }
         return host;
     }

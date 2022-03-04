@@ -19,7 +19,7 @@ public abstract class BaseRepository<T> : IRepository<T> where T : class, new()
     {
         _sqlSugarService = sqlSugarService;
         _connName = connName;
-        if (_sqlSugarService == null) throw new ExceptionBase(ExceptionType.Internal, message: "sqlSugarService不能为空");
+        if (_sqlSugarService == null) throw new ExceptionBase(ExceptionType.Internal, 0, "sqlSugarService不能为空");
     }
 
     /// <summary>

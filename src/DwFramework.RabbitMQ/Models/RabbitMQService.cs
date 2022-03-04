@@ -21,7 +21,7 @@ public sealed class RabbitMQService
     public RabbitMQService(IConfiguration configuration)
     {
         _config = configuration.Get<Config>();
-        if (_config == null) throw new ExceptionBase(ExceptionType.Internal, message: "缺少RabbitMQ配置");
+        if (_config == null) throw new ExceptionBase(ExceptionType.Internal, 0, "缺少RabbitMQ配置");
         _connectionFactory = new ConnectionFactory()
         {
             HostName = _config.Host,

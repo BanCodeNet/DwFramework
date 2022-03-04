@@ -17,7 +17,7 @@ public static class StringExtension
             > 49 and < 56 => value - 24,
             > 64 and < 91 => value - 65,
             > 96 and < 123 => value - 97,
-            _ => throw new ExceptionBase(ExceptionType.Parameter, message: $"非Base32字符:{@char}")
+            _ => throw new ExceptionBase(ExceptionType.Parameter, 0, $"非Base32字符:{@char}")
         };
     }
 
@@ -32,7 +32,7 @@ public static class StringExtension
         {
             < 26 => (char)(@byte + 65),
             > 26 and < 32 => (char)(@byte + 24),
-            _ => throw new ExceptionBase(ExceptionType.Parameter, message: $"非Base32字符值:{@byte}")
+            _ => throw new ExceptionBase(ExceptionType.Parameter, 0, $"非Base32字符值:{@byte}")
         };
     }
 
@@ -43,7 +43,7 @@ public static class StringExtension
     /// <returns></returns>
     public static string ToBase32(this byte[] bytes)
     {
-        if (bytes == null || bytes.Length == 0) throw new ExceptionBase(ExceptionType.Parameter, message: "参数为空");
+        if (bytes == null || bytes.Length == 0) throw new ExceptionBase(ExceptionType.Parameter, 0, "参数为空");
         var charCount = (int)Math.Ceiling(bytes.Length / 5d) * 8;
         var returnArray = new char[charCount];
         var nextChar = (byte)0;
@@ -79,7 +79,7 @@ public static class StringExtension
     /// <returns></returns>
     public static byte[] FromBase32(this string str)
     {
-        if (string.IsNullOrEmpty(str)) throw new ExceptionBase(ExceptionType.Parameter, message: "参数为空");
+        if (string.IsNullOrEmpty(str)) throw new ExceptionBase(ExceptionType.Parameter, 0, "参数为空");
         str = str.TrimEnd('=');
         var byteCount = str.Length * 5 / 8;
         var returnArray = new byte[byteCount];

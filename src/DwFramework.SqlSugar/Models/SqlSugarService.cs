@@ -29,8 +29,8 @@ public sealed class SqlSugarService
     public SqlSugarClient CreateConnection(string connName, InitKeyType initKeyType = InitKeyType.Attribute, Action<Type, EntityInfo> entityNameService = null, Action<PropertyInfo, EntityColumnInfo> entityService = null)
     {
         var config = _configuration.Get<Config>();
-        if (config == null) throw new ExceptionBase(ExceptionType.Internal, message: "缺少SqlSugar配置");
-        if (!config.ConnectionConfigs.ContainsKey(connName)) throw new ExceptionBase(ExceptionType.Internal, message: "找不到该连接的配置");
+        if (config == null) throw new ExceptionBase(ExceptionType.Internal, 0, "缺少SqlSugar配置");
+        if (!config.ConnectionConfigs.ContainsKey(connName)) throw new ExceptionBase(ExceptionType.Internal, 0, "找不到该连接的配置");
         var connConfig = config.ConnectionConfigs[connName];
         var connectionConfig = new ConnectionConfig()
         {
@@ -57,7 +57,7 @@ public sealed class SqlSugarService
         if (entityNameService != null) connectionConfig.ConfigureExternalServices.EntityNameService = entityNameService;
         if (entityService != null) connectionConfig.ConfigureExternalServices.EntityService = entityService;
         var db = new SqlSugarClient(connectionConfig);
-        if (db == null) throw new ExceptionBase(ExceptionType.Internal, message: "无法创建连接");
+        if (db == null) throw new ExceptionBase(ExceptionType.Internal, 0, "无法创建连接");
         return db;
     }
 }
