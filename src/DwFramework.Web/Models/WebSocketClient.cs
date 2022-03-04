@@ -47,7 +47,7 @@ public sealed class WebSocketClient
                 var buffer = new byte[_bufferSize];
                 var dataBytes = new List<byte>();
                 WebSocketCloseStatus? closeStates = null;
-                while (true)
+                while (_client.State == WebSocketState.Open)
                 {
                     try
                     {
