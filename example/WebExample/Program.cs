@@ -16,18 +16,6 @@ class Program
 {
     static async Task Main(string[] args)
     {
-        var client = new WebSocketClient();
-        client.OnClose += a =>
-        {
-
-        };
-        client.OnError += a =>
-        {
-
-        };
-        await client.ConnectAsync("ws://wanyin.f3322.net:6431");
-        Console.ReadKey();
-
         var host = new ServiceHost();
         var configuration = new ConfigurationBuilder().AddJsonFile("config.json").Build();
         host.ConfigureLogging(builder => builder.UserNLog());
