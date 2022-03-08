@@ -1,4 +1,5 @@
-﻿using DwFramework.Core;
+﻿using System;
+using DwFramework.Core;
 using System.Net.WebSockets;
 
 namespace DwFramework.Web;
@@ -103,7 +104,8 @@ public sealed class WebSocketConnection
     public async Task CloseAsync(WebSocketCloseStatus closeStatus)
     {
         if (IsClose) return;
-        await _webSocket.CloseOutputAsync(closeStatus, null, CancellationToken.None);
+        if (_webSocket.State == WebSocketState.Open)
+            await _webSocket.CloseOutputAsync(closeStatus, null, CancellationToken.None);
         _webSocket.Abort();
         _webSocket.Dispose();
         IsClose = true;

@@ -16,6 +16,10 @@ public sealed class WebSocketService
     public event Action<WebSocketConnection, OnReceiveEventArgs> OnWebSocketReceive;
     public event Action<WebSocketConnection, OnErrorEventArgs> OnWebSocketError;
 
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    /// <param name="configuration"></param>
     public WebSocketService(IConfiguration configuration)
     {
         _configuration = configuration;
