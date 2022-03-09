@@ -18,7 +18,6 @@ public static class SocketExtension
     public static ServiceHost ConfigureSocket(this ServiceHost host, IConfiguration configuration, string path = null)
     {
         var config = configuration.ParseConfiguration<Config.Socket>(path);
-        if (config == null) throw new ExceptionBase(ExceptionType.Internal, 0, "未读取到Socket配置");
         switch (config.ProtocolType)
         {
             case ProtocolType.Tcp:

@@ -4,7 +4,7 @@ namespace DwFramework.Web;
 
 public sealed class OnConnectEventArgs : EventArgs
 {
-    public IHeaderDictionary Header { get; init; }
+
 }
 
 public sealed class OnCloceEventArgs : EventArgs

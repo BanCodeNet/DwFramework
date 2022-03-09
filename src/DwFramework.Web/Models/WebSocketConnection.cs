@@ -1,5 +1,4 @@
-﻿using System;
-using DwFramework.Core;
+﻿using DwFramework.Core;
 using System.Net.WebSockets;
 
 namespace DwFramework.Web;
@@ -14,10 +13,11 @@ public sealed class WebSocketConnection
     private readonly List<byte> _dataBytes = new();
     private readonly AutoResetEvent _resetEvent;
 
-    public Action<WebSocketConnection, OnCloceEventArgs> OnClose { get; init; }
-    public Action<WebSocketConnection, OnSendEventArgs> OnSend { get; init; }
-    public Action<WebSocketConnection, OnReceiveEventArgs> OnReceive { get; init; }
-    public Action<WebSocketConnection, OnErrorEventArgs> OnError { get; init; }
+    public event Func<WebSocketConnection, OnConnectEventArgs, Task> OnConnect;
+    public event Func<WebSocketConnection, OnCloceEventArgs, Task> OnClose;
+    public event Func<WebSocketConnection, OnSendEventArgs, Task> OnSend;
+    public event Func<WebSocketConnection, OnReceiveEventArgs, Task> OnReceive;
+    public event Func<WebSocketConnection, OnErrorEventArgs, Task> OnError;
 
     /// <summary>
     /// 构造函数
@@ -25,13 +25,33 @@ public sealed class WebSocketConnection
     /// <param name="webSocket"></param>
     /// <param name="bufferSize"></param>
     /// <param name="resetEvent"></param>
-    public WebSocketConnection(WebSocket webSocket, int bufferSize, out AutoResetEvent resetEvent)
+    /// <param name="onConnect"></param>
+    /// <param name="onClose"></param>
+    /// <param name="onSend"></param>
+    /// <param name="onReceive"></param>
+    /// <param name="onError"></param>
+    public WebSocketConnection(
+        WebSocket webSocket,
+        int bufferSize,
+        out AutoResetEvent resetEvent,
+        Func<WebSocketConnection, OnConnectEventArgs, Task> onConnect = null,
+        Func<WebSocketConnection, OnCloceEventArgs, Task> onClose = null,
+        Func<WebSocketConnection, OnSendEventArgs, Task> onSend = null,
+        Func<WebSocketConnection, OnReceiveEventArgs, Task> onReceive = null,
+        Func<WebSocketConnection, OnErrorEventArgs, Task> onError = null
+    )
     {
         ID = Guid.NewGuid().ToString();
         _webSocket = webSocket;
         _buffer = new byte[bufferSize > 0 ? bufferSize : 4096];
         _resetEvent = new AutoResetEvent(false);
         resetEvent = _resetEvent;
+        OnConnect += onConnect;
+        OnClose += onClose;
+        OnSend += onSend;
+        OnReceive += onReceive;
+        OnError += onError;
+        OnConnect?.Invoke(this, new OnConnectEventArgs() { });
     }
 
     /// <summary>

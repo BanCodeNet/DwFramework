@@ -7,14 +7,14 @@ namespace DwFramework.Web;
 public sealed class WebSocketService
 {
     private readonly IConfiguration _configuration;
-    private readonly Dictionary<string, WebSocketConnection> _webSocketConnections = new();
+    private readonly Dictionary<string, WebSocketConnection> _connections = new();
 
     public int BufferSize { get; set; } = 1024 * 4;
-    public event Action<WebSocketConnection, OnConnectEventArgs> OnWebSocketConnect;
-    public event Action<WebSocketConnection, OnCloceEventArgs> OnWebSocketClose;
-    public event Action<WebSocketConnection, OnSendEventArgs> OnWebSocketSend;
-    public event Action<WebSocketConnection, OnReceiveEventArgs> OnWebSocketReceive;
-    public event Action<WebSocketConnection, OnErrorEventArgs> OnWebSocketError;
+    public event Func<WebSocketConnection, OnConnectEventArgs, Task> OnConnect;
+    public event Func<WebSocketConnection, OnCloceEventArgs, Task> OnClose;
+    public event Func<WebSocketConnection, OnSendEventArgs, Task> OnSend;
+    public event Func<WebSocketConnection, OnReceiveEventArgs, Task> OnReceive;
+    public event Func<WebSocketConnection, OnErrorEventArgs, Task> OnError;
 
     /// <summary>
     /// 构造函数
@@ -34,15 +34,22 @@ public sealed class WebSocketService
     {
         var webSocket = await context.WebSockets.AcceptWebSocketAsync();
         if (webSocket == null) return;
-        var connection = new WebSocketConnection(webSocket, BufferSize, out var resetEvent)
+        var connection = new WebSocketConnection(
+            webSocket,
+            BufferSize,
+            out var resetEvent,
+            OnConnect,
+            OnClose,
+            OnSend,
+            OnReceive,
+            OnError
+        );
+        connection.OnClose += (c, a) =>
         {
-            OnClose = OnWebSocketClose,
-            OnSend = OnWebSocketSend,
-            OnReceive = OnWebSocketReceive,
-            OnError = OnWebSocketError
+            _connections.Remove(c.ID);
+            return Task.CompletedTask;
         };
-        _webSocketConnections[connection.ID] = connection;
-        OnWebSocketConnect?.Invoke(connection, new OnConnectEventArgs() { Header = context.Request.Headers });
+        _connections[connection.ID] = connection;
         _ = connection.BeginReceiveAsync();
         resetEvent.WaitOne();
     }
@@ -53,7 +60,7 @@ public sealed class WebSocketService
     /// <param name="id"></param>
     /// <returns></returns>
     public WebSocketConnection GetWebSocketConnection(string id)
-        => _webSocketConnections.ContainsKey(id) ? _webSocketConnections[id] : null;
+        => _connections.ContainsKey(id) ? _connections[id] : null;
 
     /// <summary>
     /// 广播消息
@@ -62,7 +69,7 @@ public sealed class WebSocketService
     /// <returns></returns>
     public void BroadCast(byte[] data)
     {
-        foreach (var item in _webSocketConnections.Values)
+        foreach (var item in _connections.Values)
         {
             _ = item.SendAsync(data);
         }
@@ -73,10 +80,10 @@ public sealed class WebSocketService
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public Task CloseAsync(string id)
+    public async Task CloseAsync(string id)
     {
-        if (!_webSocketConnections.ContainsKey(id)) return Task.CompletedTask;
-        var connection = _webSocketConnections[id];
-        return connection.CloseAsync(WebSocketCloseStatus.NormalClosure);
+        if (!_connections.ContainsKey(id)) return;
+        var connection = _connections[id];
+        await connection.CloseAsync(WebSocketCloseStatus.NormalClosure);
     }
 }

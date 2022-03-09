@@ -22,10 +22,8 @@ public sealed class UdpService
     public UdpService(IConfiguration configuration)
     {
         _config = configuration.ParseConfiguration<Config.Socket>();
-        if (_config.Listen == null) throw new ExceptionBase(ExceptionType.Internal, 0, "缺少Socket配置");
         _buffer = new byte[_config.BufferSize > 0 ? _config.BufferSize : 4096];
         _server = new System.Net.Sockets.Socket(_config.AddressFamily, _config.SocketType, ProtocolType.Udp);
-        if (_config.Listen == null) throw new ExceptionBase(ExceptionType.Internal, 0, "缺少Listen配置");
         _server.Bind(new IPEndPoint(string.IsNullOrEmpty(_config.Listen.Ip) ? IPAddress.Any : IPAddress.Parse(_config.Listen.Ip), _config.Listen.Port));
         _ = AcceptAsync();
     }

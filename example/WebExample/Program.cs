@@ -84,9 +84,9 @@ class Program
         host.OnHostStarted += p =>
         {
             var web = p.GetWebSocket();
-            web.OnWebSocketConnect += (c, a) => Console.WriteLine($"{c.ID} 建立连接");
-            web.OnWebSocketReceive += (c, a) => Console.WriteLine($"{c.ID} {Encoding.UTF8.GetString(a.Data)}");
-            web.OnWebSocketClose += (c, a) => Console.WriteLine($"{c.ID} 断开连接");
+            web.OnConnect += async (c, a) => Console.WriteLine($"{c.ID} 建立连接");
+            web.OnReceive += async (c, a) => web.BroadCast(a.Data);
+            web.OnClose += async (c, a) => Console.WriteLine($"{c.ID} 断开连接");
 
             // Task.Run(async () =>
             // {
