@@ -67,8 +67,7 @@ public sealed class WebSocketConnection
             var result = await _webSocket.ReceiveAsync(new ArraySegment<byte>(_buffer), CancellationToken.None);
             if (result.CloseStatus.HasValue)
             {
-                if (_webSocket.State == WebSocketState.CloseReceived && !IsClose)
-                    await CloseAsync(result.CloseStatus.Value);
+                Close(result.CloseStatus.Value);
                 return;
             }
             _dataBytes.AddRange(_buffer.Take(result.Count));
@@ -86,7 +85,7 @@ public sealed class WebSocketConnection
                 // TODO
                 default:
                     OnError?.Invoke(this, new OnErrorEventArgs() { Exception = ex });
-                    await CloseAsync(WebSocketCloseStatus.InternalServerError);
+                    Close(WebSocketCloseStatus.InternalServerError);
                     break;
             }
         }
@@ -120,12 +119,12 @@ public sealed class WebSocketConnection
     /// 断开连接
     /// </summary>
     /// <param name="closeStatus"></param>
-    /// <returns></returns>
-    public async Task CloseAsync(WebSocketCloseStatus closeStatus)
+    /// <param name="statusDescription"></param>
+    /// <param name="cancellationToken"></param>
+    public void Close(WebSocketCloseStatus closeStatus, string statusDescription = null, CancellationToken cancellationToken = default)
     {
         if (IsClose) return;
-        if (_webSocket.State == WebSocketState.Open)
-            await _webSocket.CloseOutputAsync(closeStatus, null, CancellationToken.None);
+        _webSocket.CloseOutputAsync(closeStatus, statusDescription, cancellationToken);
         _webSocket.Abort();
         _webSocket.Dispose();
         IsClose = true;

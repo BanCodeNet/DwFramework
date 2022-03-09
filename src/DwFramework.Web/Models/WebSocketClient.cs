@@ -5,28 +5,25 @@ namespace DwFramework.Web;
 
 public sealed class WebSocketClient
 {
-    public event Action<OnConnectEventArgs> OnConnect;
-    public event Action<OnCloceEventArgs> OnClose;
-    public event Action<OnSendEventArgs> OnSend;
-    public event Action<OnReceiveEventArgs> OnReceive;
-    public event Action<OnErrorEventArgs> OnError;
+    public event Func<OnConnectEventArgs, Task> OnConnect;
+    public event Func<OnCloceEventArgs, Task> OnClose;
+    public event Func<OnSendEventArgs, Task> OnSend;
+    public event Func<OnReceiveEventArgs, Task> OnReceive;
+    public event Func<OnErrorEventArgs, Task> OnError;
 
-    private readonly ClientWebSocket _client;
     private int _bufferSize;
-    public int BufferSize
-    {
-        get => _bufferSize;
-        set { if (value > 0) _bufferSize = value; }
-    }
+    private bool _autoReconnect;
+    private ClientWebSocket _client;
+
     public WebSocketState State => _client.State;
 
     /// <summary>
     /// 构造函数
     /// </summary>
-    public WebSocketClient(int bufferSize = 4096)
+    public WebSocketClient(int bufferSize = 4096, bool autoReconnect = false)
     {
         _bufferSize = bufferSize;
-        _client = new ClientWebSocket();
+        _autoReconnect = autoReconnect;
     }
 
     /// <summary>
@@ -40,6 +37,7 @@ public sealed class WebSocketClient
     {
         if (header != null) foreach (var item in header) _client.Options.SetRequestHeader(item.Key, item.Value);
         if (subProtocal != null) foreach (var item in subProtocal) _client.Options.AddSubProtocol(item);
+        _client = new ClientWebSocket();
         await _client.ConnectAsync(new Uri(uri), CancellationToken.None).ContinueWith(a =>
         {
             if (_client.State != WebSocketState.Open) throw new ExceptionBase(ExceptionType.Internal, 0, "无法连接");
@@ -71,8 +69,15 @@ public sealed class WebSocketClient
                     }
                 }
                 OnClose?.Invoke(new OnCloceEventArgs() { });
-                ClearAllEvent();
-                if (_client.State == WebSocketState.CloseReceived) await CloseAsync();
+                if (_autoReconnect)
+                {
+                    await ConnectAsync(uri, header, subProtocal);
+                }
+                else
+                {
+                    ClearAllEvent();
+                    if (_client.State == WebSocketState.CloseReceived) Close();
+                }
             });
         });
     }
@@ -94,10 +99,10 @@ public sealed class WebSocketClient
     /// <summary>
     /// 断开连接
     /// </summary>
-    /// <returns></returns>
-    public async Task CloseAsync()
+    public void Close()
     {
-        await _client.CloseAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
+        _autoReconnect = false;
+        _client.CloseAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
     }
 
     /// <summary>
@@ -108,27 +113,27 @@ public sealed class WebSocketClient
         if (OnConnect != null)
         {
             var actions = OnConnect.GetInvocationList();
-            foreach (var item in actions) OnConnect -= (Action<OnConnectEventArgs>)item;
+            foreach (var item in actions) OnConnect -= (Func<OnConnectEventArgs, Task>)item;
         }
         if (OnClose != null)
         {
             var actions = OnClose.GetInvocationList();
-            foreach (var item in actions) OnClose -= (Action<OnCloceEventArgs>)item;
+            foreach (var item in actions) OnClose -= (Func<OnCloceEventArgs, Task>)item;
         }
         if (OnError != null)
         {
             var actions = OnError.GetInvocationList();
-            foreach (var item in actions) OnError -= (Action<OnErrorEventArgs>)item;
+            foreach (var item in actions) OnError -= (Func<OnErrorEventArgs, Task>)item;
         }
         if (OnSend != null)
         {
             var actions = OnSend.GetInvocationList();
-            foreach (var item in actions) OnSend -= (Action<OnSendEventArgs>)item;
+            foreach (var item in actions) OnSend -= (Func<OnSendEventArgs, Task>)item;
         }
         if (OnReceive != null)
         {
             var actions = OnReceive.GetInvocationList();
-            foreach (var item in actions) OnReceive -= (Action<OnReceiveEventArgs>)item;
+            foreach (var item in actions) OnReceive -= (Func<OnReceiveEventArgs, Task>)item;
         }
     }
 }

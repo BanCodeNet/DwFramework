@@ -79,11 +79,10 @@ public sealed class WebSocketService
     /// 断开连接
     /// </summary>
     /// <param name="id"></param>
-    /// <returns></returns>
-    public async Task CloseAsync(string id)
+    public void CloseAsync(string id)
     {
         if (!_connections.ContainsKey(id)) return;
         var connection = _connections[id];
-        await connection.CloseAsync(WebSocketCloseStatus.NormalClosure);
+        connection.Close(WebSocketCloseStatus.NormalClosure);
     }
 }

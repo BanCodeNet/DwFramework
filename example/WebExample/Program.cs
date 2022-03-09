@@ -16,6 +16,14 @@ class Program
 {
     static async Task Main(string[] args)
     {
+        var c = new WebSocketClient(autoReconnect: true);
+        c.OnConnect += async _ => Console.WriteLine(1);
+        c.OnClose += async _ => Console.WriteLine(2);
+        await c.ConnectAsync("ws://127.0.0.1:6431");
+        Console.ReadKey();
+        c.Close();
+        Console.ReadKey();
+
         var host = new ServiceHost();
         var configuration = new ConfigurationBuilder().AddJsonFile("config.json").Build();
         host.ConfigureLogging(builder => builder.UserNLog());
@@ -81,7 +89,7 @@ class Program
         });
         // host.ConfigureSocket(configuration, "tcp");
         // host.ConfigureSocket(configuration, "udp");
-        host.OnHostStarted += p =>
+        host.OnHostStarted += async p =>
         {
             var web = p.GetWebSocket();
             web.OnConnect += async (c, a) => Console.WriteLine($"{c.ID} 建立连接");
