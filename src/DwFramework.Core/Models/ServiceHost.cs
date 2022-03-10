@@ -12,13 +12,16 @@ namespace DwFramework.Core;
 
 public sealed class ServiceHost
 {
+    public event Action<IServiceProvider> OnHostStarted;
+
     private readonly IHostBuilder _hostBuilder;
     private static IHost _host;
+    private HashSet<Type> _commands = new();
 
     public static bool IsDebug { get; private set; }
     public static string EnvironmentType { get; private set; }
+    public static string[] Args { get; private set; }
     public static IServiceProvider ServiceProvider => _host.Services;
-    public event Action<IServiceProvider> OnHostStarted;
 
     /// <summary>
     /// 构造函数
@@ -28,6 +31,9 @@ public sealed class ServiceHost
     /// <param name="args"></param>
     public ServiceHost(bool isDebug = true, string environmentType = null, params string[] args)
     {
+        IsDebug = isDebug;
+        EnvironmentType = environmentType;
+        Args = args;
         _hostBuilder = Host.CreateDefaultBuilder(args).UseServiceProviderFactory(new AutofacServiceProviderFactory());
         if (string.IsNullOrEmpty(environmentType)) environmentType = Environment.GetEnvironmentVariable("ENVIRONMENT_TYPE");
         if (string.IsNullOrEmpty(environmentType)) environmentType = "Development";

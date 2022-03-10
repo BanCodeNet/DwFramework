@@ -1,8 +1,5 @@
 ﻿using System.IO;
 namespace DwFramework.Web;
 
-[AttributeUsage(AttributeTargets.Class)]
-public sealed class RPCAttribute : Attribute
-{
-    public RPCAttribute() { }
-}
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+public sealed class RPCAttribute : Attribute { }

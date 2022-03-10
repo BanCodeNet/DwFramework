@@ -1,8 +1,9 @@
 namespace DwFramework.Core;
 
+[AttributeUsage(AttributeTargets.All, AllowMultiple = false, Inherited = true)]
 public sealed class DescriptionAttribute : Attribute
 {
-    public string Description { get; set; }
+    public string Description { get; init; }
 
     /// <summary>
     /// 构造函数
