@@ -1,4 +1,5 @@
 ﻿using DwFramework.Core;
+using Polly;
 using System.Net.WebSockets;
 
 namespace DwFramework.Web;
@@ -12,7 +13,7 @@ public sealed class WebSocketClient
     public event Func<OnErrorEventArgs, Task> OnError;
 
     private int _bufferSize;
-    private bool _autoReconnect;
+    private int _waitMsAutoReconnect;
     private ClientWebSocket _client;
 
     public WebSocketState State => _client.State;
@@ -20,10 +21,10 @@ public sealed class WebSocketClient
     /// <summary>
     /// 构造函数
     /// </summary>
-    public WebSocketClient(int bufferSize = 4096, bool autoReconnect = false)
+    public WebSocketClient(int bufferSize = 4096, int waitMsAutoReconnect = 0)
     {
         _bufferSize = bufferSize;
-        _autoReconnect = autoReconnect;
+        _waitMsAutoReconnect = waitMsAutoReconnect;
     }
 
     /// <summary>
@@ -38,11 +39,21 @@ public sealed class WebSocketClient
         if (header != null) foreach (var item in header) _client.Options.SetRequestHeader(item.Key, item.Value);
         if (subProtocal != null) foreach (var item in subProtocal) _client.Options.AddSubProtocol(item);
         _client = new ClientWebSocket();
-        await _client.ConnectAsync(new Uri(uri), CancellationToken.None).ContinueWith(a =>
+        await _client.ConnectAsync(new Uri(uri), CancellationToken.None).ContinueWith(async _ =>
         {
-            if (_client.State != WebSocketState.Open) throw new ExceptionBase(ExceptionType.Internal, 0, "无法连接");
+            if (_client.State != WebSocketState.Open)
+            {
+                if (_waitMsAutoReconnect <= 0)
+                    throw new ExceptionBase(DwFramework.Core.ExceptionType.Internal, 0, "无法连接");
+                else
+                {
+                    await Task.Delay(_waitMsAutoReconnect);
+                    await ConnectAsync(uri, header, subProtocal);
+                }
+                return;
+            }
             OnConnect?.Invoke(new OnConnectEventArgs() { });
-            Task.Run(async () =>
+            _ = Task.Run(async () =>
             {
                 var buffer = new byte[_bufferSize];
                 var dataBytes = new List<byte>();
@@ -69,15 +80,12 @@ public sealed class WebSocketClient
                     }
                 }
                 OnClose?.Invoke(new OnCloceEventArgs() { });
-                if (_autoReconnect)
-                {
-                    await ConnectAsync(uri, header, subProtocal);
-                }
-                else
+                if (_waitMsAutoReconnect <= 0)
                 {
                     ClearAllEvent();
                     if (_client.State == WebSocketState.CloseReceived) Close();
                 }
+                else await ConnectAsync(uri, header, subProtocal);
             });
         });
     }
@@ -101,7 +109,7 @@ public sealed class WebSocketClient
     /// </summary>
     public void Close()
     {
-        _autoReconnect = false;
+        _waitMsAutoReconnect = 0;
         _client.CloseAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
     }
 

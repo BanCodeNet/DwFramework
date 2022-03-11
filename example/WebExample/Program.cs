@@ -16,7 +16,7 @@ class Program
 {
     static async Task Main(string[] args)
     {
-        var c = new WebSocketClient(autoReconnect: true);
+        var c = new WebSocketClient(waitMsAutoReconnect: 5000);
         c.OnConnect += async _ => Console.WriteLine(1);
         c.OnClose += async _ => Console.WriteLine(2);
         await c.ConnectAsync("ws://127.0.0.1:6431");
