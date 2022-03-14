@@ -6,13 +6,34 @@ using DwFramework.Core.Encrypt;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using QuartzExample;
+using System.CommandLine;
 namespace CoreExample;
 
 class Program
 {
     static async Task Main(params string[] args)
     {
-        var host = new ServiceHost();
+        var host = new ServiceHost(args: args);
+        host.AddCommand("X", (int a, int c, string b, bool d, FileAccess f) =>
+        {
+            Console.WriteLine($"a = {a},b = {b},c = {c},d = {d},f = {f}");
+        }, new Option[]{
+            new Option<int>(new []{"-a","--aa"},()=>-1,"AA"),
+            new Option<string>(new []{"-b","--bb"},"BB"),
+            new Option<int>(new []{"-c","--cc"},"CC"),
+            new Option<bool>("-d"),
+            new Option<FileAccess>("-f",()=>FileAccess.Write)
+        }, "测试1");
+        // host.AddCommand("Y", (int a, int c, string b, bool d, FileAccess f) =>
+        // {
+        //     Console.WriteLine($"a = {a},b = {b},c = {c},d = {d},f = {f}");
+        // }, new Option[]{
+        //     new Option<int>(new []{"-a","--aa"},()=>-1,"AA"),
+        //     new Option<string>(new []{"-b","--bb"},"BB"),
+        //     new Option<int>(new []{"-c","--cc"},"CC"),
+        //     new Option<bool>("-d"),
+        //     new Option<FileAccess>("-f")
+        // }, "测试2");
         host.ConfigureLogging(builder => builder.UserNLog("NLog.config"));
         host.ConfigureContainer(builder =>
         {

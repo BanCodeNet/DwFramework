@@ -16,22 +16,14 @@ class Program
 {
     static async Task Main(string[] args)
     {
-        var c = new WebSocketClient(waitMsAutoReconnect: 5000);
-        c.OnConnect += async _ => Console.WriteLine(1);
-        c.OnClose += async _ => Console.WriteLine(2);
-        await c.ConnectAsync("ws://127.0.0.1:6431");
-        Console.ReadKey();
-        c.Close();
-        Console.ReadKey();
-
         var host = new ServiceHost();
-        var configuration = new ConfigurationBuilder().AddJsonFile("config.json").Build();
+        host.AddJsonConfiguration("config.json", false, true);
         host.ConfigureLogging(builder => builder.UserNLog());
         host.ConfigureWebHostDefaults(webHostBuilder =>
         {
-            webHostBuilder.UseKestrel(options =>
+            webHostBuilder.UseKestrel((context, options) =>
             {
-                var config = configuration.ParseConfiguration<Config.Http>();
+                var config = context.Configuration.ParseConfiguration<Config.Http>();
                 foreach (var item in config.Listens)
                 {
                     options.Listen(string.IsNullOrEmpty(item.Ip) ? IPAddress.Any : IPAddress.Parse(item.Ip), item.Port, listenOptions =>
