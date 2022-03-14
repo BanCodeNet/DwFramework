@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "DwGoing",
+    "classifications": [
+        "Console"
+    ],
+    "identity": "DwFramework.Templates.SimpleConsole",
+    "name": "DwFramework SimpleConsole模板",
+    "shortName": "dwsimpleconsole",
+    "tags": {
+        "language": "C#",
+        "type": "project"
+    }
+}

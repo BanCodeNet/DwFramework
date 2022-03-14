@@ -24,10 +24,6 @@
             "preLaunchTask": "build",
             "args": [
                 "${input:ProjectName}.dll",
-<<<<<<< HEAD
-=======
-                "--version"
->>>>>>> 727244a2f17b021932420e0b93ad3988a0ae32c4
             ],
             "cwd": "${workspaceFolder}/build/${input:ProjectName}",
             "console": "integratedTerminal",
