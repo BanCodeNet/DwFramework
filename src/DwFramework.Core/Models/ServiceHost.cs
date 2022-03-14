@@ -5,6 +5,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.CommandLine;
+using System.CommandLine.Builder;
+using System.CommandLine.Invocation;
+using System.CommandLine.NamingConventionBinder;
+using System.CommandLine.Parsing;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -14,30 +19,68 @@ public sealed class ServiceHost
 {
     public event Action<IServiceProvider> OnHostStarted;
 
+    private readonly RootCommand _rootCommand = new();
+    private readonly CommandLineBuilder _commandLineBuilder;
+    private readonly Option _environmentTypeOption = new Option<string>(new[] { "-e", "--env" }, () => "Development", "运行环境");
     private readonly IHostBuilder _hostBuilder;
     private static IHost _host;
-    private HashSet<Type> _commands = new();
 
-    public static bool IsDebug { get; private set; }
-    public static string EnvironmentType { get; private set; }
     public static string[] Args { get; private set; }
+    public static string EnvironmentType { get; private set; }
     public static IServiceProvider ServiceProvider => _host.Services;
 
     /// <summary>
     /// 构造函数
     /// </summary>
-    /// <param name="isDebug"></param>
-    /// <param name="environmentType"></param>
     /// <param name="args"></param>
-    public ServiceHost(bool isDebug = true, string environmentType = null, params string[] args)
+    public ServiceHost(params string[] args)
     {
-        IsDebug = isDebug;
-        EnvironmentType = environmentType;
         Args = args;
+        _commandLineBuilder = new CommandLineBuilder(_rootCommand);
         _hostBuilder = Host.CreateDefaultBuilder(args).UseServiceProviderFactory(new AutofacServiceProviderFactory());
-        if (string.IsNullOrEmpty(environmentType)) environmentType = Environment.GetEnvironmentVariable("ENVIRONMENT_TYPE");
-        if (string.IsNullOrEmpty(environmentType)) environmentType = "Development";
-        _hostBuilder.UseEnvironment(environmentType);
+    }
+
+    /// <summary>
+    /// 添加命令
+    /// </summary>
+    /// <param name="action"></param>
+    /// <param name="options"></param>
+    /// <param name="description"></param>
+    /// <returns></returns>
+    public ServiceHost AddCommand(Delegate action, IEnumerable<Option> options = null, string description = null)
+    {
+        _rootCommand.Handler = CommandHandler.Create(action);
+        if (options.Count() > 0) foreach (var item in options) _rootCommand.AddOption(item);
+        return this;
+    }
+
+    /// <summary>
+    /// 添加命令
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="action"></param>
+    /// <param name="options"></param>
+    /// <param name="description"></param>
+    /// <returns></returns>
+    public ServiceHost AddCommand(string name, Delegate action, IEnumerable<Option> options = null, string description = null)
+    {
+        var command = new Command(name, description);
+        command.Handler = CommandHandler.Create(action);
+        if (options.Count() > 0) foreach (var item in options) command.AddOption(item);
+        _rootCommand.Add(command);
+        return this;
+    }
+
+    /// <summary>
+    /// 添加命令
+    /// </summary>
+    /// <param name="middleware"></param>
+    /// <param name="order"></param>
+    /// <returns></returns>
+    public ServiceHost AddMiddleware(InvocationMiddleware middleware, MiddlewareOrder order = MiddlewareOrder.Default)
+    {
+        _commandLineBuilder.AddMiddleware(middleware, order);
+        return this;
     }
 
     /// <summary>
@@ -243,6 +286,20 @@ public sealed class ServiceHost
     /// <returns></returns>
     public async Task RunAsync()
     {
+        _rootCommand.AddOption(_environmentTypeOption);
+        _commandLineBuilder.AddMiddleware(async (context, next) =>
+        {
+            var environmentTypeOption = context.ParseResult.FindResultFor(_environmentTypeOption);
+            EnvironmentType = environmentTypeOption?.GetValueOrDefault<string>();
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ENVIRONMENT_TYPE")))
+                EnvironmentType = Environment.GetEnvironmentVariable("ENVIRONMENT_TYPE");
+            await next(context);
+        });
+        _commandLineBuilder.UseDefaults();
+        var parser = _commandLineBuilder.Build();
+        var result = await parser.InvokeAsync(Args);
+        if (result != 0) return;
+        _hostBuilder.UseEnvironment(EnvironmentType ??= "Development");
         _hostBuilder.UseConsoleLifetime();
         _host = _hostBuilder.Build();
         OnHostStarted?.Invoke(ServiceProvider);

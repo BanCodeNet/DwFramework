@@ -28,7 +28,7 @@ class Program
     }
 }
 
-[Registerable(lifetime: Lifetime.Singleton)]
+[Registerable(Lifetime = Lifetime.Singleton)]
 public class X
 {
 

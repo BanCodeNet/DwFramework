@@ -23,7 +23,7 @@
             "program": "dotnet",
             "preLaunchTask": "build",
             "args": [
-                "${input:ProjectName}.dll"
+                "${input:ProjectName}.dll",
             ],
             "cwd": "${workspaceFolder}/build/${input:ProjectName}",
             "console": "integratedTerminal",
