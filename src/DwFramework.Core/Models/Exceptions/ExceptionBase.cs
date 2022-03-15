@@ -13,7 +13,7 @@ public class ExceptionBase : Exception
     /// <param name="message"></param>
     /// <param name="innerException"></param>
     /// <returns></returns>
-    public ExceptionBase(ExceptionType type, int code = 0, string message = null, Exception innerException = null) : base(message, innerException)
+    public ExceptionBase(ExceptionType type, int code = 0, string? message = null, Exception? innerException = null) : base(message, innerException)
     {
         Code = (int)type + code;
         Message = $"{type.GetDescription()}{(string.IsNullOrEmpty(message) ? "" : $": {message}")}";

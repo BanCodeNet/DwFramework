@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Text.RegularExpressions;
+using System.Timers;
 
 namespace DwFramework.Core.Cache;
 
@@ -28,15 +29,16 @@ public sealed class MemoryCacheStore
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="args"></param>
-    private void CleanExpireData(object sender, EventArgs args)
+    private void CleanExpireData(object? sender, ElapsedEventArgs e)
     {
         if (_isCleaning) return;
         var currentTime = DateTime.UtcNow;
         _isCleaning = true;
-        var keys = _datas.Keys;
+        var keys = (_datas ?? throw new ExceptionBase(ExceptionType.Internal, 0, "未初始化")).Keys;
         foreach (var item in keys)
         {
-            var data = (MemoryCacheData)_datas[item];
+            var data = (MemoryCacheData?)_datas[item];
+            if (data == null) continue;
             if (data.IsExpired) Del((string)item);
         };
         _isCleaning = false;
@@ -84,9 +86,9 @@ public sealed class MemoryCacheStore
     /// </summary>
     /// <param name="key"></param>
     /// <returns></returns>
-    public object Get(string key)
+    public object? Get(string key)
     {
-        var data = (MemoryCacheData)_datas[key];
+        var data = (MemoryCacheData?)_datas[key];
         if (data == null) return null;
         if (data.IsExpired)
         {
@@ -102,7 +104,7 @@ public sealed class MemoryCacheStore
     /// <typeparam name="T"></typeparam>
     /// <param name="key"></param>
     /// <returns></returns>
-    public T Get<T>(string key) where T : class
+    public T? Get<T>(string key) where T : class
     {
         var value = Get(key);
         if (value == null) return default;
@@ -151,9 +153,9 @@ public sealed class MemoryCacheStore
     /// <param name="value"></param>
     public void HSet(string key, string field, object value)
     {
-        var data = (MemoryCacheData)_datas[key];
+        var data = (MemoryCacheData?)_datas[key];
         if (data == null) data = new MemoryCacheData(key, Hashtable.Synchronized(new Hashtable()));
-        (data.Value as Hashtable).Add(field, value);
+        (data.Value as Hashtable)?.Add(field, value);
         _datas[data.Key] = data;
     }
 
@@ -164,12 +166,13 @@ public sealed class MemoryCacheStore
     /// <param name="key"></param>
     /// <param name="field"></param>
     /// <returns></returns>
-    public T HGet<T>(string key, string field)
+    public T? HGet<T>(string key, string field)
     {
         var table = Get<Hashtable>(key);
         if (table == null) return default;
-        if (!table.ContainsKey(field) || table[field].GetType() is T) return default;
-        return (T)table[field];
+        if (!table.ContainsKey(field) || table[field]?.GetType() is T) return default;
+        var obj = table[field];
+        return obj == null ? default : (T)obj;
     }
 
     /// <summary>
@@ -177,12 +180,12 @@ public sealed class MemoryCacheStore
     /// </summary>
     /// <param name="key"></param>
     /// <returns></returns>
-    public Dictionary<string, object> HGetAll(string key)
+    public Dictionary<string, object>? HGetAll(string key)
     {
         var table = Get<Hashtable>(key);
         if (table == null) return default;
         var dic = new Dictionary<string, object>();
-        foreach (var item in table) dic.Add((string)((DictionaryEntry)item).Key, ((DictionaryEntry)item).Value);
+        foreach (var item in table) dic.Add((string)((DictionaryEntry)item).Key, ((DictionaryEntry)item));
         return dic;
     }
 
@@ -205,7 +208,7 @@ public sealed class MemoryCacheStore
     /// <param name="expireAt"></param>
     public void SetExpireTime(string key, DateTime expireAt)
     {
-        var data = (MemoryCacheData)_datas[key];
+        var data = (MemoryCacheData?)_datas[key];
         if (data == null) return;
         data.SetExpireTime(expireAt);
     }
@@ -217,7 +220,7 @@ public sealed class MemoryCacheStore
     /// <param name="expireTime"></param>
     public void SetExpireTime(string key, TimeSpan expireTime)
     {
-        var data = (MemoryCacheData)_datas[key];
+        var data = (MemoryCacheData?)_datas[key];
         if (data == null) return;
         data.SetExpireTime(expireTime);
     }

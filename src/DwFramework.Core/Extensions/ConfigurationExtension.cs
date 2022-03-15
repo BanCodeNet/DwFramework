@@ -11,7 +11,7 @@ public static class ConfigurationExtension
     /// <param name="configuration"></param>
     /// <param name="path"></param>
     /// <returns></returns>
-    public static IConfiguration GetConfiguration(this IConfiguration configuration, string path = null)
+    public static IConfiguration? GetConfiguration(this IConfiguration? configuration, string? path = null)
         => configuration == null || string.IsNullOrEmpty(path) ? configuration : configuration.GetSection(path);
 
     /// <summary>
@@ -21,7 +21,7 @@ public static class ConfigurationExtension
     /// <param name="path"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static T ParseConfiguration<T>(this IConfiguration configuration, string path = null)
+    public static T ParseConfiguration<T>(this IConfiguration? configuration, string? path = null)
         => configuration.GetConfiguration(path).Get<T>();
 
     /// <summary>
@@ -30,8 +30,8 @@ public static class ConfigurationExtension
     /// <param name="provider"></param>
     /// <param name="path"></param>
     /// <returns></returns>
-    public static IConfiguration GetConfiguration(this IServiceProvider provider, string path = null)
-        => provider.GetService<IConfiguration>().GetConfiguration(path);
+    public static IConfiguration? GetConfiguration(this IServiceProvider provider, string? path = null)
+        => provider.GetService<IConfiguration>()?.GetConfiguration(path);
 
     /// <summary>
     /// 解析配置
@@ -40,6 +40,6 @@ public static class ConfigurationExtension
     /// <param name="path"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static T ParseConfiguration<T>(this IServiceProvider provider, string path = null)
+    public static T? ParseConfiguration<T>(this IServiceProvider provider, string? path = null)
         => provider.GetConfiguration(path).ParseConfiguration<T>();
 }

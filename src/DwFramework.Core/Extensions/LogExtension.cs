@@ -54,7 +54,7 @@ public static class LogExtension
     /// <param name="provider"></param>
     /// <typeparam name="ILoggerFactory"></typeparam>
     /// <returns></returns>
-    public static ILoggerFactory GetLoggerFactory(this IServiceProvider provider) => provider.GetService<ILoggerFactory>();
+    public static ILoggerFactory? GetLoggerFactory(this IServiceProvider provider) => provider.GetService<ILoggerFactory>();
 
     /// <summary>
     /// 获取Logger
@@ -62,7 +62,7 @@ public static class LogExtension
     /// <param name="provider"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static ILogger<T> GetLogger<T>(this IServiceProvider provider)
+    public static ILogger<T>? GetLogger<T>(this IServiceProvider provider)
         => provider.GetService<ILogger<T>>();
 
     /// <summary>
@@ -71,8 +71,8 @@ public static class LogExtension
     /// <param name="provider"></param>
     /// <param name="type"></param>
     /// <returns></returns>
-    public static ILogger GetLogger(this IServiceProvider provider, Type type)
-        => provider.GetLoggerFactory().CreateLogger(type);
+    public static ILogger? GetLogger(this IServiceProvider provider, Type type)
+        => provider.GetLoggerFactory()?.CreateLogger(type);
 
     /// <summary>
     /// 获取Logger
@@ -80,6 +80,6 @@ public static class LogExtension
     /// <param name="provider"></param>
     /// <param name="name"></param>
     /// <returns></returns>
-    public static ILogger GetLogger(this IServiceProvider provider, string name)
-        => provider.GetLoggerFactory().CreateLogger(name);
+    public static ILogger? GetLogger(this IServiceProvider provider, string name)
+        => provider.GetLoggerFactory()?.CreateLogger(name);
 }

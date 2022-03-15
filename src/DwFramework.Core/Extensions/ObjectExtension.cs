@@ -14,7 +14,7 @@ public static class ObjectExtension
     /// <param name="type"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public static string ToJson(this object obj, Type type, JsonSerializerOptions options = null)
+    public static string ToJson(this object obj, Type type, JsonSerializerOptions? options = null)
         => JsonSerializer.Serialize(obj, type, options);
 
     /// <summary>
@@ -24,7 +24,7 @@ public static class ObjectExtension
     /// <param name="obj"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public static string ToJson<T>(this T obj, JsonSerializerOptions options = null)
+    public static string ToJson<T>(this T obj, JsonSerializerOptions? options = null)
         => JsonSerializer.Serialize(obj, options);
 
     /// <summary>
@@ -35,7 +35,7 @@ public static class ObjectExtension
     /// <param name="encoding"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public static byte[] ToJsonBytes(this object obj, Type type, Encoding encoding = null, JsonSerializerOptions options = null)
+    public static byte[] ToJsonBytes(this object obj, Type type, Encoding? encoding = null, JsonSerializerOptions? options = null)
     {
         encoding ??= Encoding.UTF8;
         var json = obj.ToJson(type, options);
@@ -50,11 +50,11 @@ public static class ObjectExtension
     /// <param name="encoding"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public static byte[] ToJsonBytes<T>(this T obj, Encoding encoding = null, JsonSerializerOptions options = null)
+    public static byte[]? ToJsonBytes<T>(this T obj, Encoding? encoding = null, JsonSerializerOptions? options = null)
     {
         encoding ??= Encoding.UTF8;
-        var json = obj.ToJson(typeof(T), options);
-        return encoding.GetBytes(json);
+        var json = obj?.ToJson(typeof(T), options);
+        return encoding?.GetBytes(json == null ? string.Empty : json);
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ public static class ObjectExtension
     /// <param name="type"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public static object FromJson(this string json, Type type, JsonSerializerOptions options = null)
+    public static object? FromJson(this string json, Type type, JsonSerializerOptions? options = null)
         => JsonSerializer.Deserialize(json, type, options);
 
     /// <summary>
@@ -74,7 +74,7 @@ public static class ObjectExtension
     /// <param name="json"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public static T FromJson<T>(this string json, JsonSerializerOptions options = null)
+    public static T? FromJson<T>(this string json, JsonSerializerOptions? options = null)
         => JsonSerializer.Deserialize<T>(json, options);
 
     /// <summary>
@@ -85,7 +85,7 @@ public static class ObjectExtension
     /// <param name="encoding"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public static object FromJsonBytes(this byte[] bytes, Type type, Encoding encoding = null, JsonSerializerOptions options = null)
+    public static object? FromJsonBytes(this byte[] bytes, Type type, Encoding? encoding = null, JsonSerializerOptions? options = null)
     {
         encoding ??= Encoding.UTF8;
         var json = encoding.GetString(bytes);
@@ -100,7 +100,7 @@ public static class ObjectExtension
     /// <param name="encoding"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public static T FromJsonBytes<T>(this byte[] bytes, Encoding encoding = null, JsonSerializerOptions options = null)
+    public static T? FromJsonBytes<T>(this byte[] bytes, Encoding? encoding = null, JsonSerializerOptions? options = null)
     {
         encoding ??= Encoding.UTF8;
         var json = encoding.GetString(bytes);
@@ -114,7 +114,7 @@ public static class ObjectExtension
     /// <param name="type"></param>
     /// <param name="encoding"></param>
     /// <returns></returns>
-    public static string ToXml(this object obj, Type type, Encoding encoding = null)
+    public static string ToXml(this object obj, Type type, Encoding? encoding = null)
     {
         encoding ??= Encoding.UTF8;
         return encoding.GetString(obj.ToXmlBytes(type, encoding));
@@ -127,8 +127,8 @@ public static class ObjectExtension
     /// <param name="obj"></param>
     /// <param name="encoding"></param>
     /// <returns></returns>
-    public static string ToXml<T>(this T obj, Encoding encoding = null)
-        => obj.ToXml(typeof(T), encoding);
+    public static string? ToXml<T>(this T obj, Encoding? encoding = null)
+        => obj?.ToXml(typeof(T), encoding);
 
     /// <summary>
     /// 序列化
@@ -137,7 +137,7 @@ public static class ObjectExtension
     /// <param name="type"></param>
     /// <param name="encoding"></param>
     /// <returns></returns>
-    public static byte[] ToXmlBytes(this object obj, Type type, Encoding encoding = null)
+    public static byte[] ToXmlBytes(this object obj, Type type, Encoding? encoding = null)
     {
         encoding ??= Encoding.UTF8;
         using var output = new MemoryStream();
@@ -154,8 +154,8 @@ public static class ObjectExtension
     /// <param name="obj"></param>
     /// <param name="encoding"></param>
     /// <returns></returns>
-    public static byte[] ToXmlBytes<T>(this T obj, Encoding encoding = null)
-        => obj.ToXmlBytes(typeof(T), encoding);
+    public static byte[]? ToXmlBytes<T>(this T obj, Encoding? encoding = null)
+        => obj?.ToXmlBytes(typeof(T), encoding);
 
     /// <summary>
     /// 反序列化
@@ -164,7 +164,7 @@ public static class ObjectExtension
     /// <param name="type"></param>
     /// <param name="encoding"></param>
     /// <returns></returns>
-    public static object FromXml(this string xml, Type type, Encoding encoding = null)
+    public static object? FromXml(this string xml, Type type, Encoding? encoding = null)
     {
         encoding ??= Encoding.UTF8;
         return encoding.GetBytes(xml).FromXmlBytes(type);
@@ -177,8 +177,11 @@ public static class ObjectExtension
     /// <param name="xml"></param>
     /// <param name="encoding"></param>
     /// <returns></returns>
-    public static T FromXml<T>(this string xml, Encoding encoding = null)
-        => (T)xml.FromXml(typeof(T), encoding);
+    public static T? FromXml<T>(this string xml, Encoding? encoding = null)
+    {
+        var obj = xml.FromXml(typeof(T), encoding);
+        return obj == null ? default : (T)obj;
+    }
 
     /// <summary>
     /// 反序列化
@@ -186,7 +189,7 @@ public static class ObjectExtension
     /// <param name="bytes"></param>
     /// <param name="type"></param>
     /// <returns></returns>
-    public static object FromXmlBytes(this byte[] bytes, Type type)
+    public static object? FromXmlBytes(this byte[] bytes, Type type)
     {
         using var input = new MemoryStream(bytes);
         var serializer = new XmlSerializer(type);
@@ -199,6 +202,9 @@ public static class ObjectExtension
     /// <typeparam name="T"></typeparam>
     /// <param name="bytes"></param>
     /// <returns></returns>
-    public static T FromXmlBytes<T>(this byte[] bytes)
-        => (T)bytes.FromXmlBytes(typeof(T));
+    public static T? FromXmlBytes<T>(this byte[] bytes)
+    {
+        var obj = bytes.FromXmlBytes(typeof(T));
+        return obj == null ? default : (T)obj;
+    }
 }

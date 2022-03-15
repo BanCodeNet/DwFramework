@@ -64,7 +64,7 @@ public sealed class MemoryCache : ICache
     /// </summary>
     /// <param name="key"></param>
     /// <returns></returns>
-    public object Get(string key)
+    public object? Get(string key)
     {
         return GetMemoryCacheStore(key).Get(key);
     }
@@ -75,7 +75,7 @@ public sealed class MemoryCache : ICache
     /// <typeparam name="T"></typeparam>
     /// <param name="key"></param>
     /// <returns></returns>
-    public T Get<T>(string key) where T : class
+    public T? Get<T>(string key) where T : class
     {
         return GetMemoryCacheStore(key).Get<T>(key);
     }
@@ -130,7 +130,7 @@ public sealed class MemoryCache : ICache
     /// <param name="key"></param>
     /// <param name="field"></param>
     /// <returns></returns>
-    public T HGet<T>(string key, string field)
+    public T? HGet<T>(string key, string field)
     {
         return GetMemoryCacheStore(key).HGet<T>(key, field);
     }
@@ -141,7 +141,7 @@ public sealed class MemoryCache : ICache
     /// <typeparam name="T"></typeparam>
     /// <param name="key"></param>
     /// <returns></returns>
-    public Dictionary<string, object> HGetAll(string key)
+    public Dictionary<string, object>? HGetAll(string key)
     {
         return GetMemoryCacheStore(key).HGetAll(key);
     }

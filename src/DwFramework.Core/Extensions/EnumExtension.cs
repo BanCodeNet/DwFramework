@@ -8,7 +8,7 @@ public static class EnumExtension
     /// <param name="value"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static string GetDescription<T>(this T value) where T : Enum
+    public static string? GetDescription<T>(this T value) where T : Enum
     {
         if (value is null) throw new ExceptionBase(ExceptionType.Parameter);
         var enumType = typeof(T);

@@ -11,9 +11,9 @@ public static class SHA
     /// <param name="type"></param>
     /// <param name="data"></param>
     /// <returns></returns>
-    public static string Encode(SHAType type, byte[] data)
+    public static string? Encode(SHAType type, byte[] data)
     {
-        byte[] bytes = null;
+        byte[]? bytes = null;
         switch (type)
         {
             case SHAType.SHA1:

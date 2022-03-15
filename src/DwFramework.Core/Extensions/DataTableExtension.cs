@@ -12,7 +12,7 @@ public static class DataTableExtension
     /// <param name="convertFunc"></param>
     /// <param name="properyFunc"></param>
     /// <returns></returns>
-    public static T[] ToArray<T>(this DataTable dataTable, Dictionary<Type, Func<object, object>> convertFunc = null, Dictionary<string, Func<object, object>> propertyFunc = null)
+    public static T[] ToArray<T>(this DataTable dataTable, Dictionary<Type, Func<object, object>>? convertFunc = null, Dictionary<string, Func<object, object>>? propertyFunc = null)
     {
         var arr = new T[dataTable.Rows.Count];
         var properties = typeof(T).GetProperties();
