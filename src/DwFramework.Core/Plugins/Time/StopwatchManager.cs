@@ -47,7 +47,7 @@ public static class StopwatchManager
     /// <param name="tag"></param>
     /// <param name="startTime"></param>
     /// <returns></returns>
-    public static string Create(string tag = null, DateTime? startTime = null)
+    public static string Create(string? tag = null, DateTime? startTime = null)
     {
         tag ??= Guid.NewGuid().ToString();
         startTime ??= DateTime.UtcNow;
@@ -120,7 +120,7 @@ public static class StopwatchManager
     public static async Task<long> ExecuteReturnMillisecondsAsync(Func<Task> action)
     {
         var tag = Create();
-        await action?.Invoke();
+        await action.Invoke();
         var ms = GetTotalMilliseconds(tag);
         Remove(tag);
         return ms;
@@ -134,7 +134,7 @@ public static class StopwatchManager
     public static long ExecuteReturnSeconds(Action action)
     {
         var tag = Create();
-        action?.Invoke();
+        action.Invoke();
         var sec = GetTotalSeconds(tag);
         Remove(tag);
         return sec;
@@ -148,7 +148,7 @@ public static class StopwatchManager
     public static async Task<long> ExecuteReturnSecondsAsync(Func<Task> action)
     {
         var tag = Create();
-        await action?.Invoke();
+        await action.Invoke();
         var sec = GetTotalSeconds(tag);
         Remove(tag);
         return sec;
