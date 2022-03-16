@@ -10,13 +10,13 @@ public static class MD5
     /// <param name="type"></param>
     /// <param name="data"></param>
     /// <returns></returns>
-    public static string Encode(MD5Type type, byte[] data)
+    public static string? Encode(MD5Type type, byte[] data)
     {
         using var md5 = System.Security.Cryptography.MD5.Create();
         var bytes = md5.ComputeHash(data);
         var builder = new StringBuilder();
         for (int i = 0; i < bytes.Length; i++) builder.Append(bytes[i].ToString("x2"));
-        string result = null;
+        string? result = null;
         switch (type)
         {
             case MD5Type.MD5_16:

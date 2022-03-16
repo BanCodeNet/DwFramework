@@ -26,5 +26,5 @@ public static class GeneratorExtension
     /// <param name="provider"></param>
     /// <typeparam name="SnowflakeGenerator"></typeparam>
     /// <returns></returns>
-    public static SnowflakeGenerator GetSnowflakeGenerator(this IServiceProvider provider) => provider.GetService<SnowflakeGenerator>();
+    public static SnowflakeGenerator? GetSnowflakeGenerator(this IServiceProvider provider) => provider.GetService<SnowflakeGenerator>();
 }

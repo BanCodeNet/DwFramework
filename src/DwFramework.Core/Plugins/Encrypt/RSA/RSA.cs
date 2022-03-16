@@ -203,21 +203,21 @@ public static class RSA
 
         var privatElement = new XElement("RSAKeyValue");
         //Modulus
-        var primodulus = new XElement("Modulus", rsap.Modulus.ToBase64());
+        var primodulus = new XElement("Modulus", rsap.Modulus?.ToBase64());
         //Exponent
-        var priexponent = new XElement("Exponent", rsap.Exponent.ToBase64());
+        var priexponent = new XElement("Exponent", rsap.Exponent?.ToBase64());
         //P
-        var prip = new XElement("P", rsap.P.ToBase64());
+        var prip = new XElement("P", rsap.P?.ToBase64());
         //Q
-        var priq = new XElement("Q", rsap.Q.ToBase64());
+        var priq = new XElement("Q", rsap.Q?.ToBase64());
         //DP
-        var pridp = new XElement("DP", rsap.DP.ToBase64());
+        var pridp = new XElement("DP", rsap.DP?.ToBase64());
         //DQ
-        var pridq = new XElement("DQ", rsap.DQ.ToBase64());
+        var pridq = new XElement("DQ", rsap.DQ?.ToBase64());
         //InverseQ
-        var priinverseQ = new XElement("InverseQ", rsap.InverseQ.ToBase64());
+        var priinverseQ = new XElement("InverseQ", rsap.InverseQ?.ToBase64());
         //D
-        var prid = new XElement("D", rsap.D.ToBase64());
+        var prid = new XElement("D", rsap.D?.ToBase64());
 
         privatElement.Add(primodulus);
         privatElement.Add(priexponent);
@@ -230,9 +230,9 @@ public static class RSA
 
         var publicElement = new XElement("RSAKeyValue");
         //Modulus
-        var pubmodulus = new XElement("Modulus", rsap.Modulus.ToBase64());
+        var pubmodulus = new XElement("Modulus", rsap.Modulus?.ToBase64());
         //Exponent
-        var pubexponent = new XElement("Exponent", rsap.Exponent.ToBase64());
+        var pubexponent = new XElement("Exponent", rsap.Exponent?.ToBase64());
 
         publicElement.Add(pubmodulus);
         publicElement.Add(pubexponent);
@@ -252,7 +252,7 @@ public static class RSA
         var kp = pr.ReadObject() as AsymmetricCipherKeyPair;
         using var sw = new StringWriter();
         var pWrt = new PemWriter(sw);
-        var pkcs8 = new Pkcs8Generator(kp.Private);
+        var pkcs8 = new Pkcs8Generator(kp?.Private);
         pWrt.WriteObject(pkcs8);
         pWrt.Writer.Close();
         return usePem ? sw.ToString() : DisablePrivateKeyPkcs8Pem(sw.ToString());
@@ -380,14 +380,14 @@ public static class RSA
         //D
         var d = root.Element("D");
         var rsaPrivateCrtKeyParameters = new RsaPrivateCrtKeyParameters(
-            new BigInteger(1, modulus.Value.FromBase64()),
-            new BigInteger(1, exponent.Value.FromBase64()),
-            new BigInteger(1, d.Value.FromBase64()),
-            new BigInteger(1, p.Value.FromBase64()),
-            new BigInteger(1, q.Value.FromBase64()),
-            new BigInteger(1, dp.Value.FromBase64()),
-            new BigInteger(1, dq.Value.FromBase64()),
-            new BigInteger(1, inverseQ.Value.FromBase64())
+            new BigInteger(1, modulus?.Value.FromBase64()),
+            new BigInteger(1, exponent?.Value.FromBase64()),
+            new BigInteger(1, d?.Value.FromBase64()),
+            new BigInteger(1, p?.Value.FromBase64()),
+            new BigInteger(1, q?.Value.FromBase64()),
+            new BigInteger(1, dp?.Value.FromBase64()),
+            new BigInteger(1, dq?.Value.FromBase64()),
+            new BigInteger(1, inverseQ?.Value.FromBase64())
         );
         using var sw = new StringWriter();
         var pWrt = new PemWriter(sw);
@@ -421,14 +421,14 @@ public static class RSA
         //D
         var d = root.Element("D");
         var rsaPrivateCrtKeyParameters = new RsaPrivateCrtKeyParameters(
-            new BigInteger(1, modulus.Value.FromBase64()),
-            new BigInteger(1, exponent.Value.FromBase64()),
-            new BigInteger(1, d.Value.FromBase64()),
-            new BigInteger(1, p.Value.FromBase64()),
-            new BigInteger(1, q.Value.FromBase64()),
-            new BigInteger(1, dp.Value.FromBase64()),
-            new BigInteger(1, dq.Value.FromBase64()),
-            new BigInteger(1, inverseQ.Value.FromBase64())
+            new BigInteger(1, modulus?.Value.FromBase64()),
+            new BigInteger(1, exponent?.Value.FromBase64()),
+            new BigInteger(1, d?.Value.FromBase64()),
+            new BigInteger(1, p?.Value.FromBase64()),
+            new BigInteger(1, q?.Value.FromBase64()),
+            new BigInteger(1, dp?.Value.FromBase64()),
+            new BigInteger(1, dq?.Value.FromBase64()),
+            new BigInteger(1, inverseQ?.Value.FromBase64())
         );
         using var swpri = new StringWriter();
         var pWrtpri = new PemWriter(swpri);
@@ -472,7 +472,7 @@ public static class RSA
         var modulus = root.Element("Modulus");
         //Exponent
         var exponent = root.Element("Exponent");
-        var rsaKeyParameters = new RsaKeyParameters(false, new BigInteger(1, modulus.Value.FromBase64()), new BigInteger(1, exponent.Value.FromBase64()));
+        var rsaKeyParameters = new RsaKeyParameters(false, new BigInteger(1, modulus?.Value.FromBase64()), new BigInteger(1, exponent?.Value.FromBase64()));
         using var sw = new StringWriter();
         var pWrt = new PemWriter(sw);
         pWrt.WriteObject(rsaKeyParameters);
@@ -554,8 +554,8 @@ public static class RSA
                 var modulus = root.Element("Modulus");
                 //Exponent
                 var exponent = root.Element("Exponent");
-                rsap.Modulus = modulus.Value.FromBase64();
-                rsap.Exponent = exponent.Value.FromBase64();
+                rsap.Modulus = modulus?.Value.FromBase64();
+                rsap.Exponent = exponent?.Value.FromBase64();
                 rsa.ImportParameters(rsap);
                 break;
         }
@@ -600,14 +600,14 @@ public static class RSA
                 var inverseQ = root.Element("InverseQ");
                 //D
                 var d = root.Element("D");
-                rsap.Modulus = modulus.Value.FromBase64();
-                rsap.Exponent = exponent.Value.FromBase64();
-                rsap.P = p.Value.FromBase64();
-                rsap.Q = q.Value.FromBase64();
-                rsap.DP = dp.Value.FromBase64();
-                rsap.DQ = dq.Value.FromBase64();
-                rsap.InverseQ = inverseQ.Value.FromBase64();
-                rsap.D = d.Value.FromBase64();
+                rsap.Modulus = modulus?.Value.FromBase64();
+                rsap.Exponent = exponent?.Value.FromBase64();
+                rsap.P = p?.Value.FromBase64();
+                rsap.Q = q?.Value.FromBase64();
+                rsap.DP = dp?.Value.FromBase64();
+                rsap.DQ = dq?.Value.FromBase64();
+                rsap.InverseQ = inverseQ?.Value.FromBase64();
+                rsap.D = d?.Value.FromBase64();
                 rsa.ImportParameters(rsap);
                 break;
         }
@@ -653,14 +653,14 @@ public static class RSA
                 var inverseQ = root.Element("InverseQ");
                 //D
                 var d = root.Element("D");
-                rsap.Modulus = modulus.Value.FromBase64();
-                rsap.Exponent = exponent.Value.FromBase64();
-                rsap.P = p.Value.FromBase64();
-                rsap.Q = q.Value.FromBase64();
-                rsap.DP = dp.Value.FromBase64();
-                rsap.DQ = dq.Value.FromBase64();
-                rsap.InverseQ = inverseQ.Value.FromBase64();
-                rsap.D = d.Value.FromBase64();
+                rsap.Modulus = modulus?.Value.FromBase64();
+                rsap.Exponent = exponent?.Value.FromBase64();
+                rsap.P = p?.Value.FromBase64();
+                rsap.Q = q?.Value.FromBase64();
+                rsap.DP = dp?.Value.FromBase64();
+                rsap.DQ = dq?.Value.FromBase64();
+                rsap.InverseQ = inverseQ?.Value.FromBase64();
+                rsap.D = d?.Value.FromBase64();
                 rsa.ImportParameters(rsap);
                 break;
         }

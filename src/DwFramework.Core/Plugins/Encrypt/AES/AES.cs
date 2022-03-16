@@ -14,7 +14,7 @@ public static class AES
     /// <param name="mode"></param>
     /// <param name="padding"></param>
     /// <returns></returns>
-    public static byte[] Encrypt(AESType type, byte[] data, byte[] key, byte[] iv = null, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.None)
+    public static byte[] Encrypt(AESType type, byte[] data, byte[] key, byte[]? iv = null, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.None)
     {
         if (data == null || data.Length <= 0) throw new ExceptionBase(ExceptionType.Parameter, 0, "data为空");
         if (key == null) throw new ExceptionBase(ExceptionType.Parameter, 0, "key为空");
@@ -40,7 +40,7 @@ public static class AES
     /// <param name="mode"></param>
     /// <param name="padding"></param>
     /// <returns></returns>
-    public static byte[] Decrypt(AESType type, byte[] data, byte[] key, byte[] iv = null, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.None)
+    public static byte[] Decrypt(AESType type, byte[] data, byte[] key, byte[]? iv = null, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.None)
     {
         if (data == null || data.Length <= 0) throw new ExceptionBase(ExceptionType.Parameter, 0, "data为空");
         if (key == null) throw new ExceptionBase(ExceptionType.Parameter, 0, "key为空");

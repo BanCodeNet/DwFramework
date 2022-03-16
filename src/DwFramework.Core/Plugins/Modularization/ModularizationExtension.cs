@@ -11,6 +11,6 @@ public static class ModularizationExtension
     /// <param name="modulePath"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static ServiceHost ImportModule<T>(this ServiceHost host, string modulePath)
+    public static ServiceHost ImportModule<T>(this ServiceHost host, string modulePath) where T : notnull
         => host.ConfigureContainer(builder => builder.Register(_ => ModuleManager.LoadModule<T>(modulePath)));
 }

@@ -6,8 +6,8 @@ public static class ModuleManager
 {
     private sealed class ModuleInfo
     {
-        public string Path { get; set; }
-        public object Instance { get; set; }
+        public string? Path { get; set; }
+        public object? Instance { get; set; }
     }
 
     private static Dictionary<Type, ModuleInfo> _loadedModules = new();
@@ -21,7 +21,12 @@ public static class ModuleManager
     public static T LoadModule<T>(string modulePath)
     {
         var moduleType = typeof(T);
-        if (_loadedModules.ContainsKey(moduleType)) return (T)_loadedModules[moduleType].Instance;
+        if (_loadedModules.ContainsKey(moduleType))
+        {
+            var instance = _loadedModules[moduleType].Instance;
+            if (instance != null) return (T)instance;
+            else _loadedModules.Remove(moduleType);
+        }
         if (File.Exists(modulePath))
         {
             var loadContext = new ModuleLoadContext(modulePath);
@@ -53,9 +58,13 @@ public static class ModuleManager
     {
         var moduleType = typeof(T);
         if (!_loadedModules.ContainsKey(moduleType)) return;
-        var loadContext = new ModuleLoadContext(_loadedModules[moduleType].Path);
-        loadContext.Unloading += context => _loadedModules.Remove(moduleType);
-        loadContext.Unload();
+        var path = _loadedModules[moduleType].Path;
+        if (!string.IsNullOrEmpty(path))
+        {
+            var loadContext = new ModuleLoadContext(path);
+            loadContext.Unload();
+        }
+        _loadedModules.Remove(moduleType);
     }
 
     /// <summary>
@@ -65,9 +74,13 @@ public static class ModuleManager
     {
         foreach (var item in _loadedModules)
         {
-            var loadContext = new ModuleLoadContext(item.Value.Path);
-            loadContext.Unloading += context => _loadedModules.Remove(item.Key);
-            loadContext.Unload();
+            var path = item.Value.Path;
+            if (!string.IsNullOrEmpty(path))
+            {
+                var loadContext = new ModuleLoadContext(path);
+                loadContext.Unload();
+            }
+            _loadedModules.Remove(item.Key);
         }
     }
 }

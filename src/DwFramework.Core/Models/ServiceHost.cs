@@ -1,15 +1,11 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using CommandLine;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System.CommandLine;
-using System.CommandLine.Builder;
-using System.CommandLine.Invocation;
-using System.CommandLine.NamingConventionBinder;
-using System.CommandLine.Parsing;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -17,17 +13,14 @@ namespace DwFramework.Core;
 
 public sealed class ServiceHost
 {
-    public event Action<IServiceProvider> OnHostStarted;
-
-    private readonly RootCommand _rootCommand = new();
-    private readonly CommandLineBuilder _commandLineBuilder;
-    private readonly Option _environmentTypeOption = new Option<string>(new[] { "-e", "--env" }, () => "Development", "运行环境");
+    private readonly Dictionary<Type, Delegate> _options = new();
     private readonly IHostBuilder _hostBuilder;
-    private static IHost _host;
+    private static IHost? _host;
 
-    public static string[] Args { get; private set; }
-    public static string EnvironmentType { get; private set; }
-    public static IServiceProvider ServiceProvider => _host.Services;
+    public static string[]? Args { get; private set; }
+    public static string? EnvironmentType { get; private set; }
+    public static IServiceProvider? ServiceProvider => _host?.Services;
+    public event Action<IServiceProvider> OnHostStarted;
 
     /// <summary>
     /// 构造函数
@@ -36,50 +29,19 @@ public sealed class ServiceHost
     public ServiceHost(params string[] args)
     {
         Args = args;
-        _commandLineBuilder = new CommandLineBuilder(_rootCommand);
         _hostBuilder = Host.CreateDefaultBuilder(args).UseServiceProviderFactory(new AutofacServiceProviderFactory());
+        OnHostStarted += _ => { };
     }
 
     /// <summary>
     /// 添加命令
     /// </summary>
     /// <param name="action"></param>
-    /// <param name="options"></param>
-    /// <param name="description"></param>
+    /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public ServiceHost AddCommand(Delegate action, IEnumerable<Option> options = null, string description = null)
+    public ServiceHost AddOptions<T>(Action<T> action) where T : OptionsBase
     {
-        _rootCommand.Handler = CommandHandler.Create(action);
-        if (options.Count() > 0) foreach (var item in options) _rootCommand.AddOption(item);
-        return this;
-    }
-
-    /// <summary>
-    /// 添加命令
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="action"></param>
-    /// <param name="options"></param>
-    /// <param name="description"></param>
-    /// <returns></returns>
-    public ServiceHost AddCommand(string name, Delegate action, IEnumerable<Option> options = null, string description = null)
-    {
-        var command = new Command(name, description);
-        command.Handler = CommandHandler.Create(action);
-        if (options.Count() > 0) foreach (var item in options) command.AddOption(item);
-        _rootCommand.Add(command);
-        return this;
-    }
-
-    /// <summary>
-    /// 添加命令
-    /// </summary>
-    /// <param name="middleware"></param>
-    /// <param name="order"></param>
-    /// <returns></returns>
-    public ServiceHost AddMiddleware(InvocationMiddleware middleware, MiddlewareOrder order = MiddlewareOrder.Default)
-    {
-        _commandLineBuilder.AddMiddleware(middleware, order);
+        _options[typeof(T)] = action;
         return this;
     }
 
@@ -245,7 +207,7 @@ public sealed class ServiceHost
     /// </summary>
     /// <param name="assembly"></param>
     /// <param name="expression"></param>
-    public void RegisterFromAssembly(Assembly assembly, Expression<Func<Type, bool>> expression = null)
+    public void RegisterFromAssembly(Assembly assembly, Expression<Func<Type, bool>>? expression = null)
     {
         expression ??= _ => true;
         foreach (var item in assembly.GetTypes())
@@ -272,9 +234,11 @@ public sealed class ServiceHost
     /// 注册服务
     /// </summary>
     /// <param name="expression"></param>
-    public void RegisterFromAssemblies(Expression<Func<Type, bool>> expression = null)
+    public void RegisterFromAssemblies(Expression<Func<Type, bool>>? expression = null)
     {
-        foreach (var item in Assembly.GetEntryAssembly().GetReferencedAssemblies())
+        var assemblies = Assembly.GetEntryAssembly()?.GetReferencedAssemblies();
+        if (assemblies == null) return;
+        foreach (var item in assemblies)
             Assembly.Load(item);
         foreach (var item in AppDomain.CurrentDomain.GetAssemblies())
             RegisterFromAssembly(item, expression);
@@ -286,24 +250,36 @@ public sealed class ServiceHost
     /// <returns></returns>
     public async Task RunAsync()
     {
-        _rootCommand.AddOption(_environmentTypeOption);
-        _commandLineBuilder.AddMiddleware(async (context, next) =>
+        async Task RunHostAsync()
         {
-            var environmentTypeOption = context.ParseResult.FindResultFor(_environmentTypeOption);
-            EnvironmentType = environmentTypeOption?.GetValueOrDefault<string>();
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ENVIRONMENT_TYPE")))
                 EnvironmentType = Environment.GetEnvironmentVariable("ENVIRONMENT_TYPE");
-            await next(context);
-        });
-        _commandLineBuilder.UseDefaults();
-        var parser = _commandLineBuilder.Build();
-        var result = await parser.InvokeAsync(Args);
-        if (result != 0) return;
-        _hostBuilder.UseEnvironment(EnvironmentType ??= "Development");
-        _hostBuilder.UseConsoleLifetime();
-        _host = _hostBuilder.Build();
-        OnHostStarted?.Invoke(ServiceProvider);
-        await _host.RunAsync();
+            _hostBuilder.UseEnvironment(EnvironmentType ??= "Development");
+            _hostBuilder.UseConsoleLifetime();
+            _host = _hostBuilder.Build();
+            OnHostStarted?.Invoke(ServiceProvider ?? throw new ExceptionBase(ExceptionType.Internal, 0, "ServiceProvider缺失"));
+            await _host.RunAsync();
+        }
+
+        if (_options.Count <= 0) await RunHostAsync();
+        else
+        {
+            await Parser.Default.ParseArguments(Args, _options.Keys.ToArray())
+                .WithNotParsed(errors =>
+                {
+
+                })
+                .WithParsedAsync(async options =>
+                {
+                    foreach (var item in _options)
+                    {
+                        if (options.GetType() != item.Key) continue;
+                        item.Value.DynamicInvoke(options);
+                    }
+                    EnvironmentType = ((OptionsBase)options).Environment;
+                    await RunHostAsync();
+                });
+        }
     }
 
     /// <summary>
@@ -317,8 +293,8 @@ public sealed class ServiceHost
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    public static IConfiguration GetConfiguration(string path = null)
-        => ServiceProvider.GetConfiguration(path);
+    public static IConfiguration? GetConfiguration(string? path = null)
+        => ServiceProvider?.GetConfiguration(path);
 
     /// <summary>
     /// 解析配置
@@ -326,6 +302,6 @@ public sealed class ServiceHost
     /// <param name="path"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static T ParseConfiguration<T>(string path = null)
-        => ServiceProvider.ParseConfiguration<T>(path);
+    public static T? ParseConfiguration<T>(string? path = null)
+        => (ServiceProvider ?? throw new ExceptionBase(ExceptionType.Internal, 0, "ServiceProvider缺失")).ParseConfiguration<T>(path);
 }

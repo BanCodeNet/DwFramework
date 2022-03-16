@@ -9,5 +9,5 @@ public static class CacheExtension
     /// </summary>
     /// <param name="provider"></param>
     /// <returns></returns>
-    public static ICache GetCache(this IServiceProvider provider) => provider.GetService<ICache>();
+    public static ICache? GetCache(this IServiceProvider provider) => provider.GetService<ICache>();
 }

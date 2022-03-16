@@ -8,8 +8,6 @@ public static class ExpressionExtension
     {
         public ParameterExpression Parameter { get; set; }
 
-        public SetParamExpressionVisitor() { }
-
         public SetParamExpressionVisitor(ParameterExpression parameter) => Parameter = parameter;
 
         public Expression Modify(Expression exp) => Visit(exp);
