@@ -24,6 +24,12 @@
             "preLaunchTask": "build",
             "args": [
                 "${input:ProjectName}.dll",
+                "commit",
+                "-a",
+                "0.05",
+                "--env",
+                "XXXX",
+                "-X"
             ],
             "cwd": "${workspaceFolder}/build/${input:ProjectName}",
             "console": "integratedTerminal",

@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using CommandLine;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,14 +13,14 @@ namespace DwFramework.Core;
 
 public sealed class ServiceHost
 {
-    public event Action<IServiceProvider> OnHostStarted;
-
+    private readonly Dictionary<Type, Delegate> _options = new();
     private readonly IHostBuilder _hostBuilder;
     private static IHost? _host;
 
     public static string[]? Args { get; private set; }
     public static string? EnvironmentType { get; private set; }
     public static IServiceProvider? ServiceProvider => _host?.Services;
+    public event Action<IServiceProvider> OnHostStarted;
 
     /// <summary>
     /// 构造函数
@@ -27,9 +28,21 @@ public sealed class ServiceHost
     /// <param name="args"></param>
     public ServiceHost(params string[] args)
     {
-        OnHostStarted += _ => { };
         Args = args;
         _hostBuilder = Host.CreateDefaultBuilder(args).UseServiceProviderFactory(new AutofacServiceProviderFactory());
+        OnHostStarted += _ => { };
+    }
+
+    /// <summary>
+    /// 添加命令
+    /// </summary>
+    /// <param name="action"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public ServiceHost AddOptions<T>(Action<T> action) where T : OptionsBase
+    {
+        _options[typeof(T)] = action;
+        return this;
     }
 
     /// <summary>
@@ -237,11 +250,36 @@ public sealed class ServiceHost
     /// <returns></returns>
     public async Task RunAsync()
     {
-        _hostBuilder.UseEnvironment(EnvironmentType ??= "Development");
-        _hostBuilder.UseConsoleLifetime();
-        _host = _hostBuilder.Build();
-        OnHostStarted?.Invoke(ServiceProvider ?? throw new ExceptionBase(ExceptionType.Internal, 0, "ServiceProvider缺失"));
-        await _host.RunAsync();
+        async Task RunHostAsync()
+        {
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ENVIRONMENT_TYPE")))
+                EnvironmentType = Environment.GetEnvironmentVariable("ENVIRONMENT_TYPE");
+            _hostBuilder.UseEnvironment(EnvironmentType ??= "Development");
+            _hostBuilder.UseConsoleLifetime();
+            _host = _hostBuilder.Build();
+            OnHostStarted?.Invoke(ServiceProvider ?? throw new ExceptionBase(ExceptionType.Internal, 0, "ServiceProvider缺失"));
+            await _host.RunAsync();
+        }
+
+        if (_options.Count <= 0) await RunHostAsync();
+        else
+        {
+            await Parser.Default.ParseArguments(Args, _options.Keys.ToArray())
+                .WithNotParsed(errors =>
+                {
+
+                })
+                .WithParsedAsync(async options =>
+                {
+                    foreach (var item in _options)
+                    {
+                        if (options.GetType() != item.Key) continue;
+                        item.Value.DynamicInvoke(options);
+                    }
+                    EnvironmentType = ((OptionsBase)options).Environment;
+                    await RunHostAsync();
+                });
+        }
     }
 
     /// <summary>

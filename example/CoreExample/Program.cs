@@ -5,14 +5,28 @@ using DwFramework.Core.Time;
 using DwFramework.Core.Encrypt;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using CommandLine;
 
 namespace CoreExample;
 
 class Program
 {
+    [Verb("commit", HelpText = "Record changes to the repository.")]
+    class CommitOptions : OptionsBase
+    {
+        [Option('a', "alpha", Required = true)]
+        public string Alpha { get; set; }
+        [Option('X', "xop")]
+        public bool Xop { get; set; }
+    }
+
     static async Task Main(params string[] args)
     {
         var host = new ServiceHost(args: args);
+        // host.AddOptions<CommitOptions>(opts =>
+        // {
+        //     Console.WriteLine(opts.Alpha);
+        // });
         // host.AddCommand("X", (int a, int c, string b, bool d, FileAccess f) =>
         // {
         //     Console.WriteLine($"a = {a},b = {b},c = {c},d = {d},f = {f}");
