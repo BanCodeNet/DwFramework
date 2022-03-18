@@ -3,7 +3,7 @@
     "inputs": [
         {
             "type": "pickString",
-            "id": "ProjectName",
+            "id": "ExampleProjectName",
             "options": [
                 "CoreExample",
                 "QuartzExample",
@@ -13,19 +13,53 @@
                 "WebExample"
             ],
             "description": "请选择需要调试的项目"
+        },
+        {
+            "type": "pickString",
+            "id": "TemplateProjectName",
+            "options": [
+                "SimpleConsole",
+            ],
+            "description": "请选择需要调试的项目"
         }
     ],
     "configurations": [
         {
-            "name": "Debug",
+            "name": "Debug Example",
             "type": "coreclr",
             "request": "launch",
             "program": "dotnet",
-            "preLaunchTask": "build",
+            "preLaunchTask": "build example",
             "args": [
-                "${input:ProjectName}.dll",
+                "${input:ExampleProjectName}.dll",
             ],
-            "cwd": "${workspaceFolder}/build/${input:ProjectName}",
+            "cwd": "${workspaceFolder}/build/${input:ExampleProjectName}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Debug Template",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "dotnet",
+            "preLaunchTask": "build template",
+            "args": [
+                "${input:TemplateProjectName}.dll",
+            ],
+            "cwd": "${workspaceFolder}/build/${input:TemplateProjectName}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Build Nuget Package",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "dotnet",
+            "preLaunchTask": "build buildtools",
+            "args": [
+                "BuildTools.dll"
+            ],
+            "cwd": "${workspaceFolder}/build/BuildTools",
             "console": "integratedTerminal",
             "stopAtEntry": false
         },
@@ -34,19 +68,6 @@
             "type": "coreclr",
             "request": "attach",
             "processId": "${command:pickProcess}"
-        },
-        {
-            "name": "Build",
-            "type": "coreclr",
-            "request": "launch",
-            "program": "dotnet",
-            "preLaunchTask": "build tools",
-            "args": [
-                "BuildTools.dll"
-            ],
-            "cwd": "${workspaceFolder}/build/BuildTools",
-            "console": "integratedTerminal",
-            "stopAtEntry": false
         }
     ]
 }

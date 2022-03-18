@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Version>6.0.0.2</Version>
+    <Authors>DwGoing</Authors>
+    <Copyright>CopyRight 2020 BanCode.Net</Copyright>
+    <PackageId>DwFramework.Templates</PackageId>
+    <Title>DwFramework 模板库</Title>
+    <Description>DwFramework框架是一款基于Autofac开发的高扩展性轻量级基础框架，可快速构建多种类型的纯后端/MVC/前后端分离项目。</Description>
+    <PackageProjectUrl>https://github.com/BanCodeNet/DwFramework</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>git@github.com:BanCodeNet/DwFramework.git</RepositoryUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageTags>DwFramework,Autofac,Framework,DI,DDD,Templates</PackageTags>
+    <PackageType>Template</PackageType>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="../../LICENSE" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="../../template/**/*" Exclude="../../template/**/bin/**;../../template/**/obj/**" />
+    <Compile Remove="**/*" />
+  </ItemGroup>
+</Project>

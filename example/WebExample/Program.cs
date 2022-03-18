@@ -81,12 +81,12 @@ class Program
         });
         // host.ConfigureSocket(configuration, "tcp");
         // host.ConfigureSocket(configuration, "udp");
-        host.OnHostStarted += async p =>
+        host.OnHostStarted += p =>
         {
             var web = p.GetWebSocket();
-            web.OnConnect += async (c, a) => Console.WriteLine($"{c.ID} 建立连接");
-            web.OnReceive += async (c, a) => web.BroadCast(a.Data);
-            web.OnClose += async (c, a) => Console.WriteLine($"{c.ID} 断开连接");
+            web.OnConnect += async (c, a) => await Task.Run(() => Console.WriteLine($"{c.ID} 建立连接"));
+            web.OnReceive += async (c, a) => await Task.Run(() => web.BroadCast(a.Data));
+            web.OnClose += async (c, a) => await Task.Run(() => Console.WriteLine($"{c.ID} 断开连接"));
 
             // Task.Run(async () =>
             // {

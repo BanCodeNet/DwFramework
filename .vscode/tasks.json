@@ -3,7 +3,7 @@
     "inputs": [
         {
             "type": "pickString",
-            "id": "ProjectName",
+            "id": "ExampleProjectName",
             "options": [
                 "CoreExample",
                 "QuartzExample",
@@ -12,26 +12,48 @@
                 "TensorFlowExample",
                 "WebExample"
             ],
-            "description": "选择需要构建的项目"
+            "description": "请选择需要调试的项目"
+        },
+        {
+            "type": "pickString",
+            "id": "TemplateProjectName",
+            "options": [
+                "SimpleConsole",
+            ],
+            "description": "请选择需要调试的项目"
         }
     ],
     "tasks": [
         {
-            "label": "build",
+            "label": "build example",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
                 "-o",
-                "${workspaceFolder}/build/${input:ProjectName}",
-                "${workspaceFolder}/example/${input:ProjectName}/${input:ProjectName}.csproj",
+                "${workspaceFolder}/build/${input:ExampleProjectName}",
+                "${workspaceFolder}/example/${input:ExampleProjectName}/${input:ExampleProjectName}.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "build tools",
+            "label": "build template",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "-o",
+                "${workspaceFolder}/build/${input:TemplateProjectName}",
+                "${workspaceFolder}/template/${input:TemplateProjectName}/${input:TemplateProjectName}.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build buildtools",
             "command": "dotnet",
             "type": "process",
             "args": [
