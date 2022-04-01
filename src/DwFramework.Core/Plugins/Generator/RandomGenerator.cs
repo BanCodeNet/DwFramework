@@ -43,11 +43,11 @@ public static class RandomGenerator
     /// 生成随机字符串
     /// </summary>
     /// <param name="length"></param>
+    /// <param name="chars"></param>
     /// <returns></returns>
-    private const string CHARS = @"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    public static string RandomString(int length)
+    public static string RandomString(int length, string? chars = null)
     {
-        var chars = CHARS.ToCharArray();
+        chars ??= @"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         var builder = new StringBuilder();
         for (int i = 0; i < length; i++) builder.Append(chars[RandomNumber(0, chars.Length)]);
         return builder.ToString();
