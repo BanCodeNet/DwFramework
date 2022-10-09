@@ -1,7 +1,6 @@
-using System;
-using Xunit;
 using DwFramework.Core;
 using DwFramework.Core.Generator;
+using Xunit;
 
 namespace Core.Tests;
 

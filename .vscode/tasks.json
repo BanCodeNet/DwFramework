@@ -60,7 +60,7 @@
                 "build",
                 "-o",
                 "${workspaceFolder}/build/BuildTools",
-                "${workspaceFolder}/src/BuildTools/BuildTools.csproj",
+                "${workspaceFolder}/utils/BuildTools/BuildTools.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
