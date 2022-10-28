@@ -5,6 +5,7 @@
 
 # Custom files
 .DS_Store
+build/
 
 # User-specific files
 *.rsuser
