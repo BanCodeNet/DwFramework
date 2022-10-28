@@ -1,6 +1,7 @@
-using System;
-using Microsoft.AspNetCore.Mvc;
 using DwFramework.Web.JWT;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace WebExample
 {
@@ -15,7 +16,7 @@ namespace WebExample
         [HttpGet("t1")]
         public IActionResult T1()
         {
-            return Ok(JwtManager.Generate("dwgoing", "dsfjoihnoisdhf823b4iu834h"));
+            return Ok(JwtManager.Generate("dwgoing", new SymmetricSecurityKey(Encoding.UTF8.GetBytes("dsfjoihnoisdhf823b4iu834h"))));
         }
 
         [HttpGet("t2")]

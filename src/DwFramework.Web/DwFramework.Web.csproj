@@ -8,7 +8,7 @@
     <Copyright>CopyRight 2020 BanCode.Net</Copyright>
     <PackageId>DwFramework.Web</PackageId>
     <Title>DwFramework 网络库</Title>
-    <Description>DwFramework框架是一款基于Autofac开发的高扩展性轻量级基础框架，可快速构建多种类型的纯后端或MVC项目。</Description>
+    <Description>DwFramework框架是一款基于Autofac开发的高扩展性轻量级基础框架，可快速构建多种类型的纯后端/MVC/前后端分离项目。</Description>
     <PackageProjectUrl>https://github.com/BanCodeNet/DwFramework</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>git@github.com:BanCodeNet/DwFramework.git</RepositoryUrl>

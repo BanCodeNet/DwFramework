@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Autofac.Extras.DynamicProxy;
 using DwFramework.Core;
+using DwFramework.Core.Generator;
 using DwFramework.Core.Time;
 using DwFramework.Core.Encrypt;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ class Program
     static async Task Main(params string[] args)
     {
         var host = new ServiceHost(args: args);
+        host.ConfigureSnowflakeGenerator(1, DateTime.Parse("2022.01.01"), false);
         host.ConfigureLogging(builder => builder.UserNLog("NLog.config"));
         host.ConfigureContainer(builder =>
         {
@@ -32,6 +34,7 @@ class Program
         host.RegisterFromAssemblies();
         host.OnHostStarted += provider =>
         {
+            var g = provider.GetService<SnowflakeGenerator>().GenerateId();
             var x = ServiceHost.ParseConfiguration<string>("ConnectionString");
             var y = provider.GetServices<I>();
             foreach (var item in provider.GetServices<I>()) item.Do(5, 6);

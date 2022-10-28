@@ -1,6 +1,5 @@
 ﻿using DwFramework.Core;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -18,13 +17,12 @@ public static class JwtManager
     /// <param name="expires"></param>
     /// <param name="customFields"></param>
     /// <returns></returns>
-    public static string Generate(string issuer, string securityKey, string[] audiences = null, DateTime? notBefore = null, DateTime? expires = null, Dictionary<string, object> customFields = null)
+    public static string Generate(string issuer, SecurityKey securityKey, string[] audiences = null, DateTime? notBefore = null, DateTime? expires = null, Dictionary<string, object> customFields = null)
     {
-        if (securityKey.Length < 16) throw new ExceptionBase(ExceptionType.Parameter, 0, "SecuriyKey长度不足");
         JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
         var claims = new List<Claim>();
         if (audiences != null) foreach (var item in audiences) claims.Add(new Claim("aud", item));
-        var creds = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey)), SecurityAlgorithms.HmacSha256);
+        var creds = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         var jwtSecurityToken = new JwtSecurityToken(
             issuer: issuer,
             claims: claims,

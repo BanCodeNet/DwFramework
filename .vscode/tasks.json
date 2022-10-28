@@ -1,59 +1,106 @@
 {
     "version": "2.0.0",
-    "inputs": [
-        {
-            "type": "pickString",
-            "id": "ExampleProjectName",
-            "options": [
-                "CoreExample",
-                "QuartzExample",
-                "RabbitMQExample",
-                "SqlSugarExample",
-                "TensorFlowExample",
-                "WebExample"
-            ],
-            "description": "请选择需要调试的项目"
-        },
-        {
-            "type": "pickString",
-            "id": "TemplateProjectName",
-            "options": [
-                "SimpleConsole",
-            ],
-            "description": "请选择需要调试的项目"
-        }
-    ],
     "tasks": [
         {
-            "label": "build example",
+            "label": "build CoreExample",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
                 "-o",
-                "${workspaceFolder}/build/${input:ExampleProjectName}",
-                "${workspaceFolder}/example/${input:ExampleProjectName}/${input:ExampleProjectName}.csproj",
+                "${workspaceFolder}/build/CoreExample",
+                "${workspaceFolder}/example/CoreExample/CoreExample.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "build template",
+            "label": "build QuartzExample",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
                 "-o",
-                "${workspaceFolder}/build/${input:TemplateProjectName}",
-                "${workspaceFolder}/template/${input:TemplateProjectName}/${input:TemplateProjectName}.csproj",
+                "${workspaceFolder}/build/QuartzExample",
+                "${workspaceFolder}/example/QuartzExample/QuartzExample.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "build buildtools",
+            "label": "build RabbitMQExample",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "-o",
+                "${workspaceFolder}/build/RabbitMQExample",
+                "${workspaceFolder}/example/RabbitMQExample/RabbitMQExample.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build SqlSugarExample",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "-o",
+                "${workspaceFolder}/build/SqlSugarExample",
+                "${workspaceFolder}/example/SqlSugarExample/SqlSugarExample.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build TensorFlowExample",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "-o",
+                "${workspaceFolder}/build/TensorFlowExample",
+                "${workspaceFolder}/example/TensorFlowExample/TensorFlowExample.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build WebExample",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "-o",
+                "${workspaceFolder}/build/WebExample",
+                "${workspaceFolder}/example/WebExample/WebExample.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build SimpleConsole",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "-o",
+                "${workspaceFolder}/build/SimpleConsole",
+                "${workspaceFolder}/template/SimpleConsole/SimpleConsole.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build BuildTools",
             "command": "dotnet",
             "type": "process",
             "args": [
