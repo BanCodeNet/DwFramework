@@ -28,8 +28,8 @@
             "name": "Debug Example",
             "type": "coreclr",
             "request": "launch",
+            "preLaunchTask": "build ${input:ExampleProjectName}",
             "program": "dotnet",
-            "preLaunchTask": "build example",
             "args": [
                 "${input:ExampleProjectName}.dll",
             ],
@@ -41,8 +41,8 @@
             "name": "Debug Template",
             "type": "coreclr",
             "request": "launch",
+            "preLaunchTask": "build ${input:TemplateProjectName}",
             "program": "dotnet",
-            "preLaunchTask": "build template",
             "args": [
                 "${input:TemplateProjectName}.dll",
             ],
@@ -54,8 +54,8 @@
             "name": "Build Nuget Package",
             "type": "coreclr",
             "request": "launch",
-            "program": "dotnet",
             "preLaunchTask": "build buildtools",
+            "program": "dotnet",
             "args": [
                 "BuildTools.dll"
             ],
