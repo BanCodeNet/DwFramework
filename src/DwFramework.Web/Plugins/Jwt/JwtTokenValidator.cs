@@ -24,12 +24,6 @@ public abstract class JwtTokenValidator : ISecurityTokenValidator
     public bool CanReadToken(string token) => _tokenHandler.CanReadToken(token);
 
     /// <summary>
-    /// 验证参数处理
-    /// </summary>
-    /// <param name="validationParameters"></param>
-    public abstract void ParametersHandler(TokenValidationParameters validationParameters);
-
-    /// <summary>
     /// 验证Token
     /// </summary>
     /// <param name="securityToken"></param>
@@ -38,7 +32,6 @@ public abstract class JwtTokenValidator : ISecurityTokenValidator
     /// <returns></returns>
     public virtual ClaimsPrincipal ValidateToken(string securityToken, TokenValidationParameters validationParameters, out SecurityToken validatedToken)
     {
-        ParametersHandler(validationParameters);
         return _tokenHandler.ValidateToken(securityToken, validationParameters, out validatedToken);
     }
 }
