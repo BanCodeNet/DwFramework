@@ -5,7 +5,7 @@ using System.Security.Claims;
 
 namespace DwFramework.Web.JWT;
 
-public static class JwtManager
+public static class JwtHelper
 {
     /// <summary>
     /// 生成Token
@@ -15,9 +15,16 @@ public static class JwtManager
     /// <param name="audiences"></param>
     /// <param name="notBefore"></param>
     /// <param name="expires"></param>
-    /// <param name="customFields"></param>
+    /// <param name="extendedFields"></param>
     /// <returns></returns>
-    public static string Generate(string issuer, SecurityKey securityKey, string[] audiences = null, DateTime? notBefore = null, DateTime? expires = null, Dictionary<string, object> customFields = null)
+    public static string Generate(
+        string issuer,
+        SecurityKey securityKey,
+        string[] audiences = null,
+        DateTime? notBefore = null,
+        DateTime? expires = null,
+        Dictionary<string, object> extendedFields = null
+    )
     {
         JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
         var claims = new List<Claim>();
@@ -30,8 +37,8 @@ public static class JwtManager
             expires: expires,
             signingCredentials: creds
         );
-        // 自定义内容
-        if (customFields != null) foreach (var keyValuePair in customFields) jwtSecurityToken.Payload[keyValuePair.Key] = keyValuePair.Value;
+        // 扩展字段
+        if (extendedFields != null) foreach (var keyValuePair in extendedFields) jwtSecurityToken.Payload[keyValuePair.Key] = keyValuePair.Value;
         var token = tokenHandler.WriteToken(jwtSecurityToken);
         return token;
     }
@@ -56,7 +63,8 @@ public static class JwtManager
     public static JwtSecurityToken Decode(string token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        if (string.IsNullOrEmpty(token) || !tokenHandler.CanReadToken(token)) throw new ExceptionBase(ExceptionType.Parameter, 0, "无效的Token");
+        if (string.IsNullOrEmpty(token) || !tokenHandler.CanReadToken(token))
+            throw new ExceptionBase(ExceptionType.Parameter, 0, "无效的Token");
         return tokenHandler.ReadJwtToken(token);
     }
 
@@ -65,7 +73,10 @@ public static class JwtManager
     /// </summary>
     /// <param name="token"></param>
     /// <returns></returns>
-    public static Dictionary<string, object> ReadClaims(string token) => Decode(token).Payload.ToDictionary(item => item.Key, item => item.Value);
+    public static Dictionary<string, object> ReadClaims(string token)
+    {
+        return Decode(token).Payload.ToDictionary(item => item.Key, item => item.Value);
+    }
 
     /// <summary>
     /// 读取Claims信息
@@ -73,5 +84,8 @@ public static class JwtManager
     /// <param name="token"></param>
     /// <param name="key"></param>
     /// <returns></returns>
-    public static object ReadClaim(string token, string key) => Decode(token).Payload[key];
+    public static object ReadClaim(string token, string key)
+    {
+        return Decode(token).Payload[key];
+    }
 }

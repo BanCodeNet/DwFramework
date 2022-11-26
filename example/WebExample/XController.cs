@@ -16,13 +16,13 @@ namespace WebExample
         [HttpGet("t1")]
         public IActionResult T1()
         {
-            return Ok(JwtManager.Generate("dwgoing", new SymmetricSecurityKey(Encoding.UTF8.GetBytes("dsfjoihnoisdhf823b4iu834h"))));
+            return Ok(JwtHelper.Generate("dwgoing", new SymmetricSecurityKey(Encoding.UTF8.GetBytes("dsfjoihnoisdhf823b4iu834h"))));
         }
 
         [HttpGet("t2")]
         public IActionResult T2(string token)
         {
-            return Ok(JwtManager.Decode(token));
+            return Ok(JwtHelper.Decode(token));
         }
     }
 }
