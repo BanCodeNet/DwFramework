@@ -3,13 +3,12 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
     <Version>6.0.2.1</Version>
     <Authors>DwGoing</Authors>
     <Copyright>CopyRight 2020 BanCode.Net</Copyright>
     <PackageId>DwFramework.Core</PackageId>
     <Title>DwFramework 核心库</Title>
-    <Description>DwFramework框架是一款基于Autofac开发的高扩展性轻量级基础框架，可快速构建多种类型的纯后端/MVC/前后端分离项目。</Description>
+    <Description>DwFramework框架是一款基于Autofac开发的高扩展性轻量级基础框架。</Description>
     <PackageProjectUrl>https://github.com/BanCodeNet/DwFramework</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>git@github.com:BanCodeNet/DwFramework.git</RepositoryUrl>
@@ -23,9 +22,9 @@
   <ItemGroup>
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2.0" />
     <PackageReference Include="Autofac.Extras.DynamicProxy" Version="6.0.0" />
-    <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.2.16" />
     <PackageReference Include="Mapster" Version="7.3.0" />
+    <PackageReference Include="Mapster.DependencyInjection" Version="1.0.0" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.7.4" />
     <PackageReference Include="Polly" Version="7.2.3" />
     <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
