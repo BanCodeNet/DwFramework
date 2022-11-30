@@ -1,5 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Autofac;
+using Castle.DynamicProxy;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 
@@ -8,94 +9,68 @@ namespace DwFramework;
 public static class LoggingExtension
 {
     /// <summary>
-    /// 注册NLog服务
+    /// 使用NLog服务
     /// </summary>
-    /// <param name="builder"></param>
+    /// <param name="host"></param>
+    /// <param name="minimumLevel"></param>
     /// <returns></returns>
-    public static ILoggingBuilder UserNLog(this ILoggingBuilder builder)
+    public static ServiceHost UserNLog(this ServiceHost host, LogLevel minimumLevel = LogLevel.Trace)
     {
-        builder.ClearProviders();
-        builder.SetMinimumLevel(LogLevel.Trace);
-        builder.AddNLog();
-        return builder;
+        return host.ConfigureLogging(builder =>
+        {
+            builder.ClearProviders();
+            builder.SetMinimumLevel(minimumLevel);
+            builder.AddNLog();
+        });
     }
 
     /// <summary>
-    /// 注册NLog服务
+    /// 使用NLog服务
     /// </summary>
-    /// <param name="builder"></param>
+    /// <param name="host"></param>
     /// <param name="configuration"></param>
+    /// <param name="minimumLevel"></param>
     /// <returns></returns>
-    public static ILoggingBuilder UserNLog(
-        this ILoggingBuilder builder,
-        IConfiguration configuration,
-        LogLevel minimumLevel = LogLevel.Trace)
+    public static ServiceHost UserNLog(this ServiceHost host, IConfiguration configuration, LogLevel minimumLevel = LogLevel.Trace)
     {
-        builder.ClearProviders();
-        builder.SetMinimumLevel(minimumLevel);
-        builder.AddNLog(configuration);
-        return builder;
+        return host.ConfigureLogging(builder =>
+        {
+            builder.ClearProviders();
+            builder.SetMinimumLevel(minimumLevel);
+            builder.AddNLog(configuration);
+        });
     }
 
     /// <summary>
-    /// 注册NLog服务
+    /// 使用NLog服务
     /// </summary>
-    /// <param name="builder"></param>
+    /// <param name="host"></param>
     /// <param name="configPath"></param>
+    /// <param name="minimumLevel"></param>
     /// <returns></returns>
-    public static ILoggingBuilder UserNLog(
-        this ILoggingBuilder builder,
-        string configPath,
-        LogLevel minimumLevel = LogLevel.Trace
+    public static ServiceHost UserNLog(this ServiceHost host, string configPath, LogLevel minimumLevel = LogLevel.Trace)
+    {
+        return host.ConfigureLogging(builder =>
+        {
+            builder.ClearProviders();
+            builder.SetMinimumLevel(minimumLevel);
+            builder.AddNLog(configPath);
+        });
+    }
+
+    /// <summary>
+    /// 使用日志拦截器
+    /// </summary>
+    /// <param name="host"></param>
+    /// <param name="invocationHandler"></param>
+    /// <returns></returns>
+    public static ServiceHost UseLoggerInterceptor(
+        this ServiceHost host,
+        Func<IInvocation, (string LoggerName, LogLevel Level, string Context)> invocationHandler
     )
     {
-        builder.ClearProviders();
-        builder.SetMinimumLevel(minimumLevel);
-        builder.AddNLog(configPath);
-        return builder;
-    }
-
-    /// <summary>
-    /// 获取Logger工厂
-    /// </summary>
-    /// <param name="provider"></param>
-    /// <typeparam name="ILoggerFactory"></typeparam>
-    /// <returns></returns>
-    public static ILoggerFactory GetLoggerFactory(this IServiceProvider provider)
-    {
-        return provider.GetService<ILoggerFactory>();
-    }
-
-    /// <summary>
-    /// 获取Logger
-    /// </summary>
-    /// <param name="provider"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    public static ILogger<T> GetLogger<T>(this IServiceProvider provider)
-    {
-        return provider.GetService<ILogger<T>>();
-    }
-
-    /// <summary>
-    /// 获取Logger
-    /// </summary>
-    /// <param name="provider"></param>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    public static ILogger GetLogger(this IServiceProvider provider, Type type)
-    {
-        return provider.GetLoggerFactory()?.CreateLogger(type);
-    }
-
-    /// <summary>
-    /// 获取Logger
-    /// </summary>
-    /// <param name="provider"></param>
-    /// <param name="name"></param>
-    /// <returns></returns>
-    public static ILogger GetLogger(this IServiceProvider provider, string name)
-    {
-        return provider.GetLoggerFactory()?.CreateLogger(name);
+        return host.ConfigureContainer(builder =>
+            builder.Register(context => new LoggingInterceptor(context.Resolve<ILoggerFactory>(), invocationHandler))
+        );
     }
 }

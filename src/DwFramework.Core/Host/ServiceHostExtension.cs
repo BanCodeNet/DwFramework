@@ -1,5 +1,3 @@
-using Autofac;
-using Castle.DynamicProxy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -82,22 +80,5 @@ public static class ServiceHostExtension
         return host.AddConfiguration(new ConfigurationBuilder()
             .AddXmlStream(stream)
             .Build());
-    }
-    /// <summary>
-    /// 配置日志拦截器
-    /// </summary>
-    /// <param name="host"></param>
-    /// <param name="LoggerName"></param>
-    /// <param name="Level"></param>
-    /// <param name="invocationHandler"></param>
-    /// <returns></returns>
-    public static ServiceHost ConfigureLoggerInterceptor(
-        this ServiceHost host,
-        Func<IInvocation, (string LoggerName, LogLevel Level, string Context)> invocationHandler
-    )
-    {
-        return host.ConfigureContainer(builder =>
-            builder.Register(context => new LoggingInterceptor(context.Resolve<ILoggerFactory>(), invocationHandler))
-        );
     }
 }
