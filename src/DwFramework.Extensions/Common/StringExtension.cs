@@ -31,7 +31,7 @@ public static class StringExtension
         return @byte switch
         {
             < 26 => (char)(@byte + 65),
-            > 26 and < 32 => (char)(@byte + 24),
+            < 32 => (char)(@byte + 24),
             _ => throw new Exception($"{@byte} is not base32 char value")
         };
     }
