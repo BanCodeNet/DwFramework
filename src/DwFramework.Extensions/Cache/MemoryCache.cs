@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 
 namespace DwFramework.Extensions.Cache;
 
@@ -106,10 +105,10 @@ public sealed class MemoryCache : ICache
     /// <param name="key"></param>
     /// <param name="groupName"></param>
     /// <typeparam name="T"></typeparam>
-    public T Get<T>(object key, string groupName = "default") where T : class
+    public T Get<T>(object key, string groupName = "default")
     {
         if (!_memoryCaches.ContainsKey(groupName)) throw new Exception("the group has not existed");
-        return _memoryCaches[groupName].Get<T>(key);
+        return _memoryCaches[groupName].Get(key).To<T>();
     }
 
     /// <summary>
