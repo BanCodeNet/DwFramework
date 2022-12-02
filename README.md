@@ -6,8 +6,8 @@
 
 ## 0x2 版本说明
 ### 0x2.1 版本构成
-NETVersion.ReleaseVersion.BuildVersion
+NET Version(2位).Release Version.Build Version
 ### 0x2.2 当前版本
-当前功能开发版本 ==> 6.1.x
+当前功能开发版本 ==> 6.0.3.x
 ### 0x2.3 使用教程
 [框架介绍](https://bancodenet.github.io/Blog/2022-01-30-DwFramework%E6%95%99%E7%A8%8B-01/)
