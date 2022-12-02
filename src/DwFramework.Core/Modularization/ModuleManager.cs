@@ -30,25 +30,24 @@ public static class ModuleManager
         if (File.Exists(modulePath))
         {
             var loadContext = new ModuleLoadContext(modulePath);
-            var assembly = loadContext.LoadFromAssemblyName(new AssemblyName(Path.GetFileNameWithoutExtension(modulePath)));
+            var assembly = loadContext.LoadFromAssemblyName(
+                new AssemblyName(Path.GetFileNameWithoutExtension(modulePath))
+            );
             foreach (Type type in assembly.GetTypes())
             {
-                if (moduleType.IsAssignableFrom(type))
+                if (moduleType.IsAssignableFrom(type) && Activator.CreateInstance(type) is T instance)
                 {
-                    if (Activator.CreateInstance(type) is T instance)
+                    _loadedModules[moduleType] = new ModuleInfo()
                     {
-                        _loadedModules[moduleType] = new ModuleInfo()
-                        {
-                            Path = modulePath,
-                            Instance = instance
-                        };
-                        return instance;
-                    }
+                        Path = modulePath,
+                        Instance = instance
+                    };
+                    return instance;
                 }
             }
-            throw new ExceptionWithCode(ErrorCode.InternalError, $"the module is not existed: {moduleType.Name}");
+            return default;
         }
-        else throw new ExceptionWithCode(ErrorCode.InternalError, $"the path is not existed: {modulePath}");
+        else throw new ExceptionWithCode(ErrorCode.ParameterError, $"the path is not existed: {modulePath}");
     }
 
     /// <summary>
@@ -59,11 +58,7 @@ public static class ModuleManager
         var moduleType = typeof(T);
         if (!_loadedModules.ContainsKey(moduleType)) return;
         var path = _loadedModules[moduleType].Path;
-        if (!string.IsNullOrEmpty(path))
-        {
-            var loadContext = new ModuleLoadContext(path);
-            loadContext.Unload();
-        }
+        if (!string.IsNullOrEmpty(path)) new ModuleLoadContext(path).Unload();
         _loadedModules.Remove(moduleType);
     }
 
@@ -75,11 +70,7 @@ public static class ModuleManager
         foreach (var item in _loadedModules)
         {
             var path = item.Value.Path;
-            if (!string.IsNullOrEmpty(path))
-            {
-                var loadContext = new ModuleLoadContext(path);
-                loadContext.Unload();
-            }
+            if (!string.IsNullOrEmpty(path)) new ModuleLoadContext(path).Unload();
             _loadedModules.Remove(item.Key);
         }
     }
