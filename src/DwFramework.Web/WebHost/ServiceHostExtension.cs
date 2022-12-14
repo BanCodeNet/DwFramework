@@ -1,12 +1,11 @@
-﻿using DwFramework.Core;
-using Grpc.AspNetCore.Server;
+﻿using Grpc.AspNetCore.Server;
 using Microsoft.AspNetCore.Mvc;
 using ProtoBuf.Grpc.Server;
 using System.Reflection;
 
 namespace DwFramework.Web;
 
-public static class WebExtension
+public static class ServiceHostExtension
 {
     /// <summary>
     /// 配置Web主机
@@ -31,37 +30,6 @@ public static class WebExtension
         host.ConfigureHostBuilder(builder => builder.ConfigureWebHostDefaults(configure));
         return host;
     }
-
-    /// <summary>
-    /// 添加WebSocket中间件
-    /// </summary>
-    /// <param name="services"></param>
-    /// <returns></returns>
-    public static IServiceCollection AddWebSocket(this IServiceCollection services)
-    {
-        services.AddSingleton<WebSocketService>();
-        return services;
-    }
-
-    /// <summary>
-    /// 使用WebSocket中间件
-    /// </summary>
-    /// <param name="app"></param>
-    /// <returns></returns>
-    public static IApplicationBuilder UseWebSocket(this IApplicationBuilder app)
-    {
-        app.UseWebSockets();
-        app.UseMiddleware<WebSocketMiddleware>();
-        return app;
-    }
-
-    /// <summary>
-    /// 获取WebSocket服务
-    /// </summary>
-    /// <param name="provider"></param>
-    /// <returns></returns>
-    public static WebSocketService GetWebSocket(this IServiceProvider provider)
-        => provider.GetService<WebSocketService>();
 
     /// <summary>
     /// 添加RPC服务
@@ -118,8 +86,8 @@ public static class WebExtension
             var types = assembly.GetTypes();
             foreach (var type in types)
             {
-                var attribute = type.GetCustomAttribute<RPCAttribute>();
-                if (attribute == null) continue;
+                var attribute = type.GetCustomAttribute<RpcAttribute>();
+                if (attribute is null) continue;
                 rpcImpls.Add(type);
             }
         }

@@ -16,7 +16,7 @@ public sealed class RoutePrefix : IApplicationModelConvention
     {
         foreach (var controller in application.Controllers)
         {
-            var matchedSelectors = controller.Selectors.Where(x => x.AttributeRouteModel != null).ToList();
+            var matchedSelectors = controller.Selectors.Where(x => x.AttributeRouteModel is not null).ToList();
             if (matchedSelectors.Any())
             {
                 foreach (var selectorModel in matchedSelectors)
