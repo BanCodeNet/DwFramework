@@ -12,10 +12,11 @@ namespace DwFramework;
 public sealed class ServiceHost
 {
     private IHostBuilder _hostBuilder { get; init; }
-    private IHost _host { get; set; }
+    private static IHost _host { get; set; }
 
-    public string EnvironmentType { get; private set; }
-    public event Func<IServiceProvider, Task> OnHostStarted;
+    public event Func<IServiceProvider, Task> OnInitialized = _ => Task.CompletedTask;
+    public event Func<IServiceProvider, Task> OnStopping = _ => Task.CompletedTask;
+    public event Func<Task> OnStopped = () => Task.CompletedTask;
 
     /// <summary>
     /// 构造函数
@@ -210,7 +211,7 @@ public sealed class ServiceHost
     public async Task RunAsync()
     {
         _host = _hostBuilder.Build();
-        await OnHostStarted?.Invoke(_host.Services);
+        await OnInitialized.Invoke(_host.Services);
         await _host.RunAsync();
     }
 
@@ -218,8 +219,50 @@ public sealed class ServiceHost
     /// 停止服务
     /// </summary>
     /// <returns></returns>
-    public Task StopAsync()
+    public async Task StopAsync()
     {
-        return _host.WaitForShutdownAsync();
+        await OnStopping.Invoke(_host.Services);
+        await _host.WaitForShutdownAsync();
+        await OnStopped.Invoke();
+    }
+
+    /// <summary>
+    /// 获取服务
+    /// </summary>
+    /// <param name="serviceType"></param>
+    /// <returns></returns>
+    public static object GetService(Type serviceType)
+    {
+        return _host.Services.GetService(serviceType);
+    }
+
+    /// <summary>
+    /// 获取服务
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public static T GetService<T>()
+    {
+        return _host.Services.GetService<T>();
+    }
+
+    /// <summary>
+    /// 获取服务
+    /// </summary>
+    /// <param name="serviceType"></param>
+    /// <returns></returns>
+    public static IEnumerable<object> GetServices(Type serviceType)
+    {
+        return _host.Services.GetServices(serviceType);
+    }
+
+    /// <summary>
+    /// 获取服务
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public static IEnumerable<T> GetServices<T>()
+    {
+        return _host.Services.GetServices<T>();
     }
 }
