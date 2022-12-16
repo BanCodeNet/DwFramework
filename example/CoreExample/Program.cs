@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Autofac.Extras.DynamicProxy;
 using DwFramework;
+using DwFramework.Extensions;
 using DwFramework.Extensions.Cache;
 
 namespace CoreExample;
@@ -29,17 +30,7 @@ class Program
         host.RegisterFromAssemblies();
         host.OnHostStarted += async provider =>
         {
-            var x = provider.GetService<ICache>();
-            x.Add("1:1", new { A = 1, B = "1" });
-            x.Add("1:2", new { A = 2, B = "2" });
-            x.Add("2:1", new { A = 3, B = "3" });
-            var keys = x.GetKeysWhere("default", item =>
-            {
-                if (item is not string) return false;
-                return ((string)item).StartsWith("1:");
-            });
-            foreach (var key in keys) Console.WriteLine(x.Get(key));
-            // foreach (var item in provider.GetServices<I>()) item.Do(5, 6);
+            await Task.Delay(1);
         };
         await host.RunAsync();
     }

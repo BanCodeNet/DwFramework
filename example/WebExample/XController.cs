@@ -1,4 +1,5 @@
-using DwFramework.Web.JWT;
+using DwFramework.Web;
+using DwFramework.Web.Permission;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;

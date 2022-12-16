@@ -5,12 +5,7 @@
             "type": "pickString",
             "id": "ExampleProjectName",
             "options": [
-                "CoreExample",
-                "QuartzExample",
-                "RabbitMQExample",
-                "SqlSugarExample",
-                "TensorFlowExample",
-                "WebExample"
+                "SimpleExample"
             ],
             "description": "请选择需要调试的项目"
         },
@@ -35,7 +30,10 @@
             ],
             "cwd": "${workspaceFolder}/build/${input:ExampleProjectName}",
             "console": "integratedTerminal",
-            "stopAtEntry": false
+            "stopAtEntry": false,
+            "env": {
+                "ENVIRONMENT_TYPE": "Development"
+            }
         },
         {
             "name": "Debug Template",
@@ -54,7 +52,7 @@
             "name": "Build Nuget Package",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build buildtools",
+            "preLaunchTask": "build BuildTools",
             "program": "dotnet",
             "args": [
                 "BuildTools.dll"
@@ -62,12 +60,6 @@
             "cwd": "${workspaceFolder}/build/BuildTools",
             "console": "integratedTerminal",
             "stopAtEntry": false
-        },
-        {
-            "name": "Attach",
-            "type": "coreclr",
-            "request": "attach",
-            "processId": "${command:pickProcess}"
         }
     ]
 }

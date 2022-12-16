@@ -1,4 +1,4 @@
-﻿using DwFramework.Core;
+﻿using DwFramework;
 using DwFramework.Web;
 using Grpc.Net.Client;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
