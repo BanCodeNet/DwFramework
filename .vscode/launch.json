@@ -2,20 +2,41 @@
     "version": "0.2.0",
     "inputs": [
         {
-            "type": "pickString",
-            "id": "ExampleProjectName",
-            "options": [
-                "SimpleExample"
-            ],
-            "description": "请选择需要调试的项目"
+            "type": "command",
+            "id": "exampleProjectName",
+            "command": "extension.commandvariable.pickStringRemember",
+            "args": {
+                "key": "projectName",
+                "options": [
+                    "SimpleDependencyInjection",
+                    "UseNLog"
+                ],
+                "description": "请选择需要调试的项目"
+            }
         },
         {
-            "type": "pickString",
-            "id": "TemplateProjectName",
-            "options": [
-                "SimpleConsole",
-            ],
-            "description": "请选择需要调试的项目"
+            "type": "command",
+            "id": "templateProjectName",
+            "command": "extension.commandvariable.pickStringRemember",
+            "args": {
+                "key": "projectName",
+                "options": [
+                    "SimpleConsole"
+                ],
+                "description": "请选择需要调试的项目"
+            }
+        },
+        {
+            "type": "command",
+            "id": "utilProjectName",
+            "command": "extension.commandvariable.pickStringRemember",
+            "args": {
+                "key": "projectName",
+                "options": [
+                    "NugetBuilder"
+                ],
+                "description": "请选择需要调试的项目"
+            }
         }
     ],
     "configurations": [
@@ -23,41 +44,38 @@
             "name": "Debug Example",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build ${input:ExampleProjectName}",
+            "preLaunchTask": "Build Example",
+            "cwd": "${workspaceFolder}",
             "program": "dotnet",
             "args": [
-                "${input:ExampleProjectName}.dll",
+                "${workspaceFolder}/build/${input:exampleProjectName}/${input:exampleProjectName}.dll",
             ],
-            "cwd": "${workspaceFolder}/build/${input:ExampleProjectName}",
             "console": "integratedTerminal",
-            "stopAtEntry": false,
-            "env": {
-                "ENVIRONMENT_TYPE": "Development"
-            }
+            "stopAtEntry": false
         },
         {
             "name": "Debug Template",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build ${input:TemplateProjectName}",
+            "preLaunchTask": "Build Template",
+            "cwd": "${workspaceFolder}",
             "program": "dotnet",
             "args": [
-                "${input:TemplateProjectName}.dll",
+                "${workspaceFolder}/build/${input:templateProjectName}/${input:templateProjectName}.dll",
             ],
-            "cwd": "${workspaceFolder}/build/${input:TemplateProjectName}",
             "console": "integratedTerminal",
             "stopAtEntry": false
         },
         {
-            "name": "Build Nuget Package",
+            "name": "Run Util",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build BuildTools",
+            "preLaunchTask": "Build Util",
+            "cwd": "${workspaceFolder}",
             "program": "dotnet",
             "args": [
-                "BuildTools.dll"
+                "${workspaceFolder}/build/${input:utilProjectName}/${input:utilProjectName}.dll",
             ],
-            "cwd": "${workspaceFolder}/build/BuildTools",
             "console": "integratedTerminal",
             "stopAtEntry": false
         }

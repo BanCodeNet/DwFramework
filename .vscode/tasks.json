@@ -1,43 +1,69 @@
 {
     "version": "2.0.0",
+    "inputs": [
+        {
+            "id": "exampleProjectName",
+            "type": "command",
+            "command": "extension.commandvariable.rememberPick",
+            "args": {
+                "key": "projectName"
+            }
+        },
+        {
+            "id": "templateProjectName",
+            "type": "command",
+            "command": "extension.commandvariable.rememberPick",
+            "args": {
+                "key": "projectName"
+            }
+        },
+        {
+            "id": "utilProjectName",
+            "type": "command",
+            "command": "extension.commandvariable.rememberPick",
+            "args": {
+                "key": "projectName"
+            }
+        }
+    ],
     "tasks": [
         {
-            "label": "build SimpleExample",
+            "label": "Build Example",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
                 "-o",
-                "${workspaceFolder}/build/SimpleExample",
-                "${workspaceFolder}/example/SimpleExample/SimpleExample.csproj",
+                "${workspaceFolder}/build/${input:exampleProjectName}",
+                "${workspaceFolder}/example/${input:exampleProjectName}/${input:exampleProjectName}.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "build SimpleConsole",
+            "label": "Build Template",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
                 "-o",
-                "${workspaceFolder}/build/SimpleConsole",
-                "${workspaceFolder}/template/SimpleConsole/SimpleConsole.csproj",
+                "${workspaceFolder}/build/${input:templateProjectName}",
+                "${workspaceFolder}/template/${input:templateProjectName}/${input:templateProjectName}.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "build BuildTools",
+            "label": "Build Util",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
                 "-o",
-                "${workspaceFolder}/build/BuildTools",
-                "${workspaceFolder}/utils/BuildTools/BuildTools.csproj",
+                "${workspaceFolder}/build/${input:utilProjectName}",
+                "${workspaceFolder}/util/${input:utilProjectName}/${input:utilProjectName}.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
