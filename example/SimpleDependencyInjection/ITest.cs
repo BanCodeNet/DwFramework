@@ -1,4 +1,4 @@
-namespace SimpleExample;
+namespace SimpleDependencyInjection;
 
 public interface ITest
 {

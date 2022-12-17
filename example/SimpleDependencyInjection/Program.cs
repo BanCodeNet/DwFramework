@@ -2,7 +2,7 @@
 using DwFramework;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace SimpleExample;
+namespace SimpleDependencyInjection;
 
 class Program
 {
@@ -14,7 +14,7 @@ class Program
             builder.RegisterType<Test1>().As<ITest>();
             builder.RegisterType<Test2>().As<ITest>();
         });
-        host.OnHostStarted += p =>
+        host.OnInitialized += p =>
         {
             foreach (var t in p.GetServices<ITest>())
             {
