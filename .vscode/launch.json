@@ -45,7 +45,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "Build Example",
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/build/${input:exampleProjectName}",
             "program": "dotnet",
             "args": [
                 "${workspaceFolder}/build/${input:exampleProjectName}/${input:exampleProjectName}.dll",
@@ -58,7 +58,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "Build Template",
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/build/${input:templateProjectName}",
             "program": "dotnet",
             "args": [
                 "${workspaceFolder}/build/${input:templateProjectName}/${input:templateProjectName}.dll",
