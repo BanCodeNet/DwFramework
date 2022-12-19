@@ -27,9 +27,9 @@ public sealed class SnowflakeGenerator
     public SnowflakeGenerator(DateTime startTime, long workerId, long dataCenterId)
     {
         if (workerId < 0 || workerId > MAX_WORKER_ID)
-            throw new ExceptionWithCode(ErrorCode.ParameterError, "invalid work id");
+            throw new ArgumentException("invalid work id");
         if (dataCenterId < 0 || dataCenterId > MAX_DATA_CENTER_ID)
-            throw new ExceptionWithCode(ErrorCode.ParameterError, "invalid data center id");
+            throw new ArgumentException("invalid data center id");
         StartTime = startTime;
         _lastTimestamp = (long)StartTime.GetTimeDifference(DateTime.Now);
         WorkerId = workerId;
@@ -46,7 +46,7 @@ public sealed class SnowflakeGenerator
         {
             var currentTimestamp = (long)StartTime.GetTimeDifference(DateTime.Now, true);
             if (currentTimestamp > MAX_TIMESTAMP)
-                throw new ExceptionWithCode(ErrorCode.InternalError, "the capacity of timestamp has be undercapacity");
+                throw new SystemException("the capacity of timestamp has be undercapacity");
             else if (currentTimestamp > _lastTimestamp)
             {
                 _lastTimestamp = currentTimestamp;

@@ -47,7 +47,7 @@ public static class ModuleManager
             }
             return default;
         }
-        else throw new ExceptionWithCode(ErrorCode.ParameterError, $"the path is not existed: {modulePath}");
+        else throw new ArgumentException($"the path is not existed: {modulePath}");
     }
 
     /// <summary>

@@ -22,7 +22,7 @@ public static class RandomGenerator
     /// <returns></returns>
     public static int RandomNumber(int start, int end)
     {
-        if (start <= end) throw new ExceptionWithCode(ErrorCode.ParameterError, "end must great then start");
+        if (start <= end) throw new ArgumentException("end must great then start");
         var random = GetRandom();
         return random.Next(start, end);
     }
@@ -35,7 +35,7 @@ public static class RandomGenerator
     /// <returns></returns>
     public static double RandomNumber(double start, double end)
     {
-        if (start <= end) throw new ExceptionWithCode(ErrorCode.ParameterError, "end must great then start");
+        if (start <= end) throw new ArgumentException("end must great then start");
         var random = GetRandom();
         return (end - start) * random.NextDouble() + start;
     }
