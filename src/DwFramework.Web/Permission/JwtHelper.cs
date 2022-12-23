@@ -24,7 +24,7 @@ public static class JwtHelper
         IEnumerable<Claim> claims = null,
         DateTime? notBefore = null,
         DateTime? expires = null,
-        Dictionary<string, object> fields = null
+        Dictionary<string, object> properties = null
     )
     {
         JwtSecurityTokenHandler tokenHandler = new();
@@ -38,8 +38,8 @@ public static class JwtHelper
             signingCredentials
         );
         // 扩展字段
-        if (fields is not null) foreach (var field in fields)
-                jwtSecurityToken.Payload[field.Key] = field.Value;
+        if (properties is not null) foreach (var property in properties)
+                jwtSecurityToken.Payload[property.Key] = property.Value;
         var token = tokenHandler.WriteToken(jwtSecurityToken);
         return token;
     }
