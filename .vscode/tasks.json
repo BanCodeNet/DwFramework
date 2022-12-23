@@ -4,7 +4,7 @@
         {
             "id": "exampleProjectName",
             "type": "command",
-            "command": "extension.commandvariable.rememberPick",
+            "command": "extension.commandvariable.remember",
             "args": {
                 "key": "projectName"
             }
@@ -12,7 +12,7 @@
         {
             "id": "templateProjectName",
             "type": "command",
-            "command": "extension.commandvariable.rememberPick",
+            "command": "extension.commandvariable.remember",
             "args": {
                 "key": "projectName"
             }
@@ -20,7 +20,7 @@
         {
             "id": "utilProjectName",
             "type": "command",
-            "command": "extension.commandvariable.rememberPick",
+            "command": "extension.commandvariable.remember",
             "args": {
                 "key": "projectName"
             }
