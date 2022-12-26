@@ -40,7 +40,7 @@ public static class ClassExtension
     /// <returns></returns>
     public static byte[] ToJsonBytes<T>(this T obj, JsonSerializerOptions options = null, Encoding encoding = null)
     {
-        return (encoding ??= Encoding.UTF8).GetBytes(obj.ToJson(options));
+        return obj.ToJson(options).ToBytes(encoding);
     }
 
     /// <summary>
@@ -77,7 +77,7 @@ public static class ClassExtension
     /// <returns></returns>
     public static object FromJsonBytes(this byte[] bytes, Type type, JsonSerializerOptions options = null, Encoding encoding = null)
     {
-        return (encoding ??= Encoding.UTF8).GetString(bytes).FromJson(type, options);
+        return bytes.FromBytes(encoding).FromJson(type, options);
     }
 
     /// <summary>
@@ -90,7 +90,7 @@ public static class ClassExtension
     /// <returns></returns>
     public static T FromJsonBytes<T>(this byte[] bytes, Encoding encoding = null, JsonSerializerOptions options = null)
     {
-        return (encoding ??= Encoding.UTF8).GetString(bytes).FromJson<T>(options);
+        return bytes.FromBytes(encoding).FromJson<T>(options);
     }
 
     /// <summary>

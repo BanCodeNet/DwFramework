@@ -1,15 +1,38 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 
 namespace DwFramework.Extensions;
 
 public static class StringExtension
 {
     /// <summary>
+    /// 字符串转字符数组
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="encoding"></param>
+    /// <returns></returns>
+    public static byte[] ToBytes(this string str, Encoding encoding = null)
+    {
+        return (encoding ??= Encoding.UTF8).GetBytes(str);
+    }
+
+    /// <summary>
+    /// 字符数组转字符串
+    /// </summary>
+    /// <param name="bytes"></param>
+    /// <param name="encoding"></param>
+    /// <returns></returns>
+    public static string FromBytes(this byte[] bytes, Encoding encoding = null)
+    {
+        return (encoding ??= Encoding.UTF8).GetString(bytes);
+    }
+
+    /// <summary>
     /// 字符转int
     /// </summary>
     /// <param name="char"></param>
     /// <returns></returns>
-    private static int ToBase32Value(this char @char)
+    private static int ToBase32(this char @char)
     {
         var value = @char.To<int>();
         return value switch
@@ -26,7 +49,7 @@ public static class StringExtension
     /// </summary>
     /// <param name="byte"></param>
     /// <returns></returns>
-    private static char ToBase32Char(this byte @byte)
+    private static char ToBase32(this byte @byte)
     {
         return @byte switch
         {
@@ -51,12 +74,12 @@ public static class StringExtension
         foreach (var item in bytes)
         {
             nextChar = (byte)(nextChar | (item >> (8 - bitsRemaining)));
-            returnArray[arrayIndex++] = ToBase32Char(nextChar);
+            returnArray[arrayIndex++] = ToBase32(nextChar);
 
             if (bitsRemaining < 4)
             {
                 nextChar = (byte)((item >> (3 - bitsRemaining)) & 31);
-                returnArray[arrayIndex++] = ToBase32Char(nextChar);
+                returnArray[arrayIndex++] = ToBase32(nextChar);
                 bitsRemaining += 5;
             }
 
@@ -65,7 +88,7 @@ public static class StringExtension
         };
         if (arrayIndex != charCount)
         {
-            returnArray[arrayIndex++] = ToBase32Char(nextChar);
+            returnArray[arrayIndex++] = ToBase32(nextChar);
             while (arrayIndex != charCount) returnArray[arrayIndex++] = '=';
         }
         return new string(returnArray);
@@ -86,7 +109,7 @@ public static class StringExtension
         var arrayIndex = 0;
         foreach (var item in str)
         {
-            var cValue = ToBase32Value(item);
+            var cValue = ToBase32(item);
             int mask;
             if (bitsRemaining > 5)
             {
@@ -115,9 +138,9 @@ public static class StringExtension
     /// </summary>
     /// <param name="bytes"></param>
     /// <returns></returns>
-    public static string ToBase64(this byte[] bytes)
+    public static string ToBase64(this IEnumerable<byte> bytes)
     {
-        return Convert.ToBase64String(bytes, 0, bytes.Length);
+        return Convert.ToBase64String(bytes.ToArray(), 0, bytes.Count());
     }
 
     /// <summary>
@@ -135,9 +158,9 @@ public static class StringExtension
     /// </summary>
     /// <param name="bytes"></param>
     /// <returns></returns>
-    public static string ToHex(this byte[] bytes)
+    public static string ToHex(this IEnumerable<byte> bytes)
     {
-        return Convert.ToHexString(bytes);
+        return Convert.ToHexString(bytes.ToArray());
     }
 
     /// <summary>
@@ -151,14 +174,14 @@ public static class StringExtension
     }
 
     /// <summary>
-    /// 是否为邮箱地址
+    /// 是否为邮箱
     /// </summary>
     /// <param name="str"></param>
     /// <returns></returns>
-    public static bool IsEmailAddress(this string str)
+    public static bool IsEmail(this string str)
     {
-        var match = new Regex(@"^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$").Match(str);
-        return match.Success;
+        var regex = new Regex(@"^(([^<>()[\]\\.,;:\s@]+(\.[^<>()[\]\\.,;:\s@]+)*)|(.+))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$");
+        return regex.IsMatch(str);
     }
 
     /// <summary>
