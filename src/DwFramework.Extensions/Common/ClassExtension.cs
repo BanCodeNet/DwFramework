@@ -88,7 +88,7 @@ public static class ClassExtension
     /// <param name="encoding"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public static T FromJsonBytes<T>(this byte[] bytes, Encoding encoding = null, JsonSerializerOptions options = null)
+    public static T FromJsonBytes<T>(this byte[] bytes, JsonSerializerOptions options = null, Encoding encoding = null)
     {
         return bytes.FromBytes(encoding).FromJson<T>(options);
     }
