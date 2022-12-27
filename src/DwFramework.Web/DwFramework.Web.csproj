@@ -18,6 +18,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\DwFramework.Core\DwFramework.Core.csproj" />
+    <ProjectReference Include="..\DwFramework.Extensions\DwFramework.Extensions.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="protobuf-net.Grpc.AspNetCore" Version="1.0.152" />
