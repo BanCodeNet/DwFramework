@@ -1,7 +1,7 @@
 using DwFramework.Extensions;
 using ProtoBuf;
 
-namespace DwFramework.Web;
+namespace Shared;
 
 public record class RpcType
 {
@@ -13,6 +13,8 @@ public record class RpcType
         [ProtoMember(2)]
         public byte[] Bytes { get; }
         public object Value => Bytes.FromJsonBytes(Type);
+
+        public Object() { }
 
         public Object(T value)
         {
@@ -27,6 +29,8 @@ public record class RpcType
         [ProtoMember(1)]
         public bool Value { get; }
 
+        public Bool() { }
+
         public Bool(bool value)
         {
             Value = value;
@@ -38,6 +42,8 @@ public record class RpcType
     {
         [ProtoMember(1)]
         public string Value { get; }
+
+        public String() { }
 
         public String(string value)
         {
@@ -51,6 +57,8 @@ public record class RpcType
         [ProtoMember(1)]
         public long Value { get; }
 
+        public Long() { }
+
         public Long(long value)
         {
             Value = value;
@@ -63,6 +71,8 @@ public record class RpcType
         [ProtoMember(1)]
         public int Value { get; }
 
+        public Int() { }
+
         public Int(int value)
         {
             Value = value;
@@ -74,6 +84,8 @@ public record class RpcType
     {
         [ProtoMember(1)]
         public float Value { get; }
+
+        public Float() { }
 
         public Float(float value)
         {
