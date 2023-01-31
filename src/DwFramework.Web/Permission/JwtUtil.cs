@@ -4,7 +4,7 @@ using System.Security.Claims;
 
 namespace DwFramework.Web.Permission;
 
-public static class JwtHelper
+public static class JwtUtil
 {
     /// <summary>
     /// 生成Token
