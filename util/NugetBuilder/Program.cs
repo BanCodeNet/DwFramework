@@ -1,14 +1,14 @@
 ﻿using System.Diagnostics;
 using System.Xml;
 
-namespace BuildTools;
+namespace NugetBuilder;
 
 class Program
 {
     static void Main(params string[] args)
     {
-        var root = new DirectoryInfo(Directory.GetCurrentDirectory()).Parent.Parent;
-        var projects = Directory.GetDirectories(Path.Combine(root.FullName, "src"))
+        var root = new DirectoryInfo(Directory.GetCurrentDirectory());
+        var projects = Directory.GetDirectories("src")
             .Select(item => new DirectoryInfo(item))
             .Where(item => item.Name.StartsWith("DwFramework"))
             .ToArray();
@@ -63,16 +63,10 @@ class Program
             {
                 RedirectStandardOutput = true
             });
-            if (process == null) throw new Exception();
+            if (process is null) throw new Exception();
             Console.WriteLine("------------- 开始构建 --------------");
-            //开始读取
-            using (var sr = process.StandardOutput)
-            {
-                while (!sr.EndOfStream)
-                {
-                    Console.WriteLine(sr.ReadLine());
-                }
-            }
+            using var sr = process.StandardOutput;
+            while (!sr.EndOfStream) Console.WriteLine(sr.ReadLine());
             Console.WriteLine("------------- 结束构建 --------------");
         }
         catch
