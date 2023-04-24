@@ -11,9 +11,9 @@ public static class StringExtension
     /// <param name="str"></param>
     /// <param name="encoding"></param>
     /// <returns></returns>
-    public static byte[] ToBytes(this string str, Encoding encoding = null)
+    public static byte[] ToBytes(this string str, Encoding? encoding = null)
     {
-        return (encoding ??= Encoding.UTF8).GetBytes(str);
+        return (encoding ?? Encoding.UTF8).GetBytes(str);
     }
 
     /// <summary>
@@ -22,9 +22,9 @@ public static class StringExtension
     /// <param name="bytes"></param>
     /// <param name="encoding"></param>
     /// <returns></returns>
-    public static string FromBytes(this byte[] bytes, Encoding encoding = null)
+    public static string FromBytes(this byte[] bytes, Encoding? encoding = null)
     {
-        return (encoding ??= Encoding.UTF8).GetString(bytes);
+        return (encoding ?? Encoding.UTF8).GetString(bytes);
     }
 
     /// <summary>
