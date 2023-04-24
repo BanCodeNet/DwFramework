@@ -402,7 +402,7 @@ public static class SerializeExtension
     public static T? FromXmlBytes<T>(this byte[] bytes)
     {
         var obj = bytes.FromXmlBytes(typeof(T));
-        return obj is null ? default(T) : (T)obj;
+        return obj.To<T>();
     }
 
     /// <summary>

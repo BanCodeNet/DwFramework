@@ -8,7 +8,7 @@ public static class ClassExtension
     /// <param name="obj"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static T To<T>(this object obj)
+    public static T? To<T>(this object? obj)
     {
         return obj is null ? default : (T)obj;
     }

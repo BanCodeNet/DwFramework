@@ -46,7 +46,7 @@ public static class RandomGenerator
     /// <param name="length"></param>
     /// <param name="chars"></param>
     /// <returns></returns>
-    public static string RandomString(int length, string chars = null)
+    public static string RandomString(int length, string? chars = null)
     {
         chars ??= @"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         var builder = new StringBuilder();
