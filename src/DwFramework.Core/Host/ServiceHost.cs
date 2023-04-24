@@ -12,7 +12,7 @@ namespace DwFramework;
 public sealed class ServiceHost
 {
     private IHostBuilder _hostBuilder { get; init; }
-    private static IHost _host { get; set; }
+    private static IHost? _host { get; set; }
 
     public event Func<IServiceProvider, Task> OnInitialized = _ => Task.CompletedTask;
     public event Func<IServiceProvider, Task> OnStopping = _ => Task.CompletedTask;
@@ -166,7 +166,7 @@ public sealed class ServiceHost
     /// </summary>
     /// <param name="assembly"></param>
     /// <param name="expression"></param>
-    public void RegisterFromAssembly(Assembly assembly, Expression<Func<Type, bool>> expression = null)
+    public void RegisterFromAssembly(Assembly assembly, Expression<Func<Type, bool>>? expression = null)
     {
         expression ??= _ => true;
         foreach (var item in assembly.GetTypes())
@@ -195,7 +195,7 @@ public sealed class ServiceHost
     /// 注册服务
     /// </summary>
     /// <param name="expression"></param>
-    public void RegisterFromAssemblies(Expression<Func<Type, bool>> expression = null)
+    public void RegisterFromAssemblies(Expression<Func<Type, bool>>? expression = null)
     {
         var assemblies = Assembly.GetEntryAssembly()?.GetReferencedAssemblies();
         if (assemblies is null) return;
@@ -221,6 +221,7 @@ public sealed class ServiceHost
     /// <returns></returns>
     public async Task StopAsync()
     {
+        if (_host is null) return;
         await OnStopping.Invoke(_host.Services);
         await _host.WaitForShutdownAsync();
         await OnStopped.Invoke();
@@ -231,8 +232,9 @@ public sealed class ServiceHost
     /// </summary>
     /// <param name="serviceType"></param>
     /// <returns></returns>
-    public static object GetService(Type serviceType)
+    public static object? GetService(Type serviceType)
     {
+        if (_host is null) return null;
         return _host.Services.GetService(serviceType);
     }
 
@@ -241,8 +243,9 @@ public sealed class ServiceHost
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static T GetService<T>()
+    public static T? GetService<T>()
     {
+        if (_host is null) return default(T);
         return _host.Services.GetService<T>();
     }
 
@@ -251,8 +254,9 @@ public sealed class ServiceHost
     /// </summary>
     /// <param name="serviceType"></param>
     /// <returns></returns>
-    public static IEnumerable<object> GetServices(Type serviceType)
+    public static IEnumerable<object?> GetServices(Type serviceType)
     {
+        if (_host is null) return Array.Empty<object>();
         return _host.Services.GetServices(serviceType);
     }
 
@@ -263,6 +267,7 @@ public sealed class ServiceHost
     /// <returns></returns>
     public static IEnumerable<T> GetServices<T>()
     {
+        if (_host is null) return Array.Empty<T>();
         return _host.Services.GetServices<T>();
     }
 }

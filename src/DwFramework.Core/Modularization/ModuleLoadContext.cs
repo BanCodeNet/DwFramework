@@ -22,7 +22,7 @@ public sealed class ModuleLoadContext : AssemblyLoadContext
     /// </summary>
     /// <param name="assemblyName"></param>
     /// <returns></returns>
-    protected override Assembly Load(AssemblyName assemblyName)
+    protected override Assembly? Load(AssemblyName assemblyName)
     {
         var assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);
         return assemblyPath is null ? null : LoadFromAssemblyPath(assemblyPath);

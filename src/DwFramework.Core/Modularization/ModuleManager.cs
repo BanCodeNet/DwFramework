@@ -6,8 +6,8 @@ public static class ModuleManager
 {
     private sealed class ModuleInfo
     {
-        public string Path { get; set; }
-        public object Instance { get; set; }
+        public string? Path { get; set; }
+        public object? Instance { get; set; }
     }
 
     private static Dictionary<Type, ModuleInfo> _loadedModules { get; } = new();
@@ -45,9 +45,9 @@ public static class ModuleManager
                     return instance;
                 }
             }
-            return default;
+            throw new Exception("load failed");
         }
-        else throw new ArgumentException($"the path is not existed: {modulePath}");
+        else throw new ArgumentException($"module path invaild");
     }
 
     /// <summary>
