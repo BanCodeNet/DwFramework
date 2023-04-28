@@ -102,12 +102,12 @@ public static class SerializeExtension
         try
         {
             obj = str.FromJson(type, options);
-            return false;
+            return true;
         }
         catch
         {
             obj = null;
-            return true;
+            return false;
         }
     }
 
@@ -136,12 +136,12 @@ public static class SerializeExtension
         try
         {
             obj = str.FromJson<T>(options);
-            return false;
+            return true;
         }
         catch
         {
             obj = default(T);
-            return true;
+            return false;
         }
     }
 
